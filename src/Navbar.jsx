@@ -1,4 +1,4 @@
-function Navbar() {
+function Navbar({ onStartFree }) {
   return (
     <nav className="w-full flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100">
       
@@ -18,7 +18,10 @@ function Navbar() {
       </div>
 
       {/* Bouton CTA */}
-      <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2 rounded-lg">
+      <button
+        onClick={onStartFree}
+        className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2 rounded-lg"
+      >
         Start free
       </button>
 

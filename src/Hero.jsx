@@ -1,4 +1,4 @@
-function Hero() {
+function Hero({ onStartFree }) {
   return (
     <section className="flex flex-col items-center text-center px-6 py-20 bg-white">
       
@@ -21,7 +21,10 @@ function Hero() {
 
       {/* Boutons */}
       <div className="flex flex-col items-center gap-4">
-        <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg">
+        <button
+          onClick={onStartFree}
+          className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-4 rounded-xl text-lg"
+        >
           Try free 14 days →
         </button>
         <button className="border-2 border-blue-900 text-blue-900 font-semibold px-8 py-3 rounded-xl text-lg hover:bg-blue-50">
