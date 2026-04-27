@@ -1,71 +1,59 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
 function Dashboard({ session }) {
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      author: "Marie Dupont",
-      rating: 5,
-      text: "Excellent service, I highly recommend!",
-      platform: "Google",
-      date: "2 hours ago",
-      replied: false,
-      aiReply: null,
-      loading: false
-    },
-    {
-      id: 2,
-      author: "Jean Martin",
-      rating: 2,
-      text: "Disappointed with the wait time, expected better.",
-      platform: "Google",
-      date: "5 hours ago",
-      replied: false,
-      aiReply: null,
-      loading: false
-    },
-    {
-      id: 3,
-      author: "Sophie Bernard",
-      rating: 4,
-      text: "Very good experience overall, will come back.",
-      platform: "TripAdvisor",
-      date: "1 day ago",
-      replied: true,
-      aiReply: null,
-      loading: false
+  const [reviews, setReviews] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchReviews()
+  }, [])
+
+  const fetchReviews = async () => {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (!error) {
+      setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
     }
-  ])
+    setLoading(false)
+  }
 
   const generateReply = async (review) => {
-  setReviews(prev => prev.map(r =>
-    r.id === review.id ? { ...r, loading: true } : r
-  ))
-
-  try {
-    const { data, error } = await supabase.functions.invoke('generate-reply', {
-      body: {
-        reviewText: review.text,
-        rating: review.rating,
-        authorName: review.author
-      }
-    })
-
-    if (error) throw error
-
     setReviews(prev => prev.map(r =>
-      r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r
+      r.id === review.id ? { ...r, loading: true } : r
     ))
-  } catch (err) {
-    console.error(err)
-    setReviews(prev => prev.map(r =>
-      r.id === review.id ? { ...r, loading: false } : r
-    ))
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-reply', {
+        body: {
+          reviewText: review.text,
+          rating: review.rating,
+          authorName: review.author
+        }
+      })
+
+      if (error) throw error
+
+      setReviews(prev => prev.map(r =>
+        r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r
+      ))
+    } catch (err) {
+      console.error(err)
+      setReviews(prev => prev.map(r =>
+        r.id === review.id ? { ...r, loading: false } : r
+      ))
+    }
   }
-}
 
-  const markAsReplied = (id) => {
+  const markAsReplied = async (id) => {
+    await supabase
+      .from('reviews')
+      .update({ replied: true })
+      .eq('id', id)
+
     setReviews(prev => prev.map(r =>
       r.id === id ? { ...r, replied: true, aiReply: null } : r
     ))
@@ -109,11 +97,13 @@ function Dashboard({ session }) {
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <p className="text-gray-400 text-sm mb-1">Total Reviews</p>
-            <p className="text-4xl font-bold text-blue-900">124</p>
+            <p className="text-4xl font-bold text-blue-900">{reviews.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-400 text-sm mb-1">Average Rating</p>
-            <p className="text-4xl font-bold text-blue-900">4.3<span className="text-lg text-gray-400">/5</span></p>
+            <p className="text-gray-400 text-sm mb-1">Pending replies</p>
+            <p className="text-4xl font-bold text-orange-500">
+              {reviews.filter(r => !r.replied).length}
+            </p>
           </div>
         </div>
 
@@ -121,52 +111,55 @@ function Dashboard({ session }) {
         <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="text-xl font-bold text-blue-900 mb-6">Recent Reviews</h2>
 
-          <div className="space-y-4">
-            {reviews.map((review) => (
-              <div key={review.id} className="border border-gray-100 rounded-xl p-5">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="font-semibold text-blue-900">{review.author}</p>
-                    <div className="flex items-center gap-2">
-                      <div className="text-lg">{stars(review.rating)}</div>
-                      <span className="text-gray-400 text-xs">{review.platform} · {review.date}</span>
+          {loading ? (
+            <p className="text-gray-400 text-center py-8">Loading reviews...</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div key={review.id} className="border border-gray-100 rounded-xl p-5">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-semibold text-blue-900">{review.author}</p>
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg">{stars(review.rating)}</div>
+                        <span className="text-gray-400 text-xs">{review.platform}</span>
+                      </div>
                     </div>
+                    {review.replied ? (
+                      <span className="text-green-500 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">Replied</span>
+                    ) : (
+                      <span className="text-orange-500 text-xs font-semibold bg-orange-50 px-3 py-1 rounded-full">Pending</span>
+                    )}
                   </div>
-                  {review.replied ? (
-                    <span className="text-green-500 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">Replied</span>
-                  ) : (
-                    <span className="text-orange-500 text-xs font-semibold bg-orange-50 px-3 py-1 rounded-full">Pending</span>
+
+                  <p className="text-gray-600 text-sm mb-3">{review.text}</p>
+
+                  {review.aiReply && (
+                    <div className="bg-blue-50 rounded-xl p-4 mb-3">
+                      <p className="text-xs text-blue-900 font-semibold mb-1">✨ AI suggested reply</p>
+                      <p className="text-gray-600 text-sm">{review.aiReply}</p>
+                      <button
+                        onClick={() => markAsReplied(review.id)}
+                        className="mt-3 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600"
+                      >
+                        ✓ Mark as replied
+                      </button>
+                    </div>
+                  )}
+
+                  {!review.replied && !review.aiReply && (
+                    <button
+                      onClick={() => generateReply(review)}
+                      disabled={review.loading}
+                      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800"
+                    >
+                      {review.loading ? 'Generating...' : 'Reply with AI ✨'}
+                    </button>
                   )}
                 </div>
-
-                <p className="text-gray-600 text-sm mb-3">{review.text}</p>
-
-                {/* Réponse IA générée */}
-                {review.aiReply && (
-                  <div className="bg-blue-50 rounded-xl p-4 mb-3">
-                    <p className="text-xs text-blue-900 font-semibold mb-1">✨ AI suggested reply</p>
-                    <p className="text-gray-600 text-sm">{review.aiReply}</p>
-                    <button
-                      onClick={() => markAsReplied(review.id)}
-                      className="mt-3 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600"
-                    >
-                      ✓ Mark as replied
-                    </button>
-                  </div>
-                )}
-
-                {!review.replied && !review.aiReply && (
-                  <button
-                    onClick={() => generateReply(review)}
-                    disabled={review.loading}
-                    className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800"
-                  >
-                    {review.loading ? 'Generating...' : 'Reply with AI ✨'}
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>
