@@ -38,24 +38,32 @@ function Dashboard({ session }) {
     }
   ])
 
-  const generateReply = (review) => {
-    setReviews(prev => prev.map(r =>
-      r.id === review.id ? { ...r, loading: true } : r
-    ))
+  const generateReply = async (review) => {
+  setReviews(prev => prev.map(r =>
+    r.id === review.id ? { ...r, loading: true } : r
+  ))
 
-    setTimeout(() => {
-      let reply = ''
-      if (review.rating >= 4) {
-        reply = `Thank you so much ${review.author.split(' ')[0]} for your wonderful feedback! We're thrilled you had a great experience and look forward to welcoming you again soon. 😊`
-      } else {
-        reply = `Dear ${review.author.split(' ')[0]}, thank you for taking the time to share your feedback. We sincerely apologize for not meeting your expectations. We'd love the opportunity to make it right — please don't hesitate to contact us directly.`
+  try {
+    const { data, error } = await supabase.functions.invoke('generate-reply', {
+      body: {
+        reviewText: review.text,
+        rating: review.rating,
+        authorName: review.author
       }
+    })
 
-      setReviews(prev => prev.map(r =>
-        r.id === review.id ? { ...r, loading: false, aiReply: reply } : r
-      ))
-    }, 1000)
+    if (error) throw error
+
+    setReviews(prev => prev.map(r =>
+      r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r
+    ))
+  } catch (err) {
+    console.error(err)
+    setReviews(prev => prev.map(r =>
+      r.id === review.id ? { ...r, loading: false } : r
+    ))
   }
+}
 
   const markAsReplied = (id) => {
     setReviews(prev => prev.map(r =>
