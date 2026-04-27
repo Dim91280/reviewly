@@ -102,8 +102,8 @@ function Dashboard({ session }) {
   return (
     <div className="min-h-screen bg-gray-50 flex">
 
-      {/* Sidebar */}
-      <aside className="w-64 bg-blue-900 min-h-screen flex flex-col px-6 py-8 fixed top-0 left-0">
+      {/* Sidebar - cachée sur mobile */}
+      <aside className="hidden md:flex w-64 bg-blue-900 min-h-screen flex-col px-6 py-8 fixed top-0 left-0">
         <div className="flex items-center gap-2 mb-10">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
             <span className="text-white text-sm">★</span>
@@ -142,7 +142,18 @@ function Dashboard({ session }) {
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 flex-1 px-8 py-8">
+      {/* Navbar mobile */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 bg-blue-900 px-4 py-3 flex items-center justify-between z-10">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-xs">★</span>
+          </div>
+          <span className="text-white font-bold">Reviewly</span>
+        </div>
+        <button onClick={() => supabase.auth.signOut()} className="text-blue-300 text-sm">Sign out</button>
+      </nav>
+
+      <main className="md:ml-64 flex-1 px-4 md:px-8 py-4 md:py-8 mt-14 md:mt-0">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
