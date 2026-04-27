@@ -6,11 +6,11 @@ function Dashboard({ session }) {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [newReview, setNewReview] = useState({
-  author: '',
-  rating: 5,
-  text: '',
-  platform: 'Google'
-})
+    author: '',
+    rating: 5,
+    text: '',
+    platform: 'Google'
+  })
 
   useEffect(() => {
     fetchReviews()
@@ -67,25 +67,25 @@ function Dashboard({ session }) {
   }
 
   const addReview = async () => {
-  if (!newReview.author || !newReview.text) return
+    if (!newReview.author || !newReview.text) return
 
-  const { data, error } = await supabase
-    .from('reviews')
-    .insert([{
-      author: newReview.author,
-      rating: newReview.rating,
-      text: newReview.text,
-      platform: newReview.platform,
-      replied: false
-    }])
-    .select()
+    const { data, error } = await supabase
+      .from('reviews')
+      .insert([{
+        author: newReview.author,
+        rating: newReview.rating,
+        text: newReview.text,
+        platform: newReview.platform,
+        replied: false
+      }])
+      .select()
 
-  if (!error) {
-    setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
-    setNewReview({ author: '', rating: 5, text: '', platform: 'Google' })
-    setShowForm(false)
+    if (!error) {
+      setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
+      setNewReview({ author: '', rating: 5, text: '', platform: 'Google' })
+      setShowForm(false)
+    }
   }
-}
 
   const stars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -93,140 +93,191 @@ function Dashboard({ session }) {
     ))
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : '—'
 
-      {/* Navbar */}
-      <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-blue-900 rounded-xl flex items-center justify-center">
-            <span className="text-orange-400 text-lg">★</span>
+  const pendingCount = reviews.filter(r => !r.replied).length
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+
+      {/* Sidebar */}
+      <aside className="w-64 bg-blue-900 min-h-screen flex flex-col px-6 py-8 fixed top-0 left-0">
+        <div className="flex items-center gap-2 mb-10">
+          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm">★</span>
           </div>
-          <span className="text-blue-900 font-bold text-xl">Reviewly</span>
+          <span className="text-white font-bold text-lg">Reviewly</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">{session.user.email}</span>
+
+        <nav className="space-y-1 flex-1">
+          <div className="flex items-center gap-3 bg-blue-800 text-white px-4 py-3 rounded-xl">
+            <span>📊</span>
+            <span className="text-sm font-medium">Dashboard</span>
+          </div>
+          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
+            <span>⭐</span>
+            <span className="text-sm">Reviews</span>
+          </div>
+          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
+            <span>📈</span>
+            <span className="text-sm">Analytics</span>
+          </div>
+          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
+            <span>⚙️</span>
+            <span className="text-sm">Settings</span>
+          </div>
+        </nav>
+
+        <div className="border-t border-blue-800 pt-4">
+          <p className="text-blue-300 text-xs truncate mb-2">{session.user.email}</p>
           <button
             onClick={() => supabase.auth.signOut()}
-            className="text-sm text-gray-400 hover:text-blue-900"
+            className="text-blue-300 text-sm hover:text-white"
           >
-            Sign out
+            Sign out →
           </button>
         </div>
-      </nav>
+      </aside>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      {/* Main content */}
+      <main className="ml-64 flex-1 px-8 py-8">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-blue-900">Dashboard</h1>
+            <p className="text-gray-400 text-sm mt-1">Monitor and respond to your reviews</p>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2 rounded-xl"
+          >
+            + Add review
+          </button>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-400 text-sm mb-1">Reputation Score</p>
-            <p className="text-4xl font-bold text-blue-900">87<span className="text-lg text-gray-400">/100</span></p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-400 text-sm mb-1">Total Reviews</p>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-gray-400 text-sm">Total Reviews</p>
+              <span className="text-2xl">📝</span>
+            </div>
             <p className="text-4xl font-bold text-blue-900">{reviews.length}</p>
+            <p className="text-green-500 text-xs mt-2">All time</p>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-gray-400 text-sm mb-1">Pending replies</p>
-            <p className="text-4xl font-bold text-orange-500">
-              {reviews.filter(r => !r.replied).length}
-            </p>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-gray-400 text-sm">Pending Replies</p>
+              <span className="text-2xl">⏳</span>
+            </div>
+            <p className="text-4xl font-bold text-orange-500">{pendingCount}</p>
+            <p className="text-orange-400 text-xs mt-2">Need attention</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-gray-400 text-sm">Average Rating</p>
+              <span className="text-2xl">⭐</span>
+            </div>
+            <p className="text-4xl font-bold text-blue-900">{avgRating}<span className="text-lg text-gray-400">/5</span></p>
+            <p className="text-green-500 text-xs mt-2">Based on {reviews.length} reviews</p>
           </div>
         </div>
 
-        {/* Reviews */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="text-xl font-bold text-blue-900 mb-6">Recent Reviews</h2>
-          {/* Bouton + Formulaire */}
-<div className="mb-6">
-  {!showForm ? (
-    <button
-      onClick={() => setShowForm(true)}
-      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800"
-    >
-      + Add review
-    </button>
-  ) : (
-    <div className="border border-blue-100 rounded-xl p-5 bg-blue-50 space-y-3">
-      <h3 className="text-blue-900 font-semibold">Add a new review</h3>
-      <input
-        type="text"
-        placeholder="Author name"
-        value={newReview.author}
-        onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-      />
-      <textarea
-        placeholder="Review text"
-        value={newReview.text}
-        onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm h-20"
-      />
-      <div className="flex gap-3">
-        <select
-          value={newReview.rating}
-          onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
-        >
-          {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} stars</option>)}
-        </select>
-        <select
-          value={newReview.platform}
-          onChange={(e) => setNewReview({ ...newReview, platform: e.target.value })}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
-        >
-          <option>Google</option>
-          <option>TripAdvisor</option>
-          <option>Facebook</option>
-        </select>
-      </div>
-      <div className="flex gap-2">
-        <button
-          onClick={addReview}
-          className="bg-orange-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-orange-600"
-        >
-          Save review
-        </button>
-        <button
-          onClick={() => setShowForm(false)}
-          className="text-gray-400 text-sm px-4 py-2 rounded-lg hover:text-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  )}
-</div>
+        {/* Formulaire */}
+        {showForm && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+            <h3 className="text-blue-900 font-semibold mb-4">Add a new review</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Author name"
+                value={newReview.author}
+                onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-900"
+              />
+              <textarea
+                placeholder="Review text"
+                value={newReview.text}
+                onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm h-24 focus:outline-none focus:border-blue-900"
+              />
+              <div className="flex gap-3">
+                <select
+                  value={newReview.rating}
+                  onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
+                  className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none"
+                >
+                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} stars</option>)}
+                </select>
+                <select
+                  value={newReview.platform}
+                  onChange={(e) => setNewReview({ ...newReview, platform: e.target.value })}
+                  className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none"
+                >
+                  <option>Google</option>
+                  <option>TripAdvisor</option>
+                  <option>Facebook</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={addReview}
+                  className="bg-orange-500 text-white text-sm px-5 py-2 rounded-xl hover:bg-orange-600"
+                >
+                  Save review
+                </button>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="text-gray-400 text-sm px-5 py-2 rounded-xl hover:text-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-      
+        {/* Reviews */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-blue-900">Recent Reviews</h2>
+            <span className="text-gray-400 text-sm">{pendingCount} pending</span>
+          </div>
 
           {loading ? (
             <p className="text-gray-400 text-center py-8">Loading reviews...</p>
           ) : (
             <div className="space-y-4">
               {reviews.map((review) => (
-                <div key={review.id} className="border border-gray-100 rounded-xl p-5">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <p className="font-semibold text-blue-900">{review.author}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="text-lg">{stars(review.rating)}</div>
-                        <span className="text-gray-400 text-xs">{review.platform}</span>
+                <div key={review.id} className="border border-gray-100 rounded-xl p-5 hover:border-blue-100 transition-colors">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {review.author.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-blue-900">{review.author}</p>
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm">{stars(review.rating)}</div>
+                          <span className="text-gray-400 text-xs">· {review.platform}</span>
+                        </div>
                       </div>
                     </div>
                     {review.replied ? (
-                      <span className="text-green-500 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">Replied</span>
+                      <span className="text-green-500 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">✓ Replied</span>
                     ) : (
                       <span className="text-orange-500 text-xs font-semibold bg-orange-50 px-3 py-1 rounded-full">Pending</span>
                     )}
                   </div>
 
-                  <p className="text-gray-600 text-sm mb-3">{review.text}</p>
+                  <p className="text-gray-600 text-sm mb-4 ml-13">{review.text}</p>
 
                   {review.aiReply && (
-                    <div className="bg-blue-50 rounded-xl p-4 mb-3">
-                      <p className="text-xs text-blue-900 font-semibold mb-1">✨ AI suggested reply</p>
+                    <div className="bg-blue-50 rounded-xl p-4 mb-3 ml-0">
+                      <p className="text-xs text-blue-900 font-semibold mb-2">✨ AI suggested reply</p>
                       <p className="text-gray-600 text-sm">{review.aiReply}</p>
                       <button
                         onClick={() => markAsReplied(review.id)}
@@ -241,9 +292,9 @@ function Dashboard({ session }) {
                     <button
                       onClick={() => generateReply(review)}
                       disabled={review.loading}
-                      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800"
+                      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 disabled:opacity-50"
                     >
-                      {review.loading ? 'Generating...' : 'Reply with AI ✨'}
+                      {review.loading ? '⏳ Generating...' : '✨ Reply with AI'}
                     </button>
                   )}
                 </div>
@@ -251,8 +302,7 @@ function Dashboard({ session }) {
             </div>
           )}
         </div>
-
-      </div>
+      </main>
     </div>
   )
 }
