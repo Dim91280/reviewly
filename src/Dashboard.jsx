@@ -4,6 +4,13 @@ import { supabase } from './supabase'
 function Dashboard({ session }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [newReview, setNewReview] = useState({
+  author: '',
+  rating: 5,
+  text: '',
+  platform: 'Google'
+})
 
   useEffect(() => {
     fetchReviews()
@@ -59,6 +66,27 @@ function Dashboard({ session }) {
     ))
   }
 
+  const addReview = async () => {
+  if (!newReview.author || !newReview.text) return
+
+  const { data, error } = await supabase
+    .from('reviews')
+    .insert([{
+      author: newReview.author,
+      rating: newReview.rating,
+      text: newReview.text,
+      platform: newReview.platform,
+      replied: false
+    }])
+    .select()
+
+  if (!error) {
+    setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
+    setNewReview({ author: '', rating: 5, text: '', platform: 'Google' })
+    setShowForm(false)
+  }
+}
+
   const stars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className={i < rating ? "text-orange-400" : "text-gray-200"}>★</span>
@@ -110,6 +138,68 @@ function Dashboard({ session }) {
         {/* Reviews */}
         <div className="bg-white rounded-2xl shadow-sm p-6">
           <h2 className="text-xl font-bold text-blue-900 mb-6">Recent Reviews</h2>
+          {/* Bouton + Formulaire */}
+<div className="mb-6">
+  {!showForm ? (
+    <button
+      onClick={() => setShowForm(true)}
+      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800"
+    >
+      + Add review
+    </button>
+  ) : (
+    <div className="border border-blue-100 rounded-xl p-5 bg-blue-50 space-y-3">
+      <h3 className="text-blue-900 font-semibold">Add a new review</h3>
+      <input
+        type="text"
+        placeholder="Author name"
+        value={newReview.author}
+        onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+      />
+      <textarea
+        placeholder="Review text"
+        value={newReview.text}
+        onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm h-20"
+      />
+      <div className="flex gap-3">
+        <select
+          value={newReview.rating}
+          onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+        >
+          {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} stars</option>)}
+        </select>
+        <select
+          value={newReview.platform}
+          onChange={(e) => setNewReview({ ...newReview, platform: e.target.value })}
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+        >
+          <option>Google</option>
+          <option>TripAdvisor</option>
+          <option>Facebook</option>
+        </select>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={addReview}
+          className="bg-orange-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-orange-600"
+        >
+          Save review
+        </button>
+        <button
+          onClick={() => setShowForm(false)}
+          className="text-gray-400 text-sm px-4 py-2 rounded-lg hover:text-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )}
+</div>
+
+      
 
           {loading ? (
             <p className="text-gray-400 text-center py-8">Loading reviews...</p>
