@@ -34,6 +34,14 @@ function App() {
     return <Auth onBack={() => setPage('home')} />
   }
 
+  useEffect(() => {
+    if (page === 'pricing') {
+      setTimeout(() => {
+        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [page])
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar onStartFree={() => setPage('auth')} />
