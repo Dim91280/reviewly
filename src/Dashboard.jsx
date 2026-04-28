@@ -25,7 +25,7 @@ function Dashboard({ session }) {
       .select('*')
       .eq('user_id', session.user.id)
       .eq('status', 'active')
-      .single()
+      .maybeSingle()
     setSubscription(data)
     setSubLoading(false)
   }
