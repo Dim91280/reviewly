@@ -124,7 +124,7 @@ function Dashboard({ session }) {
           <p className="text-gray-400 mb-8">Accédez à votre dashboard en choisissant un plan Reviewly.</p>
           <div className="space-y-3">
             <button
-              onClick={() => window.location.href = '/#pricing'}
+              onClick={() => window.location.href = 'https://reviewly-eta.vercel.app/#pricing'}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl"
             >
               Voir les plans →
