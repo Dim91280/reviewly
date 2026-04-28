@@ -17,16 +17,17 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      if (window.location.hash === '#pricing') setPage('pricing')
     })
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session) setPage('dashboard')
+      if (session && window.location.hash !== '#pricing') setPage('dashboard')
     })
   }, [])
 
-  if (session) {
-    return <Dashboard session={session} />
+  if (session && page !== 'pricing') {
+    return <Dashboard session={session} onShowPricing={() => setPage('pricing')} />
   }
 
   if (page === 'auth') {

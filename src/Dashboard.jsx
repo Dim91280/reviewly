@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
-function Dashboard({ session }) {
+function Dashboard({ session, onShowPricing }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState(null)
@@ -124,7 +124,7 @@ function Dashboard({ session }) {
           <p className="text-gray-400 mb-8">Accédez à votre dashboard en choisissant un plan Reviewly.</p>
           <div className="space-y-3">
             <button
-              onClick={() => window.location.href = 'https://reviewly-eta.vercel.app/#pricing'}
+              onClick={() => { window.location.hash = '#pricing'; onShowPricing(); }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl"
             >
               Voir les plans →
