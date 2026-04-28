@@ -13,20 +13,25 @@ import Dashboard from './Dashboard'
 function App() {
   const [session, setSession] = useState(null)
   const [page, setPage] = useState('home')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      if (window.location.hash === '#pricing') setPage('pricing')
+      if (session) setPage('dashboard')
+      setLoading(false)
     })
 
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session && window.location.hash !== '#pricing') setPage('dashboard')
+      if (session) setPage('dashboard')
+      else setPage('home')
     })
   }, [])
 
-  if (session && page !== 'pricing') {
+  if (loading) return null
+
+  if (session && page === 'dashboard') {
     return <Dashboard session={session} onShowPricing={() => setPage('pricing')} />
   }
 
@@ -34,25 +39,19 @@ function App() {
     return <Auth onBack={() => setPage('home')} />
   }
 
-  useEffect(() => {
-    if (page === 'pricing') {
-      setTimeout(() => {
-        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
-    }
-  }, [page])
-
-  return (
-    <div className="min-h-screen bg-white">
-      <Navbar onStartFree={() => setPage('auth')} />
-      <Hero onStartFree={() => setPage('auth')} />
-      <Problems />
-      <Features />
-      <Pricing onStartFree={() => setPage('auth')} />
-      <Testimonials />
-      <Footer onStartFree={() => setPage('auth')} />
-    </div>
-  )
+  if (page === 'pricing' || page === 'home') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar onStartFree={() => setPage('auth')} />
+        <Hero onStartFree={() => setPage('auth')} />
+        <Problems />
+        <Features />
+        <Pricing onStartFree={() => setPage('auth')} />
+        <Testimonials />
+        <Footer onStartFree={() => setPage('auth')} />
+      </div>
+    )
+  }
 }
 
 export default App
