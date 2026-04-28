@@ -1,8 +1,47 @@
-function Pricing() {
-  return (
-    <section className="bg-gray-50 py-20 px-6">
+import { useState } from 'react'
+import { supabase } from './supabase'
 
-      {/* Titre */}
+const PRICE_SOLO = 'price_1TR8rmB4ROasWczJeilL2YEd'
+const PRICE_PRO = 'price_1TR8rAB4ROasWczJj2Al5ZI5'
+
+function Pricing() {
+  const [loading, setLoading] = useState(null)
+
+  const handleCheckout = async (priceId, planName) => {
+    setLoading(planName)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        window.location.href = '/auth'
+        return
+      }
+
+      const response = await fetch(
+        'https://wfjsynilylbjymwjusvi.supabase.co/functions/v1/create-checkout',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            priceId,
+            userId: session.user.id,
+            userEmail: session.user.email,
+          }),
+        }
+      )
+
+      const { url, error } = await response.json()
+      if (error) throw new Error(error)
+      window.location.href = url
+    } catch (err) {
+      alert('Erreur : ' + err.message)
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  return (
+    <section id="pricing" className="bg-gray-50 py-20 px-6">
       <h2 className="text-3xl font-bold text-blue-900 text-center mb-4">
         Simple, honest pricing
       </h2>
@@ -10,7 +49,6 @@ function Pricing() {
         No contract. Cancel anytime.
       </p>
 
-      {/* Cartes */}
       <div className="flex flex-col md:flex-row gap-6 max-w-3xl mx-auto">
 
         {/* Plan Solo */}
@@ -25,8 +63,12 @@ function Pricing() {
               </li>
             ))}
           </ul>
-          <button className="w-full border-2 border-blue-900 text-blue-900 font-semibold py-3 rounded-xl hover:bg-blue-50">
-            Start free trial
+          <button
+            onClick={() => handleCheckout(PRICE_SOLO, 'solo')}
+            disabled={loading === 'solo'}
+            className="w-full border-2 border-blue-900 text-blue-900 font-semibold py-3 rounded-xl hover:bg-blue-50 disabled:opacity-50"
+          >
+            {loading === 'solo' ? 'Chargement...' : 'Start free trial'}
           </button>
         </div>
 
@@ -45,8 +87,12 @@ function Pricing() {
               </li>
             ))}
           </ul>
-          <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl">
-            Start free trial
+          <button
+            onClick={() => handleCheckout(PRICE_PRO, 'pro')}
+            disabled={loading === 'pro'}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+          >
+            {loading === 'pro' ? 'Chargement...' : 'Start free trial'}
           </button>
         </div>
 

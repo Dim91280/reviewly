@@ -4,6 +4,8 @@ import { supabase } from './supabase'
 function Dashboard({ session }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
+  const [subscription, setSubscription] = useState(null)
+  const [subLoading, setSubLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [newReview, setNewReview] = useState({
     author: '',
@@ -13,15 +15,26 @@ function Dashboard({ session }) {
   })
 
   useEffect(() => {
+    fetchSubscription()
     fetchReviews()
   }, [])
+
+  const fetchSubscription = async () => {
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('status', 'active')
+      .single()
+    setSubscription(data)
+    setSubLoading(false)
+  }
 
   const fetchReviews = async () => {
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
       .order('created_at', { ascending: false })
-
     if (!error) {
       setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
     }
@@ -32,7 +45,6 @@ function Dashboard({ session }) {
     setReviews(prev => prev.map(r =>
       r.id === review.id ? { ...r, loading: true } : r
     ))
-
     try {
       const { data, error } = await supabase.functions.invoke('generate-reply', {
         body: {
@@ -41,9 +53,7 @@ function Dashboard({ session }) {
           authorName: review.author
         }
       })
-
       if (error) throw error
-
       setReviews(prev => prev.map(r =>
         r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r
       ))
@@ -56,11 +66,7 @@ function Dashboard({ session }) {
   }
 
   const markAsReplied = async (id) => {
-    await supabase
-      .from('reviews')
-      .update({ replied: true })
-      .eq('id', id)
-
+    await supabase.from('reviews').update({ replied: true }).eq('id', id)
     setReviews(prev => prev.map(r =>
       r.id === id ? { ...r, replied: true, aiReply: null } : r
     ))
@@ -68,7 +74,6 @@ function Dashboard({ session }) {
 
   const addReview = async () => {
     if (!newReview.author || !newReview.text) return
-
     const { data, error } = await supabase
       .from('reviews')
       .insert([{
@@ -79,7 +84,6 @@ function Dashboard({ session }) {
         replied: false
       }])
       .select()
-
     if (!error) {
       setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
       setNewReview({ author: '', rating: 5, text: '', platform: 'Google' })
@@ -99,10 +103,48 @@ function Dashboard({ session }) {
 
   const pendingCount = reviews.filter(r => !r.replied).length
 
+  // Loading abonnement
+  if (subLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
+      </div>
+    )
+  }
+
+  // Pas d'abonnement actif → paywall
+  if (!subscription) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl">⭐</span>
+          </div>
+          <h2 className="text-2xl font-bold text-blue-900 mb-3">Choisissez votre plan</h2>
+          <p className="text-gray-400 mb-8">Accédez à votre dashboard en choisissant un plan Reviewly.</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.href = '/#pricing'}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl"
+            >
+              Voir les plans →
+            </button>
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="w-full text-gray-400 text-sm hover:text-gray-600"
+            >
+              Se déconnecter
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
 
-      {/* Sidebar - cachée sur mobile */}
+      {/* Sidebar */}
       <aside className="hidden md:flex w-64 bg-blue-900 min-h-screen flex-col px-6 py-8 fixed top-0 left-0">
         <div className="flex items-center gap-2 mb-10">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -110,7 +152,11 @@ function Dashboard({ session }) {
           </div>
           <span className="text-white font-bold text-lg">Reviewly</span>
         </div>
-
+        <div className="mb-6">
+          <span className={`text-xs font-bold px-3 py-1 rounded-full ${subscription.plan === 'pro' ? 'bg-orange-500 text-white' : 'bg-blue-800 text-blue-200'}`}>
+            Plan {subscription.plan.toUpperCase()}
+          </span>
+        </div>
         <nav className="space-y-1 flex-1">
           <div className="flex items-center gap-3 bg-blue-800 text-white px-4 py-3 rounded-xl">
             <span>📊</span>
@@ -129,7 +175,6 @@ function Dashboard({ session }) {
             <span className="text-sm">Settings</span>
           </div>
         </nav>
-
         <div className="border-t border-blue-800 pt-4">
           <p className="text-blue-300 text-xs truncate mb-2">{session.user.email}</p>
           <button
@@ -141,7 +186,6 @@ function Dashboard({ session }) {
         </div>
       </aside>
 
-      {/* Main content */}
       {/* Navbar mobile */}
       <nav className="md:hidden fixed top-0 left-0 right-0 bg-blue-900 px-4 py-3 flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
@@ -155,7 +199,6 @@ function Dashboard({ session }) {
 
       <main className="md:ml-64 flex-1 px-4 md:px-8 py-4 md:py-8 mt-14 md:mt-0">
 
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-blue-900">Dashboard</h1>
@@ -169,7 +212,6 @@ function Dashboard({ session }) {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-3">
@@ -197,7 +239,6 @@ function Dashboard({ session }) {
           </div>
         </div>
 
-        {/* Formulaire */}
         {showForm && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
             <h3 className="text-blue-900 font-semibold mb-4">Add a new review</h3>
@@ -251,13 +292,11 @@ function Dashboard({ session }) {
           </div>
         )}
 
-        {/* Reviews */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-blue-900">Recent Reviews</h2>
             <span className="text-gray-400 text-sm">{pendingCount} pending</span>
           </div>
-
           {loading ? (
             <p className="text-gray-400 text-center py-8">Loading reviews...</p>
           ) : (
@@ -283,11 +322,9 @@ function Dashboard({ session }) {
                       <span className="text-orange-500 text-xs font-semibold bg-orange-50 px-3 py-1 rounded-full">Pending</span>
                     )}
                   </div>
-
-                  <p className="text-gray-600 text-sm mb-4 ml-13">{review.text}</p>
-
+                  <p className="text-gray-600 text-sm mb-4">{review.text}</p>
                   {review.aiReply && (
-                    <div className="bg-blue-50 rounded-xl p-4 mb-3 ml-0">
+                    <div className="bg-blue-50 rounded-xl p-4 mb-3">
                       <p className="text-xs text-blue-900 font-semibold mb-2">✨ AI suggested reply</p>
                       <p className="text-gray-600 text-sm">{review.aiReply}</p>
                       <button
@@ -298,7 +335,6 @@ function Dashboard({ session }) {
                       </button>
                     </div>
                   )}
-
                   {!review.replied && !review.aiReply && (
                     <button
                       onClick={() => generateReply(review)}
