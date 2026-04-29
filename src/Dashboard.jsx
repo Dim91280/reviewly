@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
-function Dashboard({ session, onShowPricing }) {
+function Dashboard({ session, onShowPricing, isSuccess }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState(null)
@@ -19,13 +19,19 @@ function Dashboard({ session, onShowPricing }) {
     fetchReviews()
   }, [])
 
-  const fetchSubscription = async () => {
+  const fetchSubscription = async (retries = 8) => {
     const { data } = await supabase
       .from('subscriptions')
       .select('*')
       .eq('user_id', session.user.id)
       .eq('status', 'active')
       .maybeSingle()
+
+    if (!data && retries > 0 && isSuccess) {
+      setTimeout(() => fetchSubscription(retries - 1), 2000)
+      return
+    }
+
     setSubscription(data)
     setSubLoading(false)
   }
@@ -108,7 +114,10 @@ function Dashboard({ session, onShowPricing }) {
   if (subLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-400">Chargement...</p>
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{isSuccess ? 'Activation de votre abonnement...' : 'Chargement...'}</p>
+        </div>
       </div>
     )
   }
