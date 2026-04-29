@@ -18,7 +18,12 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      if (session) setPage('dashboard')
+      if (session) {
+        setPage('dashboard')
+        if (window.location.search.includes('success=true')) {
+          window.history.replaceState({}, '', '/')
+        }
+      }
       setLoading(false)
     })
 
