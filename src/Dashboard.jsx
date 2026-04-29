@@ -26,12 +26,10 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
       .eq('user_id', session.user.id)
       .eq('status', 'active')
       .maybeSingle()
-
     if (!data && retries > 0 && isSuccess) {
       setTimeout(() => fetchSubscription(retries - 1), 2000)
       return
     }
-
     setSubscription(data)
     setSubLoading(false)
   }
@@ -42,55 +40,34 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
       .select('*')
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
-    if (!error) {
-      setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
-    }
+    if (!error) setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
     setLoading(false)
   }
 
   const generateReply = async (review) => {
-    setReviews(prev => prev.map(r =>
-      r.id === review.id ? { ...r, loading: true } : r
-    ))
+    setReviews(prev => prev.map(r => r.id === review.id ? { ...r, loading: true } : r))
     try {
       const { data, error } = await supabase.functions.invoke('generate-reply', {
-        body: {
-          reviewText: review.text,
-          rating: review.rating,
-          authorName: review.author
-        }
+        body: { reviewText: review.text, rating: review.rating, authorName: review.author }
       })
       if (error) throw error
-      setReviews(prev => prev.map(r =>
-        r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r
-      ))
+      setReviews(prev => prev.map(r => r.id === review.id ? { ...r, loading: false, aiReply: data.reply } : r))
     } catch (err) {
       console.error(err)
-      setReviews(prev => prev.map(r =>
-        r.id === review.id ? { ...r, loading: false } : r
-      ))
+      setReviews(prev => prev.map(r => r.id === review.id ? { ...r, loading: false } : r))
     }
   }
 
   const markAsReplied = async (id) => {
     await supabase.from('reviews').update({ replied: true }).eq('id', id)
-    setReviews(prev => prev.map(r =>
-      r.id === id ? { ...r, replied: true, aiReply: null } : r
-    ))
+    setReviews(prev => prev.map(r => r.id === id ? { ...r, replied: true, aiReply: null } : r))
   }
 
   const addReview = async () => {
     if (!newReview.author || !newReview.text) return
     const { data, error } = await supabase
       .from('reviews')
-      .insert([{
-        author: newReview.author,
-        rating: newReview.rating,
-        text: newReview.text,
-        platform: newReview.platform,
-        replied: false,
-        user_id: session.user.id
-      }])
+      .insert([{ author: newReview.author, rating: newReview.rating, text: newReview.text, platform: newReview.platform, replied: false, user_id: session.user.id }])
       .select()
     if (!error) {
       setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
@@ -99,11 +76,9 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
     }
   }
 
-  const stars = (rating) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < rating ? "text-orange-400" : "text-gray-200"}>★</span>
-    ))
-  }
+  const stars = (rating) => Array.from({ length: 5 }, (_, i) => (
+    <span key={i} style={{ color: i < rating ? '#6366f1' : '#e5e7eb' }}>★</span>
+  ))
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
@@ -111,12 +86,25 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
 
   const pendingCount = reviews.filter(r => !r.replied).length
 
+  const avatarColors = ['#e0e7ff', '#fce7f3', '#d1fae5', '#fef3c7', '#e0f2fe']
+  const avatarTextColors = ['#4338ca', '#9d174d', '#065f46', '#92400e', '#0369a1']
+  const getAvatarColor = (name) => {
+    const i = name.charCodeAt(0) % avatarColors.length
+    return { bg: avatarColors[i], text: avatarTextColors[i] }
+  }
+
+  const platformStyles = {
+    'Google': { bg: '#e0e7ff', color: '#4338ca' },
+    'TripAdvisor': { bg: '#d1fae5', color: '#065f46' },
+    'Facebook': { bg: '#dbeafe', color: '#1d4ed8' },
+  }
+
   if (subLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">{isSuccess ? 'Activation de votre abonnement...' : 'Chargement...'}</p>
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400 text-sm">{isSuccess ? 'Activation de votre abonnement...' : 'Chargement...'}</p>
         </div>
       </div>
     )
@@ -125,23 +113,20 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
   if (!subscription) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-3xl">⭐</span>
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 max-w-md w-full text-center">
+          <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
-          <h2 className="text-2xl font-bold text-blue-900 mb-3">Choisissez votre plan</h2>
-          <p className="text-gray-400 mb-8">Accédez à votre dashboard en choisissant un plan Reviewly.</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Choisissez votre plan</h2>
+          <p className="text-gray-400 text-sm mb-8">Accédez à votre dashboard en choisissant un plan Reviewly.</p>
           <div className="space-y-3">
             <button
               onClick={() => { onShowPricing(); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 200) }}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
             >
               Voir les plans →
             </button>
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="w-full text-gray-400 text-sm hover:text-gray-600"
-            >
+            <button onClick={() => supabase.auth.signOut()} className="w-full text-gray-400 text-sm hover:text-gray-600">
               Se déconnecter
             </button>
           </div>
@@ -151,128 +136,128 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <aside className="hidden md:flex w-64 bg-blue-900 min-h-screen flex-col px-6 py-8 fixed top-0 left-0">
-        <div className="flex items-center gap-2 mb-10">
-          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-            <span className="text-white text-sm">★</span>
+    <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+
+      {/* Sidebar desktop */}
+      <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
+        <div className="flex items-center gap-2 mb-8 px-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
-          <span className="text-white font-bold text-lg">Reviewly</span>
+          <span className="text-white font-medium text-sm">Reviewly</span>
         </div>
-        <div className="mb-6">
-          <span className={`text-xs font-bold px-3 py-1 rounded-full ${subscription.plan === 'pro' ? 'bg-orange-500 text-white' : 'bg-blue-800 text-blue-200'}`}>
+
+        <div className="px-2 mb-6">
+          <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{ backgroundColor: '#1e3a5f', color: '#60a5fa' }}>
             Plan {subscription.plan.toUpperCase()}
           </span>
         </div>
-        <nav className="space-y-1 flex-1">
-          <div className="flex items-center gap-3 bg-blue-800 text-white px-4 py-3 rounded-xl">
-            <span>📊</span>
-            <span className="text-sm font-medium">Dashboard</span>
-          </div>
-          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
-            <span>⭐</span>
-            <span className="text-sm">Reviews</span>
-          </div>
-          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
-            <span>📈</span>
-            <span className="text-sm">Analytics</span>
-          </div>
-          <div className="flex items-center gap-3 text-blue-300 px-4 py-3 rounded-xl hover:bg-blue-800 cursor-pointer">
-            <span>⚙️</span>
-            <span className="text-sm">Settings</span>
-          </div>
+
+        <nav className="space-y-0.5 flex-1">
+          {[
+            { label: 'Dashboard', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>, active: true },
+            { label: 'Reviews', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, badge: pendingCount > 0 ? pendingCount : null },
+            { label: 'Analytics', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+            { label: 'Settings', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> },
+          ].map(item => (
+            <div key={item.label} className="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-xs transition-colors"
+              style={{ backgroundColor: item.active ? '#1e293b' : 'transparent', color: item.active ? '#f1f5f9' : '#64748b' }}>
+              {item.icon}
+              <span>{item.label}</span>
+              {item.badge && <span className="ml-auto text-xs px-1.5 py-0.5 rounded-md" style={{ backgroundColor: '#6366f1', color: 'white' }}>{item.badge}</span>}
+            </div>
+          ))}
         </nav>
-        <div className="border-t border-blue-800 pt-4">
-          <p className="text-blue-300 text-xs truncate mb-2">{session.user.email}</p>
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="text-blue-300 text-sm hover:text-white"
-          >
+
+        <div className="border-t px-2 pt-4" style={{ borderColor: '#1e293b' }}>
+          <p className="text-xs truncate mb-2" style={{ color: '#475569' }}>{session.user.email}</p>
+          <button onClick={() => supabase.auth.signOut()} className="text-xs transition-colors" style={{ color: '#475569' }}>
             Sign out →
           </button>
         </div>
       </aside>
 
-      <nav className="md:hidden fixed top-0 left-0 right-0 bg-blue-900 px-4 py-3 flex items-center justify-between z-10">
+      {/* Navbar mobile */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-10" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xs">★</span>
+          <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
-          <span className="text-white font-bold">Reviewly</span>
+          <span className="text-white font-medium text-sm">Reviewly</span>
         </div>
-        <button onClick={() => supabase.auth.signOut()} className="text-blue-300 text-sm">Sign out</button>
+        <button onClick={() => supabase.auth.signOut()} className="text-xs" style={{ color: '#64748b' }}>Sign out</button>
       </nav>
 
-      <main className="md:ml-64 flex-1 px-4 md:px-8 py-4 md:py-8 mt-14 md:mt-0">
-        <div className="flex items-center justify-between mb-8">
+      {/* Main */}
+      <main className="md:ml-56 flex-1 px-4 md:px-8 py-5 md:py-8 mt-12 md:mt-0">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-blue-900">Dashboard</h1>
-            <p className="text-gray-400 text-sm mt-1">Monitor and respond to your reviews</p>
+            <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Monitor and respond to your reviews</p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-5 py-2 rounded-xl"
+            className="flex items-center gap-1.5 text-white text-xs font-medium px-3.5 py-2 rounded-lg transition-colors"
+            style={{ backgroundColor: '#6366f1' }}
           >
-            + Add review
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add review
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-400 text-sm">Total Reviews</p>
-              <span className="text-2xl">📝</span>
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {[
+            { label: 'Total reviews', value: reviews.length, sub: 'All time', subColor: '#22c55e' },
+            { label: 'Pending replies', value: pendingCount, sub: 'Need attention', subColor: pendingCount > 0 ? '#f59e0b' : '#22c55e', valueColor: pendingCount > 0 ? '#f59e0b' : '#111827' },
+            { label: 'Average rating', value: avgRating, suffix: '/5', sub: `Based on ${reviews.length} reviews`, subColor: '#22c55e' },
+          ].map(stat => (
+            <div key={stat.label} className="bg-white rounded-xl p-4 border" style={{ borderColor: '#f1f5f9' }}>
+              <p className="text-xs text-gray-400 mb-2">{stat.label}</p>
+              <p className="text-2xl font-semibold mb-1" style={{ color: stat.valueColor || '#111827' }}>
+                {stat.value}{stat.suffix && <span className="text-sm font-normal text-gray-400">{stat.suffix}</span>}
+              </p>
+              <p className="text-xs" style={{ color: stat.subColor }}>{stat.sub}</p>
             </div>
-            <p className="text-4xl font-bold text-blue-900">{reviews.length}</p>
-            <p className="text-green-500 text-xs mt-2">All time</p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-400 text-sm">Pending Replies</p>
-              <span className="text-2xl">⏳</span>
-            </div>
-            <p className="text-4xl font-bold text-orange-500">{pendingCount}</p>
-            <p className="text-orange-400 text-xs mt-2">Need attention</p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-400 text-sm">Average Rating</p>
-              <span className="text-2xl">⭐</span>
-            </div>
-            <p className="text-4xl font-bold text-blue-900">{avgRating}<span className="text-lg text-gray-400">/5</span></p>
-            <p className="text-green-500 text-xs mt-2">Based on {reviews.length} reviews</p>
-          </div>
+          ))}
         </div>
 
+        {/* Form */}
         {showForm && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h3 className="text-blue-900 font-semibold mb-4">Add a new review</h3>
+          <div className="bg-white rounded-xl border p-5 mb-5" style={{ borderColor: '#f1f5f9' }}>
+            <h3 className="text-sm font-medium text-gray-900 mb-4">Add a new review</h3>
             <div className="space-y-3">
               <input
                 type="text"
                 placeholder="Author name"
                 value={newReview.author}
                 onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-900"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                style={{ borderColor: '#e5e7eb' }}
               />
               <textarea
                 placeholder="Review text"
                 value={newReview.text}
                 onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm h-24 focus:outline-none focus:border-blue-900"
+                className="w-full border rounded-lg px-3 py-2 text-sm h-20 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                style={{ borderColor: '#e5e7eb' }}
               />
               <div className="flex gap-3">
                 <select
                   value={newReview.rating}
                   onChange={(e) => setNewReview({ ...newReview, rating: parseInt(e.target.value) })}
-                  className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none"
+                  className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
+                  style={{ borderColor: '#e5e7eb' }}
                 >
                   {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} stars</option>)}
                 </select>
                 <select
                   value={newReview.platform}
                   onChange={(e) => setNewReview({ ...newReview, platform: e.target.value })}
-                  className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none"
+                  className="border rounded-lg px-3 py-2 text-sm focus:outline-none"
+                  style={{ borderColor: '#e5e7eb' }}
                 >
                   <option>Google</option>
                   <option>TripAdvisor</option>
@@ -280,16 +265,10 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
                 </select>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={addReview}
-                  className="bg-orange-500 text-white text-sm px-5 py-2 rounded-xl hover:bg-orange-600"
-                >
+                <button onClick={addReview} className="text-white text-sm px-4 py-2 rounded-lg transition-colors" style={{ backgroundColor: '#6366f1' }}>
                   Save review
                 </button>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-400 text-sm px-5 py-2 rounded-xl hover:text-gray-600"
-                >
+                <button onClick={() => setShowForm(false)} className="text-gray-400 text-sm px-4 py-2 rounded-lg hover:text-gray-600">
                   Cancel
                 </button>
               </div>
@@ -297,60 +276,85 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-blue-900">Recent Reviews</h2>
-            <span className="text-gray-400 text-sm">{pendingCount} pending</span>
+        {/* Reviews */}
+        <div className="bg-white rounded-xl border" style={{ borderColor: '#f1f5f9' }}>
+          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#f8fafc' }}>
+            <h2 className="text-sm font-medium text-gray-900">Recent reviews</h2>
+            <span className="text-xs text-gray-400">{pendingCount} pending</span>
           </div>
+
           {loading ? (
-            <p className="text-gray-400 text-center py-8">Loading reviews...</p>
+            <div className="flex items-center justify-center py-12">
+              <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : reviews.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#f1f5f9' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <p className="text-sm text-gray-400">No reviews yet</p>
+              <p className="text-xs text-gray-300 mt-1">Add your first review to get started</p>
+            </div>
           ) : (
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <div key={review.id} className="border border-gray-100 rounded-xl p-5 hover:border-blue-100 transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {review.author.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-blue-900">{review.author}</p>
-                        <div className="flex items-center gap-2">
-                          <div className="text-sm">{stars(review.rating)}</div>
-                          <span className="text-gray-400 text-xs">· {review.platform}</span>
+            <div className="divide-y" style={{ borderColor: '#f8fafc' }}>
+              {reviews.map((review) => {
+                const av = getAvatarColor(review.author)
+                const plat = platformStyles[review.platform] || { bg: '#f3f4f6', color: '#374151' }
+                return (
+                  <div key={review.id} className="px-5 py-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start justify-between mb-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
+                          style={{ backgroundColor: av.bg, color: av.text }}>
+                          {review.author.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{review.author}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-xs">{stars(review.rating)}</span>
+                            <span className="text-xs px-2 py-0.5 rounded-md font-medium" style={{ backgroundColor: plat.bg, color: plat.color }}>
+                              {review.platform}
+                            </span>
+                          </div>
                         </div>
                       </div>
+                      {review.replied ? (
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{ backgroundColor: '#f0fdf4', color: '#16a34a' }}>✓ Replied</span>
+                      ) : (
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{ backgroundColor: '#fefce8', color: '#ca8a04' }}>Pending</span>
+                      )}
                     </div>
-                    {review.replied ? (
-                      <span className="text-green-500 text-xs font-semibold bg-green-50 px-3 py-1 rounded-full">✓ Replied</span>
-                    ) : (
-                      <span className="text-orange-500 text-xs font-semibold bg-orange-50 px-3 py-1 rounded-full">Pending</span>
+
+                    <p className="text-sm text-gray-500 mb-3 leading-relaxed pl-10">{review.text}</p>
+
+                    {review.aiReply && (
+                      <div className="ml-10 rounded-xl p-3.5 mb-3" style={{ backgroundColor: '#eef2ff' }}>
+                        <p className="text-xs font-medium mb-2" style={{ color: '#4338ca' }}>AI suggested reply</p>
+                        <p className="text-sm text-gray-600 leading-relaxed">{review.aiReply}</p>
+                        <button
+                          onClick={() => markAsReplied(review.id)}
+                          className="mt-3 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+                          style={{ backgroundColor: '#16a34a' }}
+                        >
+                          ✓ Mark as replied
+                        </button>
+                      </div>
+                    )}
+
+                    {!review.replied && !review.aiReply && (
+                      <button
+                        onClick={() => generateReply(review)}
+                        disabled={review.loading}
+                        className="ml-10 text-xs px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                        style={{ borderColor: '#e0e7ff', color: '#6366f1', backgroundColor: '#fafafa' }}
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        {review.loading ? 'Generating...' : 'Reply with AI'}
+                      </button>
                     )}
                   </div>
-                  <p className="text-gray-600 text-sm mb-4">{review.text}</p>
-                  {review.aiReply && (
-                    <div className="bg-blue-50 rounded-xl p-4 mb-3">
-                      <p className="text-xs text-blue-900 font-semibold mb-2">✨ AI suggested reply</p>
-                      <p className="text-gray-600 text-sm">{review.aiReply}</p>
-                      <button
-                        onClick={() => markAsReplied(review.id)}
-                        className="mt-3 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600"
-                      >
-                        ✓ Mark as replied
-                      </button>
-                    </div>
-                  )}
-                  {!review.replied && !review.aiReply && (
-                    <button
-                      onClick={() => generateReply(review)}
-                      disabled={review.loading}
-                      className="bg-blue-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 disabled:opacity-50"
-                    >
-                      {review.loading ? '⏳ Generating...' : '✨ Reply with AI'}
-                    </button>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
