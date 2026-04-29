@@ -15,13 +15,14 @@ Deno.serve(async (req: Request) => {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = await stripe.webhooks.constructEventAsync(
       body,
       signature,
       Deno.env.get('STRIPE_WEBHOOK_SECRET')!
     )
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error'
+    console.error('Webhook error:', message)
     return new Response(`Webhook Error: ${message}`, { status: 400 })
   }
 
@@ -33,7 +34,6 @@ Deno.serve(async (req: Request) => {
 
     const subscription = await stripe.subscriptions.retrieve(subscriptionId)
     const priceId = subscription.items.data[0].price.id
-
     const plan = priceId === Deno.env.get('STRIPE_PRICE_SOLO') ? 'solo' : 'pro'
 
     await supabase.from('subscriptions').upsert({
