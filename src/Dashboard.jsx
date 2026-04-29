@@ -34,6 +34,7 @@ function Dashboard({ session, onShowPricing }) {
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
+      .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
     if (!error) {
       setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
@@ -81,7 +82,8 @@ function Dashboard({ session, onShowPricing }) {
         rating: newReview.rating,
         text: newReview.text,
         platform: newReview.platform,
-        replied: false
+        replied: false,
+        user_id: session.user.id
       }])
       .select()
     if (!error) {
@@ -103,7 +105,6 @@ function Dashboard({ session, onShowPricing }) {
 
   const pendingCount = reviews.filter(r => !r.replied).length
 
-  // Loading abonnement
   if (subLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -112,7 +113,6 @@ function Dashboard({ session, onShowPricing }) {
     )
   }
 
-  // Pas d'abonnement actif → paywall
   if (!subscription) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -143,8 +143,6 @@ function Dashboard({ session, onShowPricing }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-
-      {/* Sidebar */}
       <aside className="hidden md:flex w-64 bg-blue-900 min-h-screen flex-col px-6 py-8 fixed top-0 left-0">
         <div className="flex items-center gap-2 mb-10">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -186,7 +184,6 @@ function Dashboard({ session, onShowPricing }) {
         </div>
       </aside>
 
-      {/* Navbar mobile */}
       <nav className="md:hidden fixed top-0 left-0 right-0 bg-blue-900 px-4 py-3 flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -198,7 +195,6 @@ function Dashboard({ session, onShowPricing }) {
       </nav>
 
       <main className="md:ml-64 flex-1 px-4 md:px-8 py-4 md:py-8 mt-14 md:mt-0">
-
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-blue-900">Dashboard</h1>
