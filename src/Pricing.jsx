@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
 const PRICE_SOLO = 'price_1TR8rmB4ROasWczJeilL2YEd'
@@ -6,33 +6,48 @@ const PRICE_PRO = 'price_1TR8rAB4ROasWczJj2Al5ZI5'
 
 function Pricing() {
   const [loading, setLoading] = useState(null)
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+  }, [])
 
   const handleCheckout = async (priceId, planName) => {
     setLoading(planName)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const currentSession = session || (await supabase.auth.getSession()).data.session
 
-      if (!session) {
+      if (!currentSession) {
         window.location.href = '/auth'
         return
       }
+
+      console.log('Calling create-checkout with:', { priceId, userId: currentSession.user.id })
 
       const response = await fetch(
         'https://wfjsynilylbjymwjusvi.supabase.co/functions/v1/create-checkout',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentSession.access_token}`,
+          },
           body: JSON.stringify({
             priceId,
-            userId: session.user.id,
-            userEmail: session.user.email,
+            userId: currentSession.user.id,
+            userEmail: currentSession.user.email,
           }),
         }
       )
 
-      const { url, error } = await response.json()
-      if (error) throw new Error(error)
-      window.location.href = url
+      console.log('Response status:', response.status)
+      const data = await response.json()
+      console.log('Response data:', data)
+
+      if (data.error) throw new Error(data.error)
+      window.location.href = data.url
     } catch (err) {
       alert('Erreur : ' + err.message)
     } finally {

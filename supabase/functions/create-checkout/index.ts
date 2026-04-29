@@ -18,8 +18,8 @@ Deno.serve(async (req: Request) => {
       mode: 'subscription',
       customer_email: userEmail,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: 'https://reviewly-eta.vercel.app/dashboard?success=true',
-      cancel_url: 'https://reviewly-eta.vercel.app/#pricing',
+      success_url: 'https://reviewly-eta.vercel.app/?success=true',
+      cancel_url: 'https://reviewly-eta.vercel.app/?cancel=true',
       metadata: { userId },
     })
 
