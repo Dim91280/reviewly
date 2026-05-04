@@ -9,9 +9,7 @@ function Footer({ onStartFree }) {
           <p className="text-slate-400 text-sm mb-6">Join 500+ local businesses across Europe.</p>
           <button onClick={onStartFree}
             className="text-white font-semibold px-7 py-3 rounded-xl text-sm"
-            style={{ backgroundColor: '#6366f1' }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#6366f1'}>
+            style={{ backgroundColor: '#6366f1' }}>
             Start your free trial
           </button>
         </div>
