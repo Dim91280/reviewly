@@ -1,4 +1,4 @@
-function Navbar({ onStartFree }) {
+function Navbar({ onStartFree, onSignIn }) {
   return (
     <nav className="w-full flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="flex items-center gap-2">
@@ -7,20 +7,30 @@ function Navbar({ onStartFree }) {
         </div>
         <span className="font-semibold text-gray-900 text-sm tracking-tight">Reviewly</span>
       </div>
+
       <div className="hidden md:flex items-center gap-8 text-sm text-gray-500">
         <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
         <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
         <a href="#testimonials" className="hover:text-gray-900 transition-colors">Testimonials</a>
       </div>
-      <button
-        onClick={onStartFree}
-        className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        style={{ backgroundColor: '#6366f1' }}
-        onMouseEnter={e => e.target.style.backgroundColor = '#4f46e5'}
-        onMouseLeave={e => e.target.style.backgroundColor = '#6366f1'}
-      >
-        Start free
-      </button>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onSignIn}
+          className="text-sm font-medium px-4 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
+        >
+          Sign in
+        </button>
+        <button
+          onClick={onStartFree}
+          className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          style={{ backgroundColor: '#6366f1' }}
+          onMouseEnter={e => e.target.style.backgroundColor = '#4f46e5'}
+          onMouseLeave={e => e.target.style.backgroundColor = '#6366f1'}
+        >
+          Start free
+        </button>
+      </div>
     </nav>
   )
 }

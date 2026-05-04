@@ -48,7 +48,7 @@ function App() {
   if (page === 'pricing' || page === 'home') {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar onStartFree={() => setPage('auth')} />
+        <Navbar onStartFree={() => setPage('auth')} onSignIn={() => setPage('auth')} />
         <Hero onStartFree={() => setPage('auth')} />
         <Problems />
         <Features />
