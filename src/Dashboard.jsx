@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
+import Account from './Account'
 
 function Dashboard({ session, onShowPricing, isSuccess }) {
+  const [showAccount, setShowAccount] = useState(false)
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState(null)
@@ -135,6 +137,9 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
     )
   }
 
+  if (showAccount) {
+    return <Account session={session} subscription={subscription} onBack={() => setShowAccount(false)} />
+  }
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
 
