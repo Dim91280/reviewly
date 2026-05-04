@@ -40,7 +40,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
       .select('*')
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
-    if (!error) setReviews(data.map(r => ({ ...r, aiReply: null, loading: false })))
+    if (!error) setReviews(data.map(r => ({ ...r, aiReply: null, loading: false, manualReply: undefined, showManual: false })))
     setLoading(false)
   }
 
@@ -60,7 +60,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
 
   const markAsReplied = async (id) => {
     await supabase.from('reviews').update({ replied: true }).eq('id', id)
-    setReviews(prev => prev.map(r => r.id === id ? { ...r, replied: true, aiReply: null } : r))
+    setReviews(prev => prev.map(r => r.id === id ? { ...r, replied: true, aiReply: null, showManual: false, manualReply: undefined } : r))
   }
 
   const addReview = async () => {
@@ -70,7 +70,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
       .insert([{ author: newReview.author, rating: newReview.rating, text: newReview.text, platform: newReview.platform, replied: false, user_id: session.user.id }])
       .select()
     if (!error) {
-      setReviews(prev => [{ ...data[0], aiReply: null, loading: false }, ...prev])
+      setReviews(prev => [{ ...data[0], aiReply: null, loading: false, manualReply: undefined, showManual: false }, ...prev])
       setNewReview({ author: '', rating: 5, text: '', platform: 'Google' })
       setShowForm(false)
     }
@@ -224,7 +224,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
           ))}
         </div>
 
-        {/* Form */}
+        {/* Form ajout avis */}
         {showForm && (
           <div className="bg-white rounded-xl border p-5 mb-5" style={{ borderColor: '#f1f5f9' }}>
             <h3 className="text-sm font-medium text-gray-900 mb-4">Add a new review</h3>
@@ -265,7 +265,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
                 </select>
               </div>
               <div className="flex gap-2">
-                <button onClick={addReview} className="text-white text-sm px-4 py-2 rounded-lg transition-colors" style={{ backgroundColor: '#6366f1' }}>
+                <button onClick={addReview} className="text-white text-sm px-4 py-2 rounded-lg" style={{ backgroundColor: '#6366f1' }}>
                   Save review
                 </button>
                 <button onClick={() => setShowForm(false)} className="text-gray-400 text-sm px-4 py-2 rounded-lg hover:text-gray-600">
@@ -327,13 +327,14 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
 
                     <p className="text-sm text-gray-500 mb-3 leading-relaxed pl-10">{review.text}</p>
 
+                    {/* Réponse IA générée */}
                     {review.aiReply && (
                       <div className="ml-10 rounded-xl p-3.5 mb-3" style={{ backgroundColor: '#eef2ff' }}>
                         <p className="text-xs font-medium mb-2" style={{ color: '#4338ca' }}>AI suggested reply</p>
                         <p className="text-sm text-gray-600 leading-relaxed">{review.aiReply}</p>
                         <button
                           onClick={() => markAsReplied(review.id)}
-                          className="mt-3 text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+                          className="mt-3 text-white text-xs px-3 py-1.5 rounded-lg"
                           style={{ backgroundColor: '#16a34a' }}
                         >
                           ✓ Mark as replied
@@ -341,16 +342,56 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
                       </div>
                     )}
 
-                    {!review.replied && !review.aiReply && (
-                      <button
-                        onClick={() => generateReply(review)}
-                        disabled={review.loading}
-                        className="ml-10 text-xs px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-50 flex items-center gap-1.5"
-                        style={{ borderColor: '#e0e7ff', color: '#6366f1', backgroundColor: '#fafafa' }}
-                      >
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        {review.loading ? 'Generating...' : 'Reply with AI'}
-                      </button>
+                    {/* Réponse manuelle */}
+                    {review.showManual && (
+                      <div className="ml-10 mt-2">
+                        <textarea
+                          value={review.manualReply || ''}
+                          onChange={e => setReviews(prev => prev.map(r => r.id === review.id ? { ...r, manualReply: e.target.value } : r))}
+                          placeholder="Write your reply..."
+                          className="w-full border rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                          style={{ borderColor: '#e5e7eb' }}
+                          rows={3}
+                        />
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            onClick={() => markAsReplied(review.id)}
+                            className="text-white text-xs px-3 py-1.5 rounded-lg"
+                            style={{ backgroundColor: '#16a34a' }}
+                          >
+                            ✓ Mark as replied
+                          </button>
+                          <button
+                            onClick={() => setReviews(prev => prev.map(r => r.id === review.id ? { ...r, showManual: false, manualReply: undefined } : r))}
+                            className="text-gray-400 text-xs px-3 py-1.5 rounded-lg hover:text-gray-600"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Boutons d'action */}
+                    {!review.replied && !review.aiReply && !review.showManual && (
+                      <div className="ml-10 flex items-center gap-2">
+                        <button
+                          onClick={() => generateReply(review)}
+                          disabled={review.loading}
+                          className="text-xs px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                          style={{ borderColor: '#e0e7ff', color: '#6366f1', backgroundColor: '#fafafa' }}
+                        >
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                          {review.loading ? 'Generating...' : 'Reply with AI'}
+                        </button>
+                        <button
+                          onClick={() => setReviews(prev => prev.map(r => r.id === review.id ? { ...r, showManual: true, manualReply: '' } : r))}
+                          className="text-xs px-3 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5"
+                          style={{ borderColor: '#e5e7eb', color: '#64748b', backgroundColor: '#fafafa' }}
+                        >
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          Reply manually
+                        </button>
+                      </div>
                     )}
                   </div>
                 )
