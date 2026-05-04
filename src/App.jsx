@@ -5,6 +5,7 @@ import Hero from './Hero'
 import Problems from './Problems'
 import Features from './Features'
 import Pricing from './Pricing'
+import FAQ from './FAQ'
 import Testimonials from './Testimonials'
 import Footer from './Footer'
 import Auth from './Auth'
@@ -53,6 +54,7 @@ function App() {
         <Features />
         <Pricing onStartFree={() => setPage('auth')} />
         <Testimonials />
+        <FAQ />
         <Footer onStartFree={() => setPage('auth')} />
       </div>
     )
