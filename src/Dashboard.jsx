@@ -96,7 +96,7 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
-        <div className="flex items-center gap-2 mb-8 px-2">
+        <div className="flex items-center gap-2 mb-8 px-2 cursor-pointer" onClick={() => supabase.auth.signOut()}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
