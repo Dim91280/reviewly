@@ -117,12 +117,12 @@ function AppLayout({ session }) {
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
-        <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2 mb-8 px-2">
+        <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Reviewly</span>
-        </Link>
+        </div>
         <div className="px-2 mb-6">
           <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{ backgroundColor: subscription ? '#1e3a5f' : '#1e293b', color: subscription ? '#60a5fa' : '#94a3b8' }}>
             {subscription ? `Plan ${subscription.plan.toUpperCase()}` : `Trial — ${daysLeft}j`}
@@ -162,7 +162,7 @@ function AppLayout({ session }) {
         {!subscription && isInTrial && (
           <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center justify-between" style={{ backgroundColor: '#eef2ff', color: '#4338ca' }}>
             <span>Free trial — <strong>{daysLeft} days remaining</strong></span>
-            <button onClick={() => navigate('/')} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ backgroundColor: '#6366f1' }}>
+            <button onClick={() => { navigate('/'); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 300) }} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ backgroundColor: '#6366f1' }}>
               Upgrade now
             </button>
           </div>
