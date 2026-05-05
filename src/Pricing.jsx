@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
-const PRICE_SOLO = 'price_1TR8rmB4ROasWczJeilL2YEd'
-const PRICE_PRO = 'price_1TR8rAB4ROasWczJj2Al5ZI5'
+const PRICE_SOLO = 'price_1TTicgB0aG7UyaOPr2HonNB7'
+const PRICE_PRO = 'price_1TTifSB0aG7UyaOPdWJfXheQ'
 
 function Pricing({ onStartFree }) {
   const [loading, setLoading] = useState(null)
