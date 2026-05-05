@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { supabase } from './supabase'
 import Account from './Account'
 import Reviews from './Reviews'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 function Dashboard({ session, onShowPricing, isSuccess }) {
   const [activePage, setActivePage] = useState('dashboard')
@@ -64,6 +65,38 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
   const reputationScore = avgRating !== null ? Math.round((avgRating / 5) * 100) : null
   const responseRate = reviews.length > 0 ? Math.round((reviews.filter(r => r.replied).length / reviews.length) * 100) : null
   const negativeUnanswered = reviews.filter(r => r.rating <= 2 && !r.replied)
+
+  const weeklyData = useMemo(() => {
+    const buckets = {}
+    reviews.forEach(r => {
+      const d = new Date(r.created_at)
+      const jan1 = new Date(d.getFullYear(), 0, 1)
+      const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7)
+      const key = `${d.getFullYear()}-W${String(week).padStart(2, '0')}`
+      if (!buckets[key]) buckets[key] = { week: `W${week}`, sum: 0, count: 0, ts: d.getTime() }
+      buckets[key].sum += r.rating
+      buckets[key].count += 1
+    })
+    return Object.values(buckets)
+      .sort((a, b) => a.ts - b.ts)
+      .slice(-8)
+      .map(b => ({ week: b.week, avg: Math.round((b.sum / b.count) * 10) / 10, count: b.count }))
+  }, [reviews])
+
+  const trendDelta = weeklyData.length >= 2
+    ? Math.round((weeklyData[weeklyData.length - 1].avg - weeklyData[weeklyData.length - 2].avg) * 10) / 10
+    : null
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null
+    const d = payload[0].payload
+    return (
+      <div className="bg-white border rounded-lg px-3 py-2 shadow-sm text-xs" style={{ borderColor: '#e5e7eb' }}>
+        <p className="font-medium text-gray-900">★ {d.avg.toFixed(1)}</p>
+        <p className="text-gray-400">{d.count} review{d.count !== 1 ? 's' : ''}</p>
+      </div>
+    )
+  }
 
   const accountAge = Math.floor((Date.now() - new Date(session.user.created_at)) / (1000 * 60 * 60 * 24))
   const isInTrial = accountAge < 14
@@ -211,6 +244,38 @@ function Dashboard({ session, onShowPricing, isSuccess }) {
                   {responseRate === null ? 'No reviews yet' : responseRate >= 80 ? 'Great job' : 'Reply to more reviews'}
                 </p>
               </div>
+            </div>
+
+            <div className="bg-white rounded-xl border p-5 mb-6" style={{ borderColor: '#f1f5f9' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Rating trend</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Weekly average over the last 8 weeks</p>
+                </div>
+                {trendDelta !== null && (
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{
+                    backgroundColor: trendDelta >= 0 ? '#f0fdf4' : '#fef2f2',
+                    color: trendDelta >= 0 ? '#16a34a' : '#ef4444',
+                  }}>
+                    {trendDelta >= 0 ? '+' : ''}{trendDelta} vs last week
+                  </span>
+                )}
+              </div>
+              {weeklyData.length < 2 ? (
+                <div className="flex items-center justify-center h-32 rounded-xl" style={{ backgroundColor: '#f8fafc' }}>
+                  <p className="text-xs text-gray-400">Not enough data yet — add reviews across multiple weeks</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={weeklyData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+                    <CartesianGrid vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e0e7ff', strokeWidth: 1 }} />
+                    <Line type="monotone" dataKey="avg" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} activeDot={{ r: 5, fill: '#6366f1' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </div>
 
             {negativeUnanswered.length > 0 ? (
