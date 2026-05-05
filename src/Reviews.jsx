@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 
-function Reviews({ reviews, setReviews, generateReply, markAsReplied, addReview, loading }) {
+function Reviews() {
+  const { reviews, setReviews, generateReply, markAsReplied, addReview, loading } = useOutletContext()
   const [filterPlatform, setFilterPlatform] = useState('All')
   const [filterRating, setFilterRating] = useState('All')
   const [filterStatus, setFilterStatus] = useState('All')

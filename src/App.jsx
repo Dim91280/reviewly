@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from './supabase'
 import Navbar from './Navbar'
 import Hero from './Hero'
@@ -9,56 +10,82 @@ import FAQ from './FAQ'
 import Testimonials from './Testimonials'
 import Footer from './Footer'
 import Auth from './Auth'
-import Dashboard from './Dashboard'
+import AppLayout from './AppLayout'
+import DashboardPage from './DashboardPage'
+import Reviews from './Reviews'
+import Account from './Account'
+
+function ProtectedRoute({ session }) {
+  if (!session) return <Navigate to="/auth" replace />
+  return <Outlet />
+}
+
+function Landing({ onStartFree }) {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar onStartFree={onStartFree} onSignIn={onStartFree} />
+      <Hero onStartFree={onStartFree} />
+      <Problems />
+      <Features />
+      <Pricing onStartFree={onStartFree} />
+      <Testimonials />
+      <FAQ />
+      <Footer onStartFree={onStartFree} />
+    </div>
+  )
+}
 
 function App() {
   const [session, setSession] = useState(null)
-  const [page, setPage] = useState('home')
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      if (session) {
-        setPage('dashboard')
-        if (window.location.search.includes('success=true')) {
-          window.history.replaceState({}, '', '/')
-        }
+      if (session && window.location.pathname === '/') {
+        const successParam = window.location.search.includes('success=true') ? '?success=true' : ''
+        navigate('/dashboard' + successParam, { replace: true })
       }
       setLoading(false)
     })
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session) setPage('dashboard')
-      else setPage('home')
+      if (session) navigate('/dashboard', { replace: true })
+      else navigate('/', { replace: true })
     })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   if (loading) return null
 
-  if (session && page === 'dashboard') {
-    return <Dashboard session={session} onShowPricing={() => setPage('pricing')} />
-  }
+  return (
+    <Routes>
+      <Route path="/" element={
+        session
+          ? <Navigate to="/dashboard" replace />
+          : <Landing onStartFree={() => navigate('/auth')} />
+      } />
 
-  if (page === 'auth') {
-    return <Auth onBack={() => setPage('home')} />
-  }
+      <Route path="/auth" element={
+        session
+          ? <Navigate to="/dashboard" replace />
+          : <Auth onBack={() => navigate('/')} />
+      } />
 
-  if (page === 'pricing' || page === 'home') {
-    return (
-      <div className="min-h-screen bg-white">
-        <Navbar onStartFree={() => setPage('auth')} onSignIn={() => setPage('auth')} />
-        <Hero onStartFree={() => setPage('auth')} />
-        <Problems />
-        <Features />
-        <Pricing onStartFree={() => setPage('auth')} />
-        <Testimonials />
-        <FAQ />
-        <Footer onStartFree={() => setPage('auth')} />
-      </div>
-    )
-  }
+      <Route element={<ProtectedRoute session={session} />}>
+        <Route element={<AppLayout session={session} />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/account" element={<Account />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
 
 export default App
