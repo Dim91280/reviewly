@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img">
+  <title>Replio</title>
+  <!-- Couche 1 : fond indigo -->
+  <rect x="0" y="0" width="120" height="120" rx="24" fill="#6366f1"/>
+  <!-- Couche 2 : panneau blanc -->
+  <rect x="8" y="8" width="104" height="104" rx="18" fill="white"/>
+  <!-- Couche 3 : inner ring indigo -->
+  <rect x="14" y="14" width="92" height="92" rx="13" fill="none" stroke="#6366f1" stroke-width="1.2"/>
+  <!-- Couche 4 : inner ring léger -->
+  <rect x="19" y="19" width="82" height="82" rx="9" fill="none" stroke="#c7d2fe" stroke-width="0.7"/>
+  <!-- R — jambe verticale -->
+  <rect x="30" y="26" width="9" height="68" rx="4" fill="#6366f1"/>
+  <!-- R — bosse -->
+  <path d="M39 26 L62 26 Q80 26 80 43 Q80 60 62 60 L39 60" fill="none" stroke="#6366f1" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- R — jambe diagonale -->
+  <line x1="40" y1="58" x2="80" y2="94" stroke="#6366f1" stroke-width="9" stroke-linecap="round"/>
+</svg>

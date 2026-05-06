@@ -150,10 +150,7 @@ function AppLayout({ session }) {
       {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
         <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/><path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/></svg>
-          </div>
-          <span className="text-white font-medium text-sm">Replio</span>
+          <img src="/replio-logo-wordmark.svg" alt="Replio" height="30" style={{ height: '30px' }} />
         </div>
 
         {/* Plan badge */}
@@ -180,10 +177,7 @@ function AppLayout({ session }) {
       {/* Navbar mobile */}
       <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
         <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/><path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/></svg>
-          </div>
-          <span className="text-white font-medium text-sm">Replio</span>
+          <img src="/replio-logo-wordmark.svg" alt="Replio" height="26" style={{ height: '26px' }} />
         </Link>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
           {mobileMenuOpen ? (
@@ -216,7 +210,7 @@ function AppLayout({ session }) {
       {/* Main */}
       <main className="md:ml-56 flex-1 px-4 md:px-8 py-5 md:py-8 mt-12 md:mt-0">
 
-        {/* Bannière trial améliorée */}
+        {/* Bannière trial */}
         {!subscription && isInTrial && (
           <div className="mb-6 px-4 py-3 rounded-2xl flex items-center justify-between" style={{
             background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(167,139,250,0.08) 100%)',
