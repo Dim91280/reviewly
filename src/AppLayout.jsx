@@ -14,12 +14,9 @@ function AppLayout({ session }) {
   const isSuccess = searchParams.get('success') === 'true'
 
   useEffect(() => { fetchSubscription(); fetchReviews() }, [])
-
   useEffect(() => {
     if (!subLoading && isSuccess) navigate('/dashboard', { replace: true })
   }, [subLoading])
-
-  // Ferme le menu mobile quand on change de page
   useEffect(() => { setMobileMenuOpen(false) }, [pathname])
 
   const fetchSubscription = async (retries = 8) => {
@@ -71,27 +68,35 @@ function AppLayout({ session }) {
   const daysLeft = 13 - accountAge
 
   if (subLoading) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
       <div className="text-center">
-        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-400 text-sm">{isSuccess ? 'Activation de votre abonnement...' : 'Chargement...'}</p>
+        <div className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: '#6366f1', borderTopColor: 'transparent' }}></div>
+        <p className="text-sm" style={{ color: '#94a3b8' }}>{isSuccess ? 'Activating your subscription...' : 'Loading...'}</p>
       </div>
     </div>
   )
 
   if (!subscription && !isInTrial) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-100 p-10 max-w-md w-full text-center">
-        <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#f8fafc' }}>
+      <div className="bg-white rounded-2xl border p-10 max-w-md w-full text-center" style={{ borderColor: '#f1f5f9' }}>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#eef2ff' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Votre essai a expiré</h2>
-        <p className="text-gray-400 text-sm mb-8">Choisissez un plan pour continuer à utiliser Reviewly.</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Your trial has expired</h2>
+        <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>Choose a plan to continue using Reviewly.</p>
         <div className="space-y-3">
-          <button onClick={() => navigate('/')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition-colors">
-            Voir les plans →
+          <button onClick={() => navigate('/')}
+            className="w-full text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
+            style={{ backgroundColor: '#6366f1' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#6366f1'}>
+            View plans →
           </button>
-          <button onClick={() => supabase.auth.signOut()} className="w-full text-gray-400 text-sm hover:text-gray-600">Se déconnecter</button>
+          <button onClick={() => supabase.auth.signOut()} className="w-full text-sm" style={{ color: '#94a3b8' }}>
+            Sign out
+          </button>
         </div>
       </div>
     </div>
@@ -103,10 +108,13 @@ function AppLayout({ session }) {
       <Link key={to} to={to} style={{
         display: 'flex', alignItems: 'center', gap: '10px',
         padding: '8px 12px', borderRadius: '8px',
-        fontSize: '12px', textDecoration: 'none', transition: 'background 0.15s',
+        fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
         backgroundColor: isActive ? '#1e293b' : 'transparent',
         color: isActive ? '#f1f5f9' : '#64748b',
-      }}>
+      }}
+      onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#1e293b20' }}
+      onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent' }}
+      >
         {icon}
         <span>{label}</span>
         {badge != null && badge > 0 && (
@@ -146,15 +154,25 @@ function AppLayout({ session }) {
           </div>
           <span className="text-white font-medium text-sm">Reviewly</span>
         </div>
+
+        {/* Plan badge */}
         <div className="px-2 mb-6">
-          <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{ backgroundColor: subscription ? '#1e3a5f' : '#1e293b', color: subscription ? '#60a5fa' : '#94a3b8' }}>
-            {subscription ? `Plan ${subscription.plan.toUpperCase()}` : `Trial — ${daysLeft}j`}
+          <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{
+            backgroundColor: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
+            color: subscription ? '#60a5fa' : '#a5b4fc',
+            border: `1px solid ${subscription ? 'rgba(96,165,250,0.2)' : 'rgba(99,102,241,0.2)'}`
+          }}>
+            {subscription ? `✦ Plan ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
           </span>
         </div>
+
         <nav className="space-y-0.5 flex-1">{navLinks}</nav>
+
         <div className="border-t px-2 pt-4" style={{ borderColor: '#1e293b' }}>
           <p className="text-xs truncate mb-2" style={{ color: '#475569' }}>{session.user.email}</p>
-          <button onClick={() => supabase.auth.signOut()} className="text-xs transition-colors" style={{ color: '#475569' }}>Sign out →</button>
+          <button onClick={() => supabase.auth.signOut()} className="text-xs transition-colors hover:text-slate-300" style={{ color: '#475569' }}>
+            Sign out →
+          </button>
         </div>
       </aside>
 
@@ -166,7 +184,6 @@ function AppLayout({ session }) {
           </div>
           <span className="text-white font-medium text-sm">Reviewly</span>
         </Link>
-        {/* Hamburger */}
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
           {mobileMenuOpen ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -180,8 +197,11 @@ function AppLayout({ session }) {
       {mobileMenuOpen && (
         <div className="md:hidden fixed top-12 left-0 right-0 z-10 px-4 py-4 space-y-1" style={{ backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }}>
           <div className="mb-3 px-2">
-            <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{ backgroundColor: subscription ? '#1e3a5f' : '#1e293b', color: subscription ? '#60a5fa' : '#94a3b8' }}>
-              {subscription ? `Plan ${subscription.plan.toUpperCase()}` : `Trial — ${daysLeft}j`}
+            <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{
+              backgroundColor: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
+              color: subscription ? '#60a5fa' : '#a5b4fc',
+            }}>
+              {subscription ? `✦ Plan ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
             </span>
           </div>
           {navLinks}
@@ -194,14 +214,40 @@ function AppLayout({ session }) {
 
       {/* Main */}
       <main className="md:ml-56 flex-1 px-4 md:px-8 py-5 md:py-8 mt-12 md:mt-0">
+
+        {/* Bannière trial améliorée */}
         {!subscription && isInTrial && (
-          <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center justify-between" style={{ backgroundColor: '#eef2ff', color: '#4338ca' }}>
-            <span>Free trial — <strong>{daysLeft} days remaining</strong></span>
-            <button onClick={() => { navigate('/'); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 300) }} className="text-xs font-medium px-3 py-1.5 rounded-lg text-white" style={{ backgroundColor: '#6366f1' }}>
-              Upgrade now
+          <div className="mb-6 px-4 py-3 rounded-2xl flex items-center justify-between" style={{
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(167,139,250,0.08) 100%)',
+            border: '1px solid rgba(99,102,241,0.2)'
+          }}>
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'rgba(99,102,241,0.15)' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <span className="text-sm font-medium" style={{ color: '#4338ca' }}>Free trial</span>
+                <span className="text-sm" style={{ color: '#6366f1' }}> — <strong>{daysLeft} days remaining</strong></span>
+              </div>
+            </div>
+            <button
+              onClick={() => { navigate('/'); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 300) }}
+              className="text-xs font-semibold px-4 py-2 rounded-xl text-white transition-all"
+              style={{ backgroundColor: '#6366f1' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = '#4f46e5'
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(99,102,241,0.3)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = '#6366f1'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              Upgrade now →
             </button>
           </div>
         )}
+
         <Outlet context={outletContext} />
       </main>
     </div>
