@@ -1,4 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+function FloatingIcon({ style, children }) {
+  return (
+    <div style={{
+      position: 'absolute',
+      borderRadius: '16px',
+      padding: '10px',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(99,102,241,0.2)',
+      backgroundColor: 'rgba(15,23,42,0.8)',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+      animation: 'float 3s ease-in-out infinite',
+      ...style
+    }}>
+      {children}
+    </div>
+  )
+}
 
 function Hero({ onStartFree }) {
   const [visible, setVisible] = useState(false)
@@ -8,12 +26,9 @@ function Hero({ onStartFree }) {
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 100)
-
-    // Compteurs animés
     const duration = 1500
     const steps = 40
     const interval = duration / steps
-
     let step = 0
     const timer = setInterval(() => {
       step++
@@ -22,12 +37,26 @@ function Hero({ onStartFree }) {
       setCount3(Math.min(Math.round((step / steps) * 12), 12))
       if (step >= steps) clearInterval(timer)
     }, interval)
-
     return () => clearInterval(timer)
   }, [])
 
   return (
     <section className="relative overflow-hidden flex flex-col items-center text-center px-6 py-28 md:py-36" style={{ backgroundColor: '#0f172a' }}>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+        @keyframes float3 {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+        }
+      `}</style>
 
       {/* Dégradé lumineux */}
       <div className="absolute inset-0 pointer-events-none" style={{
@@ -40,33 +69,113 @@ function Hero({ onStartFree }) {
         backgroundSize: '60px 60px'
       }} />
 
+      {/* Icônes flottantes - desktop only */}
+      <div className="hidden md:block">
+        {/* Google - haut gauche */}
+        <FloatingIcon style={{ top: '15%', left: '8%', animationDuration: '3s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Google</div>
+              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★★</div>
+            </div>
+          </div>
+        </FloatingIcon>
+
+        {/* Notification - haut droit */}
+        <FloatingIcon style={{ top: '12%', right: '7%', animationDuration: '3.5s', animationDelay: '0.5s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>New review!</div>
+              <div style={{ fontSize: '9px', color: '#64748b' }}>2 seconds ago</div>
+            </div>
+          </div>
+        </FloatingIcon>
+
+        {/* TripAdvisor - milieu gauche */}
+        <FloatingIcon style={{ top: '45%', left: '4%', animationDuration: '4s', animationDelay: '1s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#00aa6c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><path d="M12 4c-4 0-8 3-8 8h16c0-5-4-8-8-8z"/></svg>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>TripAdvisor</div>
+              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★★</div>
+            </div>
+          </div>
+        </FloatingIcon>
+
+        {/* AI Reply - milieu droit */}
+        <FloatingIcon style={{ top: '42%', right: '4%', animationDuration: '3.8s', animationDelay: '0.8s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #6366f1, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>AI replied</div>
+              <div style={{ fontSize: '9px', color: '#22c55e' }}>✓ Sent</div>
+            </div>
+          </div>
+        </FloatingIcon>
+
+        {/* Facebook - bas gauche */}
+        <FloatingIcon style={{ bottom: '22%', left: '6%', animationDuration: '4.2s', animationDelay: '1.5s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#1877f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Facebook</div>
+              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★☆</div>
+            </div>
+          </div>
+        </FloatingIcon>
+
+        {/* Score - bas droit */}
+        <FloatingIcon style={{ bottom: '25%', right: '6%', animationDuration: '3.2s', animationDelay: '0.3s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '16px' }}>📈</span>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Score 95/100</div>
+              <div style={{ fontSize: '9px', color: '#22c55e' }}>↑ +5 this week</div>
+            </div>
+          </div>
+        </FloatingIcon>
+      </div>
+
       <div className="relative z-10 flex flex-col items-center">
 
         {/* Badge */}
-        <div
-          className="flex items-center gap-2 border rounded-full px-4 py-1.5 mb-8 text-xs font-medium"
-          style={{
-            borderColor: 'rgba(99,102,241,0.4)',
-            color: '#a5b4fc',
-            backgroundColor: 'rgba(99,102,241,0.1)',
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(10px)',
-            transition: 'all 0.6s ease'
-          }}
-        >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          border: '1px solid rgba(99,102,241,0.4)',
+          color: '#a5b4fc', backgroundColor: 'rgba(99,102,241,0.1)',
+          borderRadius: '9999px', padding: '6px 16px',
+          fontSize: '12px', fontWeight: '500', marginBottom: '32px',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'all 0.6s ease'
+        }}>
           <span style={{ color: '#6366f1' }}>●</span>
           AI replies in 12 European languages
         </div>
 
         {/* Titre */}
-        <h1
-          className="text-5xl md:text-7xl font-bold leading-tight max-w-4xl mb-6 tracking-tight text-white"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'all 0.7s ease 0.1s'
-          }}
-        >
+        <h1 className="text-5xl md:text-7xl font-bold leading-tight max-w-4xl mb-6 tracking-tight text-white" style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'all 0.7s ease 0.1s'
+        }}>
           All your reviews.<br />
           One place.{' '}
           <span style={{
@@ -79,29 +188,23 @@ function Hero({ onStartFree }) {
         </h1>
 
         {/* Sous-titre */}
-        <p
-          className="text-lg max-w-lg mb-10 leading-relaxed"
-          style={{
-            color: '#94a3b8',
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'all 0.7s ease 0.2s'
-          }}
-        >
+        <p className="text-lg max-w-lg mb-10 leading-relaxed" style={{
+          color: '#94a3b8',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'all 0.7s ease 0.2s'
+        }}>
           Monitor Google, Facebook and TripAdvisor from one dashboard. Reply in one click with AI.
         </p>
 
         {/* CTA */}
-        <div
-          className="flex flex-col items-center gap-3"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'all 0.7s ease 0.3s'
-          }}
-        >
-          <button
-            onClick={onStartFree}
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'all 0.7s ease 0.3s'
+        }}>
+          <button onClick={onStartFree}
             className="text-white font-semibold px-8 py-3.5 rounded-xl text-base"
             style={{ backgroundColor: '#6366f1', transition: 'all 0.2s' }}
             onMouseEnter={e => {
@@ -121,78 +224,69 @@ function Hero({ onStartFree }) {
         </div>
 
         {/* Compteurs */}
-        <div
-          className="flex items-center gap-8 mt-14"
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: 'all 0.7s ease 0.5s'
-          }}
-        >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '48px', marginTop: '56px',
+          opacity: visible ? 1 : 0,
+          transition: 'all 0.7s ease 0.5s'
+        }}>
           {[
             { value: `${count1}+`, label: 'businesses' },
             { value: `${count2.toFixed(1)}★`, label: 'average rating' },
             { value: `${count3}`, label: 'languages' },
           ].map((stat, i) => (
-            <div key={i} className="flex flex-col items-center">
-              <span className="text-2xl font-bold text-white">{stat.value}</span>
-              <span className="text-xs mt-1" style={{ color: '#475569' }}>{stat.label}</span>
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <span style={{ fontSize: '24px', fontWeight: '700', color: 'white' }}>{stat.value}</span>
+              <span style={{ fontSize: '11px', marginTop: '4px', color: '#475569' }}>{stat.label}</span>
             </div>
           ))}
         </div>
 
         {/* Mockup dashboard */}
-        <div
-          className="mt-16 w-full max-w-3xl rounded-2xl overflow-hidden"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0) perspective(1000px) rotateX(2deg)' : 'translateY(30px) perspective(1000px) rotateX(5deg)',
-            transition: 'all 0.9s ease 0.6s',
-            boxShadow: '0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.2)',
-          }}
-        >
-          {/* Barre de fenêtre */}
-          <div className="flex items-center gap-2 px-4 py-3" style={{ backgroundColor: '#1e293b' }}>
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ef4444' }} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f59e0b' }} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }} />
-            <div className="flex-1 mx-4 h-5 rounded-md" style={{ backgroundColor: '#0f172a', maxWidth: '200px' }} />
+        <div style={{
+          marginTop: '64px', width: '100%', maxWidth: '768px',
+          borderRadius: '16px', overflow: 'hidden',
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'translateY(0) perspective(1000px) rotateX(2deg)' : 'translateY(30px) perspective(1000px) rotateX(5deg)',
+          transition: 'all 0.9s ease 0.6s',
+          boxShadow: '0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.2)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', backgroundColor: '#1e293b' }}>
+            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
+            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
+            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
+            <div style={{ flex: 1, margin: '0 16px', height: '20px', borderRadius: '6px', backgroundColor: '#0f172a', maxWidth: '200px' }} />
           </div>
-
-          {/* Contenu mockup */}
-          <div className="p-6" style={{ backgroundColor: '#f8fafc' }}>
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
+          <div style={{ padding: '24px', backgroundColor: '#f8fafc' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
               {[
                 { label: 'Reputation score', value: '95', sub: 'Excellent', color: '#22c55e' },
                 { label: 'Average rating', value: '4.8', sub: 'Based on 124 reviews', color: '#6366f1' },
                 { label: 'Response rate', value: '100%', sub: 'Great job', color: '#22c55e' },
               ].map((s, i) => (
-                <div key={i} className="bg-white rounded-xl p-3 border" style={{ borderColor: '#f1f5f9' }}>
+                <div key={i} style={{ backgroundColor: 'white', borderRadius: '12px', padding: '12px', border: '1px solid #f1f5f9' }}>
                   <p style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '4px' }}>{s.label}</p>
                   <p style={{ fontSize: '20px', fontWeight: '700', color: '#111827' }}>{s.value}</p>
                   <p style={{ fontSize: '10px', color: s.color }}>{s.sub}</p>
                 </div>
               ))}
             </div>
-
-            {/* Reviews */}
-            <div className="bg-white rounded-xl border" style={{ borderColor: '#f1f5f9' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
               {[
-                { name: 'Marie D.', stars: 5, text: 'Service exceptionnel, je recommande vivement !', platform: 'Google', replied: true },
+                { name: 'Marie D.', stars: 5, text: 'Service exceptionnel !', platform: 'Google', replied: true },
                 { name: 'Thomas B.', stars: 4, text: 'Très bon rapport qualité-prix.', platform: 'TripAdvisor', replied: false },
               ].map((r, i) => (
-                <div key={i} className="flex items-start justify-between px-4 py-3 border-b last:border-0" style={{ borderColor: '#f8fafc' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: '#eef2ff', color: '#6366f1' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: i === 0 ? '1px solid #f8fafc' : 'none' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#6366f1' }}>
                       {r.name[0]}
                     </div>
                     <div>
                       <p style={{ fontSize: '11px', fontWeight: '600', color: '#111827' }}>{r.name}</p>
-                      <p style={{ fontSize: '10px', color: '#94a3b8' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</p>
+                      <p style={{ fontSize: '10px', color: '#f59e0b' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</p>
                     </div>
                   </div>
                   <span style={{
-                    fontSize: '10px', fontWeight: '500', padding: '2px 8px', borderRadius: '6px',
+                    fontSize: '10px', fontWeight: '500', padding: '3px 10px', borderRadius: '6px',
                     backgroundColor: r.replied ? '#f0fdf4' : '#fefce8',
                     color: r.replied ? '#16a34a' : '#ca8a04'
                   }}>
