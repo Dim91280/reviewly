@@ -14,13 +14,13 @@ function Navbar({ onStartFree, onSignIn, session }) {
     <nav
       className="w-full flex items-center justify-between px-8 py-4 sticky top-0 z-50"
       style={{
-        backgroundColor: scrolled ? 'rgba(255,255,255,0.90)' : 'rgba(15,23,42,0.5)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: scrolled ? '1px solid rgba(241,245,249,0.8)' : '1px solid rgba(99,102,241,0.1)',
-        boxShadow: scrolled ? '0 1px 20px rgba(0,0,0,0.05)' : 'none',
-        transition: 'all 0.4s ease',
-      }}
+  backgroundColor: scrolled ? 'rgba(255,255,255,0.90)' : 'transparent',
+  backdropFilter: scrolled ? 'blur(12px)' : 'none',
+  WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+  borderBottom: scrolled ? '1px solid rgba(241,245,249,0.8)' : '1px solid transparent',
+  boxShadow: scrolled ? '0 1px 20px rgba(0,0,0,0.05)' : 'none',
+  transition: 'all 0.4s ease',
+}}
     >
       {/* Logo */}
       <div className="flex items-center gap-2">
