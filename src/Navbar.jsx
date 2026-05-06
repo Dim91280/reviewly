@@ -24,14 +24,12 @@ function Navbar({ onStartFree, onSignIn, session }) {
     >
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/>
-            <path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/>
-          </svg>
-        </div>
-        <span className="font-semibold text-sm tracking-tight" style={{ color: scrolled ? '#111827' : '#f1f5f9' }}>Replio</span>
-      </div>
+  <img
+    src={scrolled ? '/replio-logo-wordmark.svg' : '/replio-logo-wordmark-white.svg'}
+    alt="Replio"
+    style={{ height: '30px' }}
+  />
+</div>
 
       {/* Navigation */}
       <div className="hidden md:flex items-center gap-8 text-sm">
