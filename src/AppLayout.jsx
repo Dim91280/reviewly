@@ -7,6 +7,7 @@ function AppLayout({ session }) {
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState(null)
   const [subLoading, setSubLoading] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
@@ -17,6 +18,9 @@ function AppLayout({ session }) {
   useEffect(() => {
     if (!subLoading && isSuccess) navigate('/dashboard', { replace: true })
   }, [subLoading])
+
+  // Ferme le menu mobile quand on change de page
+  useEffect(() => { setMobileMenuOpen(false) }, [pathname])
 
   const fetchSubscription = async (retries = 8) => {
     const { data } = await supabase.from('subscriptions').select('*').eq('user_id', session.user.id).eq('status', 'active').maybeSingle()
@@ -112,10 +116,29 @@ function AppLayout({ session }) {
     )
   }
 
+  const navLinks = (
+    <>
+      {navItem('/dashboard',
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>,
+        'Dashboard'
+      )}
+      {navItem('/reviews',
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+        'Reviews', pendingCount
+      )}
+      {navItem('/account',
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        'Account'
+      )}
+    </>
+  )
+
   const outletContext = { reviews, setReviews, subscription, generateReply, markAsReplied, addReview, loading, pendingCount, session }
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+
+      {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
         <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
@@ -128,36 +151,48 @@ function AppLayout({ session }) {
             {subscription ? `Plan ${subscription.plan.toUpperCase()}` : `Trial — ${daysLeft}j`}
           </span>
         </div>
-        <nav className="space-y-0.5 flex-1">
-          {navItem('/dashboard',
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>,
-            'Dashboard'
-          )}
-          {navItem('/reviews',
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-            'Reviews', pendingCount
-          )}
-          {navItem('/account',
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-            'Account'
-          )}
-        </nav>
+        <nav className="space-y-0.5 flex-1">{navLinks}</nav>
         <div className="border-t px-2 pt-4" style={{ borderColor: '#1e293b' }}>
           <p className="text-xs truncate mb-2" style={{ color: '#475569' }}>{session.user.email}</p>
           <button onClick={() => supabase.auth.signOut()} className="text-xs transition-colors" style={{ color: '#475569' }}>Sign out →</button>
         </div>
       </aside>
 
-      <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-10" style={{ backgroundColor: '#0f172a' }}>
+      {/* Navbar mobile */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
         <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Reviewly</span>
         </Link>
-        <button onClick={() => supabase.auth.signOut()} className="text-xs" style={{ color: '#64748b' }}>Sign out</button>
+        {/* Hamburger */}
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
+          {mobileMenuOpen ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          )}
+        </button>
       </nav>
 
+      {/* Menu mobile déroulant */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed top-12 left-0 right-0 z-10 px-4 py-4 space-y-1" style={{ backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }}>
+          <div className="mb-3 px-2">
+            <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{ backgroundColor: subscription ? '#1e3a5f' : '#1e293b', color: subscription ? '#60a5fa' : '#94a3b8' }}>
+              {subscription ? `Plan ${subscription.plan.toUpperCase()}` : `Trial — ${daysLeft}j`}
+            </span>
+          </div>
+          {navLinks}
+          <div className="border-t pt-3 mt-3" style={{ borderColor: '#1e293b' }}>
+            <p className="text-xs truncate mb-2 px-3" style={{ color: '#475569' }}>{session.user.email}</p>
+            <button onClick={() => supabase.auth.signOut()} className="text-xs px-3" style={{ color: '#475569' }}>Sign out →</button>
+          </div>
+        </div>
+      )}
+
+      {/* Main */}
       <main className="md:ml-56 flex-1 px-4 md:px-8 py-5 md:py-8 mt-12 md:mt-0">
         {!subscription && isInTrial && (
           <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center justify-between" style={{ backgroundColor: '#eef2ff', color: '#4338ca' }}>
