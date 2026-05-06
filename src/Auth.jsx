@@ -48,7 +48,7 @@ function LiveDemo({ mounted }) {
     setTypedReply('')
     setPhase('idle')
 
-    setTimeout(() => { setVisible(true); setPhase('incoming') }, 600)
+    setTimeout(() => { setVisible(true); setPhase('incoming') }, 300)
     setTimeout(() => setPhase('thinking'), 2400)
     setTimeout(() => {
       setPhase('typing')
@@ -79,7 +79,7 @@ function LiveDemo({ mounted }) {
         const next = (reviewIndex + 1) % REVIEWS.length
         setReviewIndex(next)
         runCycle(next)
-      }, 2800)
+      }, 1800)
     }
     return () => clearTimeout(cycleRef.current)
   }, [phase])
