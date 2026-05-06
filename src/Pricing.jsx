@@ -77,16 +77,28 @@ function Pricing({ onStartFree }) {
         <div className="flex flex-col md:flex-row gap-5">
 
           {/* Solo */}
-          <div
-            className="flex-1 rounded-2xl p-7"
-            style={{
-              backgroundColor: '#1e293b',
-              border: '1px solid rgba(99,102,241,0.15)',
-              opacity: inView ? 1 : 0,
-              transform: inView ? 'translateY(0)' : 'translateY(32px)',
-              transition: 'all 0.6s ease 0.1s',
-            }}
-          >
+         {/* Solo */}
+<div
+  className="flex-1 rounded-2xl p-7"
+  style={{
+    backgroundColor: '#1e293b',
+    border: '1px solid rgba(99,102,241,0.15)',
+    opacity: inView ? 1 : 0,
+    transform: inView ? 'translateY(0)' : 'translateY(32px)',
+    transition: 'all 0.6s ease 0.1s',
+    cursor: 'default',
+  }}
+  onMouseEnter={e => {
+    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.5)'
+    e.currentTarget.style.boxShadow = '0 0 30px rgba(99,102,241,0.15)'
+    e.currentTarget.style.transform = 'translateY(-4px)'
+  }}
+  onMouseLeave={e => {
+    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.15)'
+    e.currentTarget.style.boxShadow = 'none'
+    e.currentTarget.style.transform = 'translateY(0)'
+  }}
+>
             <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#475569' }}>Solo</p>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-4xl font-bold text-white">€19</span>
@@ -124,17 +136,29 @@ function Pricing({ onStartFree }) {
           </div>
 
           {/* Pro */}
-          <div
-            className="flex-1 rounded-2xl p-7 relative"
-            style={{
-              background: 'linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%)',
-              border: '1px solid rgba(99,102,241,0.4)',
-              boxShadow: '0 0 40px rgba(99,102,241,0.15)',
-              opacity: inView ? 1 : 0,
-              transform: inView ? 'translateY(0)' : 'translateY(32px)',
-              transition: 'all 0.6s ease 0.2s',
-            }}
-          >
+          {/* Pro */}
+<div
+  className="flex-1 rounded-2xl p-7 relative"
+  style={{
+    background: 'linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%)',
+    border: '1px solid rgba(99,102,241,0.4)',
+    boxShadow: '0 0 40px rgba(99,102,241,0.15)',
+    opacity: inView ? 1 : 0,
+    transform: inView ? 'translateY(0)' : 'translateY(32px)',
+    transition: 'all 0.6s ease 0.2s',
+    cursor: 'default',
+  }}
+  onMouseEnter={e => {
+    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.8)'
+    e.currentTarget.style.boxShadow = '0 0 50px rgba(99,102,241,0.3)'
+    e.currentTarget.style.transform = 'translateY(-4px)'
+  }}
+  onMouseLeave={e => {
+    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.4)'
+    e.currentTarget.style.boxShadow = '0 0 40px rgba(99,102,241,0.15)'
+    e.currentTarget.style.transform = 'translateY(0)'
+  }}
+>
             {/* Badge Popular */}
             <span
               className="absolute top-5 right-5 text-xs font-semibold px-3 py-1 rounded-lg"
