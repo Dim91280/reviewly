@@ -1,6 +1,72 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useOutletContext, Link } from 'react-router-dom'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+
+function OnboardingChecklist() {
+  const [dismissed, setDismissed] = useState(false)
+  const businessName = localStorage.getItem('replio_business_name')
+  const platform = localStorage.getItem('replio_platform')
+
+  const items = [
+    { text: 'Account created', done: true },
+    { text: businessName ? `${businessName} configured` : 'Business configured', done: !!businessName },
+    { text: 'First AI reply generated', done: !!platform },
+    { text: 'Connect Google Business', done: false, soon: true },
+  ]
+
+  const completedCount = items.filter(i => i.done).length
+  const pct = Math.round((completedCount / items.length) * 100)
+  const allDone = completedCount === items.filter(i => !i.soon).length
+
+  if (dismissed || allDone) return null
+
+  return (
+    <div style={{
+      backgroundColor: 'white', borderRadius: '16px', border: '1px solid #f1f5f9',
+      padding: '16px 20px', marginBottom: '20px',
+      background: 'linear-gradient(135deg, rgba(99,102,241,0.03) 0%, white 60%)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div>
+            <p style={{ fontSize: '13px', fontWeight: 600, color: '#111827', margin: 0 }}>Getting started</p>
+            <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>{completedCount}/{items.length} steps completed</p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Progress bar */}
+          <div style={{ width: '80px', height: '5px', borderRadius: '3px', backgroundColor: '#f1f5f9', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${pct}%`, backgroundColor: '#6366f1', borderRadius: '3px', transition: 'width 0.5s ease' }}/>
+          </div>
+          <span style={{ fontSize: '11px', color: '#6366f1', fontWeight: 600 }}>{pct}%</span>
+          <button onClick={() => setDismissed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e1', padding: '2px' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {items.map((item, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            padding: '5px 10px', borderRadius: '8px',
+            backgroundColor: item.done ? '#f0fdf4' : '#f8fafc',
+            border: `1px solid ${item.done ? '#bbf7d0' : '#f1f5f9'}`,
+          }}>
+            <div style={{ width: '14px', height: '14px', borderRadius: '50%', backgroundColor: item.done ? '#22c55e' : '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {item.done
+                ? <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                : null
+              }
+            </div>
+            <span style={{ fontSize: '11px', color: item.done ? '#15803d' : '#94a3b8', whiteSpace: 'nowrap' }}>{item.text}</span>
+            {item.soon && <span style={{ fontSize: '9px', color: '#94a3b8', backgroundColor: '#f1f5f9', padding: '1px 5px', borderRadius: '4px' }}>Soon</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function DashboardPage() {
   const { reviews, pendingCount, subscription } = useOutletContext()
@@ -10,7 +76,6 @@ function DashboardPage() {
   const responseRate = reviews.length > 0 ? Math.round((reviews.filter(r => r.replied).length / reviews.length) * 100) : null
   const negativeUnanswered = reviews.filter(r => r.rating <= 2 && !r.replied)
 
-  // Graphique hebdomadaire
   const weeklyData = useMemo(() => {
     const buckets = {}
     reviews.forEach(r => {
@@ -32,20 +97,16 @@ function DashboardPage() {
     ? Math.round((weeklyData[weeklyData.length - 1].avg - weeklyData[weeklyData.length - 2].avg) * 10) / 10
     : null
 
-  // Répartition des notes
   const ratingDistribution = useMemo(() => {
-    const dist = [5, 4, 3, 2, 1].map(star => ({
+    return [5, 4, 3, 2, 1].map(star => ({
       star,
       count: reviews.filter(r => r.rating === star).length,
       pct: reviews.length > 0 ? Math.round((reviews.filter(r => r.rating === star).length / reviews.length) * 100) : 0
     }))
-    return dist
   }, [reviews])
 
-  // Stats par plateforme
   const platformStats = useMemo(() => {
-    const platforms = ['Google', 'TripAdvisor', 'Facebook']
-    return platforms.map(p => {
+    return ['Google', 'TripAdvisor', 'Facebook'].map(p => {
       const pReviews = reviews.filter(r => r.platform === p)
       const avg = pReviews.length > 0 ? pReviews.reduce((sum, r) => sum + r.rating, 0) / pReviews.length : null
       return { platform: p, count: pReviews.length, avg }
@@ -66,7 +127,6 @@ function DashboardPage() {
     )
   }
 
-  // État vide
   if (reviews.length === 0) {
     return (
       <>
@@ -74,6 +134,7 @@ function DashboardPage() {
           <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
           <p className="text-xs text-gray-400 mt-0.5">Your reputation at a glance</p>
         </div>
+        <OnboardingChecklist />
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: '#eef2ff' }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.5">
@@ -92,11 +153,12 @@ function DashboardPage() {
 
   return (
     <>
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
         <p className="text-xs text-gray-400 mt-0.5">Your reputation at a glance</p>
       </div>
+
+      <OnboardingChecklist />
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -142,10 +204,8 @@ function DashboardPage() {
         ))}
       </div>
 
-      {/* Graphique tendance + Répartition notes */}
+      {/* Graphique + répartition */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-
-        {/* Graphique tendance — 2/3 */}
         <div className="md:col-span-2 bg-white rounded-2xl border p-5" style={{ borderColor: '#f1f5f9' }}>
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -178,7 +238,6 @@ function DashboardPage() {
           )}
         </div>
 
-        {/* Répartition des notes — 1/3 */}
         <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#f1f5f9' }}>
           <p className="text-sm font-semibold text-gray-900 mb-1">Rating breakdown</p>
           <p className="text-xs text-gray-400 mb-4">Distribution of all reviews</p>
@@ -187,10 +246,7 @@ function DashboardPage() {
               <div key={star} className="flex items-center gap-2">
                 <span className="text-xs text-gray-500 w-4">{star}★</span>
                 <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#f1f5f9' }}>
-                  <div className="h-full rounded-full transition-all duration-500" style={{
-                    width: `${pct}%`,
-                    backgroundColor: starColors[star]
-                  }} />
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: starColors[star] }} />
                 </div>
                 <span className="text-xs text-gray-400 w-6 text-right">{count}</span>
               </div>

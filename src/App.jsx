@@ -14,6 +14,7 @@ import AppLayout from './AppLayout'
 import DashboardPage from './DashboardPage'
 import Reviews from './Reviews'
 import Account from './Account'
+import Onboarding from './Onboarding'
 
 function ProtectedRoute({ session }) {
   if (!session) return <Navigate to="/auth" replace />
@@ -46,9 +47,17 @@ function App() {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
-      if (!session) navigate('/', { replace: true })
+      if (!session) {
+        navigate('/', { replace: true })
+      } else if (event === 'SIGNED_IN') {
+        // Premier login → onboarding, sinon dashboard
+        const onboarded = localStorage.getItem('replio_onboarded')
+        if (!onboarded) {
+          navigate('/onboarding', { replace: true })
+        }
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -65,6 +74,11 @@ function App() {
           ? <Navigate to="/dashboard" replace />
           : <Auth onBack={() => navigate('/')} />
       } />
+
+      {/* Onboarding — protégé, hors AppLayout */}
+      <Route element={<ProtectedRoute session={session} />}>
+        <Route path="/onboarding" element={<Onboarding />} />
+      </Route>
 
       <Route element={<ProtectedRoute session={session} />}>
         <Route element={<AppLayout session={session} />}>
