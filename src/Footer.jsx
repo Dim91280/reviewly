@@ -94,10 +94,8 @@ function Footer({ onStartFree }) {
         >
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-              <svg width="12" height="12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 0C3.58 0 0 3.58 0 8V40C0 44.42 3.58 48 8 48H22L32 56L42 48H56C60.42 48 64 44.42 64 40V8C64 3.58 60.42 0 56 0H8Z" fill="white" opacity="0.95"/>
-                <path d="M42 18L28 24L42 30V26C48 26 52 28 52 34C52 32 50 26 42 24V18Z" fill="#6366f1"/>
-                <path d="M20 20L21.5 24L25.5 24.5L22.5 27L23.5 31L20 28.5L16.5 31L17.5 27L14.5 24.5L18.5 24L20 20Z" fill="#6366f1"/>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <text x="5" y="18" fontSize="16" fontWeight="800" fontFamily="Arial, sans-serif" fill="white">R</text>
               </svg>
             </div>
             <span className="text-white font-medium text-sm">Replio</span>
