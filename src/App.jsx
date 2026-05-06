@@ -43,17 +43,12 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      if (session && window.location.pathname === '/') {
-        const successParam = window.location.search.includes('success=true') ? '?success=true' : ''
-        navigate('/dashboard' + successParam, { replace: true })
-      }
       setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session) navigate('/dashboard', { replace: true })
-      else navigate('/', { replace: true })
+      if (!session) navigate('/', { replace: true })
     })
 
     return () => subscription.unsubscribe()
@@ -63,11 +58,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={
-        session
-          ? <Navigate to="/dashboard" replace />
-          : <Landing onStartFree={() => navigate('/auth')} />
-      } />
+      <Route path="/" element={<Landing onStartFree={() => navigate('/auth')} />} />
 
       <Route path="/auth" element={
         session
