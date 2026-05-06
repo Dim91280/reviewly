@@ -1,4 +1,22 @@
+import { useEffect, useRef, useState } from 'react'
+
+function useInView(threshold = 0.2) {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setInView(true)
+    }, { threshold })
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+  return [ref, inView]
+}
+
 function FAQ() {
+  const [sectionRef, inView] = useInView()
+  const [openIndex, setOpenIndex] = useState(null)
+
   const faqs = [
     {
       q: "Which platforms do you support?",
@@ -27,23 +45,72 @@ function FAQ() {
   ]
 
   return (
-    <section id="faq" className="py-20 px-6 bg-white">
+    <section id="faq" ref={sectionRef} className="py-24 px-6" style={{ backgroundColor: '#ffffff' }}>
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Frequently asked questions</h2>
-          <p className="text-gray-400 text-sm">Everything you need to know about Reviewly.</p>
+
+        {/* Header */}
+        <div className="text-center mb-14" style={{
+          opacity: inView ? 1 : 0,
+          transform: inView ? 'translateY(0)' : 'translateY(24px)',
+          transition: 'all 0.6s ease'
+        }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>FAQ</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Frequently asked questions</h2>
+          <p className="text-gray-400 mt-3 text-sm">Everything you need to know about Reviewly.</p>
         </div>
+
+        {/* Questions */}
         <div className="space-y-3">
           {faqs.map((faq, i) => (
-            <details key={i} className="group border rounded-2xl px-6 py-5 cursor-pointer" style={{ borderColor: '#f1f5f9' }}>
-              <summary className="flex items-center justify-between text-sm font-medium text-gray-900 list-none">
-                {faq.q}
-                <svg className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </summary>
-              <p className="mt-3 text-gray-400 text-sm leading-relaxed">{faq.a}</p>
-            </details>
+            <div
+              key={i}
+              className="rounded-2xl overflow-hidden"
+              style={{
+                border: '1px solid',
+                borderColor: openIndex === i ? '#e0e7ff' : '#f1f5f9',
+                backgroundColor: openIndex === i ? '#fafafe' : '#ffffff',
+                opacity: inView ? 1 : 0,
+                transform: inView ? 'translateY(0)' : 'translateY(20px)',
+                transition: `opacity 0.5s ease ${0.05 * i}s, transform 0.5s ease ${0.05 * i}s, border-color 0.2s, background-color 0.2s`,
+              }}
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full flex items-center justify-between px-6 py-5 text-left"
+              >
+                <span className="text-sm font-medium text-gray-900 pr-4">{faq.q}</span>
+                <div
+                  className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: openIndex === i ? '#6366f1' : '#f1f5f9',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <svg
+                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke={openIndex === i ? 'white' : '#94a3b8'}
+                    strokeWidth="2.5"
+                    style={{
+                      transform: openIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  >
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </div>
+              </button>
+
+              {/* Réponse animée */}
+              <div style={{
+                maxHeight: openIndex === i ? '200px' : '0px',
+                overflow: 'hidden',
+                transition: 'max-height 0.3s ease'
+              }}>
+                <p className="px-6 pb-5 text-sm leading-relaxed" style={{ color: '#64748b' }}>
+                  {faq.a}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       </div>
