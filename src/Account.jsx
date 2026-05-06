@@ -144,7 +144,7 @@ function Account() {
             </div>
             <h2 className="text-sm font-semibold text-gray-900">Google Business Profile</h2>
           </div>
-          <p className="text-xs text-gray-400 mb-5 ml-9">Sync your Google reviews automatically into Reviewly.</p>
+          <p className="text-xs text-gray-400 mb-5 ml-9">Sync your Google reviews automatically into Replio.</p>
           {googleConnected ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -180,7 +180,7 @@ function Account() {
             style={{ borderColor: '#e5e7eb', color: '#64748b', backgroundColor: '#f8fafc' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f8fafc'}>
-            Sign out of Reviewly
+            Sign out of Replio
           </button>
         </div>
 

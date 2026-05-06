@@ -56,7 +56,7 @@ function FAQ() {
         }}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>FAQ</p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Frequently asked questions</h2>
-          <p className="text-gray-400 mt-3 text-sm">Everything you need to know about Reviewly.</p>
+          <p className="text-gray-400 mt-3 text-sm">Everything you need to know about Replio.</p>
         </div>
 
         {/* Questions */}

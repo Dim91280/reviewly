@@ -77,7 +77,6 @@ function Pricing({ onStartFree }) {
         <div className="flex flex-col md:flex-row gap-5">
 
           {/* Solo */}
-         {/* Solo */}
 <div
   className="flex-1 rounded-2xl p-7"
   style={{
@@ -135,7 +134,6 @@ function Pricing({ onStartFree }) {
             </button>
           </div>
 
-          {/* Pro */}
           {/* Pro */}
 <div
   className="flex-1 rounded-2xl p-7 relative"

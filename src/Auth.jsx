@@ -29,9 +29,9 @@ function Auth({ onBack }) {
       <div className="hidden md:flex flex-col justify-between w-1/2 p-12 text-white" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
           </div>
-          <span className="font-semibold text-sm">Reviewly</span>
+          <span className="font-semibold text-sm">Replio</span>
         </div>
 
         <div>
@@ -41,13 +41,13 @@ function Auth({ onBack }) {
             ))}
           </div>
           <p className="text-slate-300 text-base leading-relaxed mb-6">
-            "Since using Reviewly, I reply to every review in under a minute. My rating went from 4.1 to 4.6 in 3 months."
+            "Since using Replio, I reply to every review in under a minute. My rating went from 4.1 to 4.6 in 3 months."
           </p>
           <p className="text-white font-medium text-sm">Marie Dubois</p>
           <p className="text-slate-500 text-xs">Restaurant owner, Lyon</p>
         </div>
 
-        <p className="text-slate-600 text-xs">© 2025 Reviewly. All rights reserved.</p>
+        <p className="text-slate-600 text-xs">© 2025 Replio. All rights reserved.</p>
       </div>
 
       {/* Panel droit */}
@@ -56,9 +56,9 @@ function Auth({ onBack }) {
 
           <div className="flex items-center gap-2 mb-10 md:hidden">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
             </div>
-            <span className="font-semibold text-gray-900 text-sm">Reviewly</span>
+            <span className="font-semibold text-gray-900 text-sm">Replio</span>
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-1">

@@ -94,11 +94,12 @@ function Footer({ onStartFree }) {
         >
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/>
               </svg>
             </div>
-            <span className="text-white font-medium text-sm">Reviewly</span>
+            <span className="text-white font-medium text-sm">Replio</span>
           </div>
 
           <div className="flex gap-6 text-xs" style={{ color: '#334155' }}>
@@ -121,7 +122,7 @@ function Footer({ onStartFree }) {
 
           <div className="flex items-center gap-4 text-xs" style={{ color: '#334155' }}>
             <span>GDPR compliant</span>
-            <span>© 2025 Reviewly</span>
+            <span>© 2025 Replio</span>
           </div>
         </div>
       </div>

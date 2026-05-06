@@ -23,7 +23,7 @@ function Testimonials() {
       business: "Restaurant owner, Lyon",
       avatar: "MD",
       flag: "🇫🇷",
-      text: "Since I started using Reviewly, I reply to every review in under a minute. My rating went from 4.1 to 4.6 in 3 months.",
+      text: "Since I started using Replio, I reply to every review in under a minute. My rating went from 4.1 to 4.6 in 3 months.",
       metric: "+0.5★",
       metricLabel: "in 3 months"
     },

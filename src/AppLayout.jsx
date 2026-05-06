@@ -81,11 +81,12 @@ function AppLayout({ session }) {
       <div className="bg-white rounded-2xl border p-10 max-w-md w-full text-center" style={{ borderColor: '#f1f5f9' }}>
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#eef2ff' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/>
           </svg>
         </div>
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Your trial has expired</h2>
-        <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>Choose a plan to continue using Reviewly.</p>
+        <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>Choose a plan to continue using Replio.</p>
         <div className="space-y-3">
           <button onClick={() => navigate('/')}
             className="w-full text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
@@ -150,9 +151,9 @@ function AppLayout({ session }) {
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
         <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
           </div>
-          <span className="text-white font-medium text-sm">Reviewly</span>
+          <span className="text-white font-medium text-sm">Replio</span>
         </div>
 
         {/* Plan badge */}
@@ -180,9 +181,9 @@ function AppLayout({ session }) {
       <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
         <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
           </div>
-          <span className="text-white font-medium text-sm">Reviewly</span>
+          <span className="text-white font-medium text-sm">Replio</span>
         </Link>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
           {mobileMenuOpen ? (
