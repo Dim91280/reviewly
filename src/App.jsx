@@ -20,10 +20,10 @@ function ProtectedRoute({ session }) {
   return <Outlet />
 }
 
-function Landing({ onStartFree }) {
+function Landing({ onStartFree, session }) {
   return (
     <div className="min-h-screen bg-white">
-      <Navbar onStartFree={onStartFree} onSignIn={onStartFree} />
+      <Navbar onStartFree={onStartFree} onSignIn={onStartFree} session={session} />
       <Hero onStartFree={onStartFree} />
       <Problems />
       <Features />
@@ -58,7 +58,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Landing onStartFree={() => navigate('/auth')} />} />
+      <Route path="/" element={<Landing onStartFree={() => navigate('/auth')} session={session} />} />
 
       <Route path="/auth" element={
         session

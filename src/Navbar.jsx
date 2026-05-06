@@ -1,4 +1,6 @@
-function Navbar({ onStartFree, onSignIn }) {
+import { Link } from 'react-router-dom'
+
+function Navbar({ onStartFree, onSignIn, session }) {
   return (
     <nav className="w-full flex items-center justify-between px-8 py-4 bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="flex items-center gap-2">
@@ -15,21 +17,30 @@ function Navbar({ onStartFree, onSignIn }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          onClick={onSignIn}
-          className="text-sm font-medium px-4 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
-        >
-          Sign in
-        </button>
-        <button
-          onClick={onStartFree}
-          className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          style={{ backgroundColor: '#6366f1' }}
-          onMouseEnter={e => e.target.style.backgroundColor = '#4f46e5'}
-          onMouseLeave={e => e.target.style.backgroundColor = '#6366f1'}
-        >
-          Start free
-        </button>
+        {session ? (
+          <Link to="/dashboard"
+            className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            style={{ backgroundColor: '#6366f1', textDecoration: 'none' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#6366f1'}
+          >
+            Go to Dashboard →
+          </Link>
+        ) : (
+          <>
+            <button onClick={onSignIn} className="text-sm font-medium px-4 py-2 rounded-lg transition-colors text-gray-600 hover:text-gray-900">
+              Sign in
+            </button>
+            <button onClick={onStartFree}
+              className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+              style={{ backgroundColor: '#6366f1' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#6366f1'}
+            >
+              Start free
+            </button>
+          </>
+        )}
       </div>
     </nav>
   )
