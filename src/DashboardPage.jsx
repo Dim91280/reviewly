@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useOutletContext, Link } from 'react-router-dom'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 function DashboardPage() {
   const { reviews, pendingCount, subscription } = useOutletContext()
@@ -10,6 +10,7 @@ function DashboardPage() {
   const responseRate = reviews.length > 0 ? Math.round((reviews.filter(r => r.replied).length / reviews.length) * 100) : null
   const negativeUnanswered = reviews.filter(r => r.rating <= 2 && !r.replied)
 
+  // Graphique hebdomadaire
   const weeklyData = useMemo(() => {
     const buckets = {}
     reviews.forEach(r => {
@@ -31,90 +32,197 @@ function DashboardPage() {
     ? Math.round((weeklyData[weeklyData.length - 1].avg - weeklyData[weeklyData.length - 2].avg) * 10) / 10
     : null
 
+  // Répartition des notes
+  const ratingDistribution = useMemo(() => {
+    const dist = [5, 4, 3, 2, 1].map(star => ({
+      star,
+      count: reviews.filter(r => r.rating === star).length,
+      pct: reviews.length > 0 ? Math.round((reviews.filter(r => r.rating === star).length / reviews.length) * 100) : 0
+    }))
+    return dist
+  }, [reviews])
+
+  // Stats par plateforme
+  const platformStats = useMemo(() => {
+    const platforms = ['Google', 'TripAdvisor', 'Facebook']
+    return platforms.map(p => {
+      const pReviews = reviews.filter(r => r.platform === p)
+      const avg = pReviews.length > 0 ? pReviews.reduce((sum, r) => sum + r.rating, 0) / pReviews.length : null
+      return { platform: p, count: pReviews.length, avg }
+    }).filter(p => p.count > 0)
+  }, [reviews])
+
+  const platformColors = { Google: '#4285F4', TripAdvisor: '#00aa6c', Facebook: '#1877f2' }
+  const starColors = { 5: '#22c55e', 4: '#84cc16', 3: '#f59e0b', 2: '#f97316', 1: '#ef4444' }
+
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null
     const d = payload[0].payload
     return (
       <div className="bg-white border rounded-lg px-3 py-2 shadow-sm text-xs" style={{ borderColor: '#e5e7eb' }}>
-        <p className="font-medium text-gray-900">★ {d.avg.toFixed(1)}</p>
+        <p className="font-medium text-gray-900">★ {d.avg?.toFixed(1)}</p>
         <p className="text-gray-400">{d.count} review{d.count !== 1 ? 's' : ''}</p>
       </div>
     )
   }
 
+  // État vide
+  if (reviews.length === 0) {
+    return (
+      <>
+        <div className="mb-6">
+          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Your reputation at a glance</p>
+        </div>
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: '#eef2ff' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.5">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h2>
+          <p className="text-sm text-gray-400 max-w-xs mb-6">Add your first review to start tracking your reputation score and trends.</p>
+          <Link to="/reviews" className="text-white text-sm font-medium px-5 py-2.5 rounded-xl" style={{ backgroundColor: '#6366f1', textDecoration: 'none' }}>
+            Go to Reviews →
+          </Link>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
         <p className="text-xs text-gray-400 mt-0.5">Your reputation at a glance</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 border" style={{ borderColor: '#f1f5f9' }}>
-          <p className="text-xs text-gray-400 mb-2">Reputation score</p>
-          <p className="text-3xl font-semibold text-gray-900 mb-1">
-            {reputationScore !== null ? reputationScore : '—'}
-            {reputationScore !== null && <span className="text-sm font-normal text-gray-400">/100</span>}
-          </p>
-          <p className="text-xs" style={{ color: reputationScore === null ? '#94a3b8' : reputationScore >= 80 ? '#22c55e' : reputationScore >= 60 ? '#f59e0b' : '#ef4444' }}>
-            {reputationScore === null ? 'No reviews yet' : reputationScore >= 80 ? 'Excellent' : reputationScore >= 60 ? 'Good' : 'Needs improvement'}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border" style={{ borderColor: '#f1f5f9' }}>
-          <p className="text-xs text-gray-400 mb-2">Average rating</p>
-          <p className="text-3xl font-semibold text-gray-900 mb-1">
-            {avgRating !== null ? avgRating.toFixed(1) : '—'}
-            {avgRating !== null && <span className="text-sm font-normal text-gray-400">/5</span>}
-          </p>
-          <p className="text-xs text-gray-400">Based on {reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border" style={{ borderColor: '#f1f5f9' }}>
-          <p className="text-xs text-gray-400 mb-2">Response rate</p>
-          <p className="text-3xl font-semibold mb-1" style={{ color: responseRate !== null && responseRate < 50 ? '#f59e0b' : '#111827' }}>
-            {responseRate !== null ? `${responseRate}%` : '—'}
-          </p>
-          <p className="text-xs" style={{ color: responseRate === null ? '#94a3b8' : responseRate >= 80 ? '#22c55e' : '#f59e0b' }}>
-            {responseRate === null ? 'No reviews yet' : responseRate >= 80 ? 'Great job' : 'Reply to more reviews'}
-          </p>
-        </div>
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        {[
+          {
+            label: 'Reputation score',
+            value: reputationScore !== null ? `${reputationScore}` : '—',
+            suffix: reputationScore !== null ? '/100' : '',
+            sub: reputationScore === null ? 'No reviews yet' : reputationScore >= 80 ? 'Excellent' : reputationScore >= 60 ? 'Good' : 'Needs improvement',
+            subColor: reputationScore === null ? '#94a3b8' : reputationScore >= 80 ? '#22c55e' : reputationScore >= 60 ? '#f59e0b' : '#ef4444',
+            icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          },
+          {
+            label: 'Average rating',
+            value: avgRating !== null ? avgRating.toFixed(1) : '—',
+            suffix: avgRating !== null ? '/5' : '',
+            sub: `Based on ${reviews.length} review${reviews.length !== 1 ? 's' : ''}`,
+            subColor: '#94a3b8',
+            icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 20.94l1.5 2.06 2-3 3 1-1-3 3-1.5-3-1.5 1-3-3 1-2-3-2 3-3-1 1 3-3 1.5 3 1.5-1 3 3-1z"/></svg>
+          },
+          {
+            label: 'Response rate',
+            value: responseRate !== null ? `${responseRate}%` : '—',
+            suffix: '',
+            sub: responseRate === null ? 'No reviews yet' : responseRate >= 80 ? 'Great job' : 'Reply to more reviews',
+            subColor: responseRate === null ? '#94a3b8' : responseRate >= 80 ? '#22c55e' : '#f59e0b',
+            icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white rounded-2xl p-5 border" style={{ borderColor: '#f1f5f9' }}>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs text-gray-400">{stat.label}</p>
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#eef2ff' }}>
+                {stat.icon}
+              </div>
+            </div>
+            <p className="text-3xl font-bold text-gray-900 mb-1">
+              {stat.value}
+              {stat.suffix && <span className="text-sm font-normal text-gray-400">{stat.suffix}</span>}
+            </p>
+            <p className="text-xs" style={{ color: stat.subColor }}>{stat.sub}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="bg-white rounded-xl border p-5 mb-6" style={{ borderColor: '#f1f5f9' }}>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-sm font-medium text-gray-900">Rating trend</p>
-            <p className="text-xs text-gray-400 mt-0.5">Weekly average over the last 8 weeks</p>
+      {/* Graphique tendance + Répartition notes */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+
+        {/* Graphique tendance — 2/3 */}
+        <div className="md:col-span-2 bg-white rounded-2xl border p-5" style={{ borderColor: '#f1f5f9' }}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Rating trend</p>
+              <p className="text-xs text-gray-400 mt-0.5">Weekly average</p>
+            </div>
+            {trendDelta !== null && (
+              <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{
+                backgroundColor: trendDelta >= 0 ? '#f0fdf4' : '#fef2f2',
+                color: trendDelta >= 0 ? '#16a34a' : '#ef4444',
+              }}>
+                {trendDelta >= 0 ? '+' : ''}{trendDelta} vs last week
+              </span>
+            )}
           </div>
-          {trendDelta !== null && (
-            <span className="text-xs font-medium px-2.5 py-1 rounded-lg" style={{
-              backgroundColor: trendDelta >= 0 ? '#f0fdf4' : '#fef2f2',
-              color: trendDelta >= 0 ? '#16a34a' : '#ef4444',
-            }}>
-              {trendDelta >= 0 ? '+' : ''}{trendDelta} vs last week
-            </span>
+          {weeklyData.length < 2 ? (
+            <div className="flex items-center justify-center h-32 rounded-xl" style={{ backgroundColor: '#f8fafc' }}>
+              <p className="text-xs text-gray-400">Not enough data yet</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={weeklyData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e0e7ff', strokeWidth: 1 }} />
+                <Line type="monotone" dataKey="avg" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} activeDot={{ r: 5, fill: '#6366f1' }} />
+              </LineChart>
+            </ResponsiveContainer>
           )}
         </div>
-        {weeklyData.length < 2 ? (
-          <div className="flex items-center justify-center h-32 rounded-xl" style={{ backgroundColor: '#f8fafc' }}>
-            <p className="text-xs text-gray-400">Not enough data yet — add reviews across multiple weeks</p>
+
+        {/* Répartition des notes — 1/3 */}
+        <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#f1f5f9' }}>
+          <p className="text-sm font-semibold text-gray-900 mb-1">Rating breakdown</p>
+          <p className="text-xs text-gray-400 mb-4">Distribution of all reviews</p>
+          <div className="space-y-2.5">
+            {ratingDistribution.map(({ star, count, pct }) => (
+              <div key={star} className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-4">{star}★</span>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#f1f5f9' }}>
+                  <div className="h-full rounded-full transition-all duration-500" style={{
+                    width: `${pct}%`,
+                    backgroundColor: starColors[star]
+                  }} />
+                </div>
+                <span className="text-xs text-gray-400 w-6 text-right">{count}</span>
+              </div>
+            ))}
           </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={weeklyData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e0e7ff', strokeWidth: 1 }} />
-              <Line type="monotone" dataKey="avg" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }} activeDot={{ r: 5, fill: '#6366f1' }} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        </div>
       </div>
 
+      {/* Stats par plateforme */}
+      {platformStats.length > 0 && (
+        <div className="bg-white rounded-2xl border p-5 mb-5" style={{ borderColor: '#f1f5f9' }}>
+          <p className="text-sm font-semibold text-gray-900 mb-1">By platform</p>
+          <p className="text-xs text-gray-400 mb-4">Performance per review source</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {platformStats.map(({ platform, count, avg }) => (
+              <div key={platform} className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: '#f8fafc' }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${platformColors[platform]}20` }}>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: platformColors[platform] }} />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-gray-900">{platform}</p>
+                  <p className="text-xs text-gray-400">{count} review{count !== 1 ? 's' : ''} · {avg ? `★ ${avg.toFixed(1)}` : '—'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Alerte avis négatifs */}
       {negativeUnanswered.length > 0 ? (
-        <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#fee2e2' }}>
+        <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#fee2e2' }}>
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#fef2f2' }}>
@@ -132,8 +240,8 @@ function DashboardPage() {
             </Link>
           </div>
         </div>
-      ) : reviews.length > 0 ? (
-        <div className="bg-white rounded-xl border p-5" style={{ borderColor: '#f1f5f9' }}>
+      ) : (
+        <div className="bg-white rounded-2xl border p-5" style={{ borderColor: '#f1f5f9' }}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#f0fdf4' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -144,7 +252,7 @@ function DashboardPage() {
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </>
   )
 }
