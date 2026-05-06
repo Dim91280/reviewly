@@ -29,7 +29,7 @@ function Auth({ onBack }) {
       <div className="hidden md:flex flex-col justify-between w-1/2 p-12 text-white" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M20 2H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8l4 4V4a2 2 0 0 0-2-2z" fill="white" fillOpacity="0.9" stroke="none"/><path d="M4 7H3a2 2 0 0 0-2 2v8l3-3h7a2 2 0 0 0 2-2v-1" fill="white" fillOpacity="0.5" stroke="none"/></svg>
           </div>
           <span className="font-semibold text-sm">Replio</span>
         </div>
@@ -56,7 +56,7 @@ function Auth({ onBack }) {
 
           <div className="flex items-center gap-2 mb-10 md:hidden">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M20 2H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8l4 4V4a2 2 0 0 0-2-2z" fill="white" fillOpacity="0.9" stroke="none"/><path d="M4 7H3a2 2 0 0 0-2 2v8l3-3h7a2 2 0 0 0 2-2v-1" fill="white" fillOpacity="0.5" stroke="none"/></svg>
             </div>
             <span className="font-semibold text-gray-900 text-sm">Replio</span>
           </div>

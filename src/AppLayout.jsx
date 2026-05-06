@@ -151,7 +151,7 @@ function AppLayout({ session }) {
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
         <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M20 2H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8l4 4V4a2 2 0 0 0-2-2z" fill="white" fillOpacity="0.9" stroke="none"/><path d="M4 7H3a2 2 0 0 0-2 2v8l3-3h7a2 2 0 0 0 2-2v-1" fill="white" fillOpacity="0.5" stroke="none"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Replio</span>
         </div>
@@ -181,7 +181,7 @@ function AppLayout({ session }) {
       <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
         <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M20 2H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8l4 4V4a2 2 0 0 0-2-2z" fill="white" fillOpacity="0.9" stroke="none"/><path d="M4 7H3a2 2 0 0 0-2 2v8l3-3h7a2 2 0 0 0 2-2v-1" fill="white" fillOpacity="0.5" stroke="none"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Replio</span>
         </Link>
