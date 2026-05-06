@@ -151,7 +151,7 @@ function AppLayout({ session }) {
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
         <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="5" y="18" fontSize="16" fontWeight="800" fontFamily="Arial, sans-serif" fill="white">R</text></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/><path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Replio</span>
         </div>
@@ -181,7 +181,7 @@ function AppLayout({ session }) {
       <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
         <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><text x="5" y="18" fontSize="16" fontWeight="800" fontFamily="Arial, sans-serif" fill="white">R</text></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/><path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/></svg>
           </div>
           <span className="text-white font-medium text-sm">Replio</span>
         </Link>
