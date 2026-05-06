@@ -19,6 +19,151 @@ const REVIEWS = [
   },
 ]
 
+const FEED_EVENTS = [
+  { icon: '⭐', text: 'New 5★ review replied in 23s', color: '#f59e0b', delay: 0 },
+  { icon: '📈', text: 'Rating updated · +0.1 pts', color: '#22c55e', delay: 2200 },
+  { icon: '⭐', text: 'New 4★ review replied in 41s', color: '#f59e0b', delay: 4400 },
+  { icon: '🏆', text: 'Top rated this week in Lyon', color: '#818cf8', delay: 6600 },
+  { icon: '📈', text: 'Rating updated · +0.2 pts', color: '#22c55e', delay: 8800 },
+]
+
+function RatingMeter({ mounted }) {
+  const [rating, setRating] = useState(3.8)
+  const [feedItems, setFeedItems] = useState([])
+  const [pulse, setPulse] = useState(false)
+  const targetRating = 4.7
+  const ratingRef = useRef(3.8)
+  const feedRef = useRef([])
+
+  // Rating progression
+  useEffect(() => {
+    if (!mounted) return
+    const interval = setInterval(() => {
+      if (ratingRef.current < targetRating) {
+        ratingRef.current = Math.min(targetRating, +(ratingRef.current + 0.01).toFixed(2))
+        setRating(ratingRef.current)
+        if (Math.abs(ratingRef.current % 0.1) < 0.015) {
+          setPulse(true)
+          setTimeout(() => setPulse(false), 600)
+        }
+      }
+    }, 120)
+    return () => clearInterval(interval)
+  }, [mounted])
+
+  // Feed events
+  useEffect(() => {
+    if (!mounted) return
+    FEED_EVENTS.forEach(ev => {
+      setTimeout(() => {
+        setFeedItems(prev => {
+          const next = [{ ...ev, id: Date.now() + ev.delay }, ...prev].slice(0, 3)
+          return next
+        })
+      }, ev.delay)
+    })
+  }, [mounted])
+
+  const pct = Math.min(1, (rating - 3.8) / (targetRating - 3.8))
+  const radius = 52
+  const circumference = Math.PI * radius
+  const strokeDash = circumference * pct
+
+  // Arc semi-circle: starts at 180deg (left), ends at 0deg (right)
+  const cx = 70, cy = 70
+
+  return (
+    <div style={{
+      borderRadius: '16px', padding: '18px 20px',
+      backgroundColor: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      marginBottom: '10px'
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div>
+          <p style={{ fontSize: '11px', color: '#475569', margin: 0 }}>Google rating · Le Petit Bistro</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+            <span style={{ fontSize: '10px', color: '#334155' }}>Before Replio</span>
+            <span style={{ fontSize: '10px', color: '#475569' }}>3.8★</span>
+            <span style={{ fontSize: '10px', color: '#475569' }}>→</span>
+            <span style={{ fontSize: '10px', color: '#22c55e', fontWeight: 600 }}>Now {rating.toFixed(1)}★</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#22c55e', animation: 'pulse 2s infinite' }}/>
+          <span style={{ fontSize: '9px', color: '#22c55e' }}>Live</span>
+        </div>
+      </div>
+
+      {/* Speedometer */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px' }}>
+        <div style={{ position: 'relative', width: '140px', height: '80px', flexShrink: 0 }}>
+          <svg width="140" height="85" viewBox="0 0 140 90" style={{ overflow: 'visible' }}>
+            {/* Track arc */}
+            <path
+              d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
+              fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" strokeLinecap="round"
+            />
+            {/* Progress arc */}
+            <path
+              d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
+              fill="none"
+              stroke="url(#ratingGrad)"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={`${strokeDash} ${circumference}`}
+              style={{ transition: 'stroke-dasharray 0.3s ease' }}
+            />
+            <defs>
+              <linearGradient id="ratingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f59e0b"/>
+                <stop offset="100%" stopColor="#6366f1"/>
+              </linearGradient>
+            </defs>
+            {/* Tick marks */}
+            {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
+              const angle = Math.PI * (1 - t)
+              const x1 = cx + (radius - 14) * Math.cos(angle)
+              const y1 = cy - (radius - 14) * Math.sin(angle)
+              const x2 = cx + (radius - 8) * Math.cos(angle)
+              const y2 = cy - (radius - 8) * Math.sin(angle)
+              return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
+            })}
+            {/* Labels */}
+            <text x={cx - radius - 4} y={cy + 14} fontSize="9" fill="#334155" textAnchor="middle">3.8</text>
+            <text x={cx + radius + 4} y={cy + 14} fontSize="9" fill="#334155" textAnchor="middle">5.0</text>
+            {/* Center value */}
+            <text x={cx} y={cy - 6} fontSize="22" fontWeight="700" fill={pulse ? '#818cf8' : 'white'} textAnchor="middle"
+              style={{ transition: 'fill 0.3s ease' }}>
+              {rating.toFixed(1)}
+            </text>
+            <text x={cx} y={cy + 8} fontSize="9" fill="#475569" textAnchor="middle">/ 5.0</text>
+          </svg>
+        </div>
+
+        {/* Feed événements */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px', minHeight: '72px', justifyContent: 'center' }}>
+          {feedItems.length === 0 && (
+            <p style={{ fontSize: '10px', color: '#1e293b', margin: 0 }}>Starting up...</p>
+          )}
+          {feedItems.map((ev, i) => (
+            <div key={ev.id} style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              opacity: i === 0 ? 1 : i === 1 ? 0.6 : 0.3,
+              animation: i === 0 ? 'slideIn 0.4s ease' : 'none',
+              transition: 'opacity 0.5s ease'
+            }}>
+              <span style={{ fontSize: '11px' }}>{ev.icon}</span>
+              <span style={{ fontSize: '10px', color: i === 0 ? ev.color : '#334155' }}>{ev.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Stars({ rating }) {
   return (
     <div style={{ display: 'flex', gap: '2px' }}>
@@ -47,7 +192,6 @@ function LiveDemo({ mounted }) {
     setVisible(false)
     setTypedReply('')
     setPhase('idle')
-
     setTimeout(() => { setVisible(true); setPhase('incoming') }, 300)
     setTimeout(() => setPhase('thinking'), 2400)
     setTimeout(() => {
@@ -58,10 +202,7 @@ function LiveDemo({ mounted }) {
         setTypedReply(currentReview.reply.slice(0, i))
         if (i >= currentReview.reply.length) {
           clearInterval(typingRef.current)
-          setTimeout(() => {
-            setPhase('done')
-            setRepliedCount(c => c + 1)
-          }, 400)
+          setTimeout(() => { setPhase('done'); setRepliedCount(c => c + 1) }, 400)
         }
       }, 20)
     }, 4200)
@@ -87,9 +228,13 @@ function LiveDemo({ mounted }) {
   useEffect(() => () => { clearInterval(typingRef.current); clearTimeout(cycleRef.current) }, [])
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '10px' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
+      {/* Rating Meter */}
+      <RatingMeter mounted={mounted} />
+
+      {/* Live preview header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: '10px', color: '#475569', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Live preview</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
           <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#22c55e', animation: 'pulse 2s infinite' }}/>
@@ -104,11 +249,7 @@ function LiveDemo({ mounted }) {
           { label: 'Replied', value: repliedCount, color: '#22c55e' },
           { label: 'Avg rating', value: '4.6★', color: '#818cf8' },
         ].map((s, i) => (
-          <div key={i} style={{
-            flex: 1, padding: '8px 10px', borderRadius: '10px',
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)'
-          }}>
+          <div key={i} style={{ flex: 1, padding: '8px 10px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <div style={{ fontSize: '14px', fontWeight: 600, color: s.color }}>{s.value}</div>
             <div style={{ fontSize: '10px', color: '#475569', marginTop: '1px' }}>{s.label}</div>
           </div>
@@ -124,14 +265,12 @@ function LiveDemo({ mounted }) {
         transform: visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.99)',
         transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        {/* Review */}
         <div style={{ padding: '14px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 width: '28px', height: '28px', borderRadius: '50%',
-                backgroundColor: review.color + '22',
-                border: `1px solid ${review.color}44`,
+                backgroundColor: review.color + '22', border: `1px solid ${review.color}44`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '10px', fontWeight: 600, color: review.color
               }}>{review.initials}</div>
@@ -143,26 +282,17 @@ function LiveDemo({ mounted }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Stars rating={review.rating} />
               {phase === 'incoming' && (
-                <span style={{
-                  fontSize: '9px', padding: '1px 6px', borderRadius: '4px',
-                  backgroundColor: 'rgba(245,158,11,0.12)', color: '#f59e0b',
-                  border: '1px solid rgba(245,158,11,0.2)', animation: 'fadeIn 0.3s ease'
-                }}>New</span>
+                <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', backgroundColor: 'rgba(245,158,11,0.12)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', animation: 'fadeIn 0.3s ease' }}>New</span>
               )}
               {phase === 'done' && (
-                <span style={{
-                  fontSize: '9px', padding: '1px 6px', borderRadius: '4px',
-                  backgroundColor: 'rgba(34,197,94,0.1)', color: '#22c55e',
-                  border: '1px solid rgba(34,197,94,0.2)',
-                }}>Replied ✓</span>
+                <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '4px', backgroundColor: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)' }}>Replied ✓</span>
               )}
             </div>
           </div>
           <p style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.6', margin: 0 }}>{review.text}</p>
         </div>
 
-        {/* AI zone */}
-        <div style={{ padding: '12px 16px', minHeight: '70px' }}>
+        <div style={{ padding: '12px 16px', minHeight: '60px' }}>
           {phase === 'idle' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -179,10 +309,7 @@ function LiveDemo({ mounted }) {
               <span style={{ fontSize: '11px', color: '#818cf8' }}>Replio AI is analyzing...</span>
               <div style={{ display: 'flex', gap: '3px', marginLeft: 'auto' }}>
                 {[0,1,2].map(i => (
-                  <div key={i} style={{
-                    width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#6366f1',
-                    animation: `bounce 1s ease-in-out ${i * 0.15}s infinite`
-                  }}/>
+                  <div key={i} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#6366f1', animation: `bounce 1s ease-in-out ${i * 0.15}s infinite` }}/>
                 ))}
               </div>
             </div>
@@ -204,7 +331,7 @@ function LiveDemo({ mounted }) {
       </div>
 
       {/* Progress dots */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginTop: '2px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
         {REVIEWS.map((_, i) => (
           <div key={i} style={{
             width: i === reviewIndex % REVIEWS.length ? '14px' : '5px',
@@ -220,6 +347,7 @@ function LiveDemo({ mounted }) {
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
       `}</style>
     </div>
   )
@@ -261,15 +389,15 @@ function Auth({ onBack }) {
         <div style={{ position: 'absolute', top: '-55px', right: '-55px', width: '230px', height: '230px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.07)', pointerEvents: 'none' }}/>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 70%)', pointerEvents: 'none' }}/>
 
-        <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '28px', position: 'relative', zIndex: 1 }}>
+        <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
           <img src="/replio-logo-wordmark-white.svg" alt="Replio" style={{ height: '30px' }} />
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1, overflowY: 'auto' }}>
           <LiveDemo mounted={mounted} />
         </div>
 
-        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '14px' }}>© 2025 Replio. All rights reserved.</p>
+        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2025 Replio. All rights reserved.</p>
       </div>
 
       {/* Panel droit */}
