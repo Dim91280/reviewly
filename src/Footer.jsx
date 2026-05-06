@@ -93,14 +93,8 @@ function Footer({ onStartFree }) {
           }}
         >
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 4h7a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6V4z" fill="white"/>
-                <path d="M6 12h4l4 8H10l-4-8z" fill="white" opacity="0.85"/>
-              </svg>
-            </div>
-            <span className="text-white font-medium text-sm">Replio</span>
-          </div>
+  <img src="/replio-logo-wordmark-white.svg" alt="Replio" style={{ height: '28px' }} />
+</div>
 
           <div className="flex gap-6 text-xs" style={{ color: '#334155' }}>
             <a href="#" className="transition-colors" style={{ color: '#334155' }}
