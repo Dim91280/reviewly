@@ -5,7 +5,7 @@ function Navbar({ onStartFree, onSignIn, session }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
+    const handleScroll = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -14,29 +14,44 @@ function Navbar({ onStartFree, onSignIn, session }) {
     <nav
       className="w-full flex items-center justify-between px-8 py-4 sticky top-0 z-50"
       style={{
-        backgroundColor: scrolled ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,1)',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(241,245,249,0.8)' : '1px solid transparent',
+        backgroundColor: scrolled ? 'rgba(255,255,255,0.90)' : 'rgba(15,23,42,0.5)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: scrolled ? '1px solid rgba(241,245,249,0.8)' : '1px solid rgba(99,102,241,0.1)',
         boxShadow: scrolled ? '0 1px 20px rgba(0,0,0,0.05)' : 'none',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.4s ease',
       }}
     >
+      {/* Logo */}
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#6366f1' }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         </div>
-        <span className="font-semibold text-gray-900 text-sm tracking-tight">Reviewly</span>
+        <span className="font-semibold text-sm tracking-tight" style={{ color: scrolled ? '#111827' : '#f1f5f9' }}>Reviewly</span>
       </div>
 
+      {/* Navigation */}
       <div className="hidden md:flex items-center gap-8 text-sm">
-        <a href="#features" className="transition-colors hover:text-gray-900" style={{ color: '#64748b' }}>Features</a>
-        <a href="#pricing" className="transition-colors hover:text-gray-900" style={{ color: '#64748b' }}>Pricing</a>
-        <a href="#testimonials" className="transition-colors hover:text-gray-900" style={{ color: '#64748b' }}>Testimonials</a>
+        <a href="#features" className="transition-colors" style={{ color: scrolled ? '#64748b' : '#94a3b8' }}
+          onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#111827' : '#f1f5f9'}
+          onMouseLeave={e => e.currentTarget.style.color = scrolled ? '#64748b' : '#94a3b8'}>
+          Features
+        </a>
+        <a href="#pricing" className="transition-colors" style={{ color: scrolled ? '#64748b' : '#94a3b8' }}
+          onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#111827' : '#f1f5f9'}
+          onMouseLeave={e => e.currentTarget.style.color = scrolled ? '#64748b' : '#94a3b8'}>
+          Pricing
+        </a>
+        <a href="#testimonials" className="transition-colors" style={{ color: scrolled ? '#64748b' : '#94a3b8' }}
+          onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#111827' : '#f1f5f9'}
+          onMouseLeave={e => e.currentTarget.style.color = scrolled ? '#64748b' : '#94a3b8'}>
+          Testimonials
+        </a>
       </div>
 
+      {/* CTA */}
       <div className="flex items-center gap-2">
         {session ? (
           <Link
@@ -53,9 +68,9 @@ function Navbar({ onStartFree, onSignIn, session }) {
             <button
               onClick={onSignIn}
               className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-              style={{ color: '#64748b' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#111827'}
-              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+              style={{ color: scrolled ? '#64748b' : '#94a3b8' }}
+              onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#111827' : '#f1f5f9'}
+              onMouseLeave={e => e.currentTarget.style.color = scrolled ? '#64748b' : '#94a3b8'}
             >
               Sign in
             </button>
