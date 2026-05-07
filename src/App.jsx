@@ -36,6 +36,15 @@ function Landing({ onStartFree, session }) {
   )
 }
 
+async function checkOnboarded(userId) {
+  const { data } = await supabase
+    .from('business_profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .maybeSingle()
+  return !!data
+}
+
 function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -47,15 +56,16 @@ function App() {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session)
       if (!session) {
         navigate('/', { replace: true })
       } else if (event === 'SIGNED_IN') {
-        // Premier login → onboarding, sinon dashboard
-        const onboarded = localStorage.getItem('replio_onboarded')
+        const onboarded = await checkOnboarded(session.user.id)
         if (!onboarded) {
           navigate('/onboarding', { replace: true })
+        } else {
+          navigate('/dashboard', { replace: true })
         }
       }
     })

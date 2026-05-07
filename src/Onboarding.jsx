@@ -17,7 +17,6 @@ const PLATFORMS = [
   )},
 ]
 
-// Icônes flottantes déco
 const FLOATERS = [
   { icon: '⭐', x: '8%', y: '15%', delay: 0, size: 22 },
   { icon: '💬', x: '88%', y: '12%', delay: 0.8, size: 20 },
@@ -88,45 +87,19 @@ function Step1({ onNext }) {
 
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)', textAlign: 'center' }}>
-      {/* Icône centrale avec glow */}
       <div style={{ position: 'relative', width: '90px', height: '90px', margin: '0 auto 28px' }}>
-        <div style={{
-          position: 'absolute', inset: '-12px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)',
-          animation: 'glowPulse 2s ease-in-out infinite',
-        }}/>
-        <div style={{
-          width: '90px', height: '90px', borderRadius: '24px',
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(129,140,248,0.1) 100%)',
-          border: '1px solid rgba(99,102,241,0.3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          animation: 'popIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both',
-          backdropFilter: 'blur(10px)',
-        }}>
+        <div style={{ position: 'absolute', inset: '-12px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)', animation: 'glowPulse 2s ease-in-out infinite' }}/>
+        <div style={{ width: '90px', height: '90px', borderRadius: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(129,140,248,0.1) 100%)', border: '1px solid rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'popIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.1s both', backdropFilter: 'blur(10px)' }}>
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="1.5">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
           </svg>
         </div>
       </div>
-
-      <h1 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '12px', animation: 'fadeUp 0.6s ease 0.2s both' }}>
-        Welcome to Replio 🎉
-      </h1>
-      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '380px', margin: '0 auto 36px', animation: 'fadeUp 0.6s ease 0.3s both' }}>
-        In the next 2 minutes, set up your account and generate your first AI reply.
-      </p>
-
-      {/* Promise cards */}
+      <h1 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '12px', animation: 'fadeUp 0.6s ease 0.2s both' }}>Welcome to Replio 🎉</h1>
+      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '380px', margin: '0 auto 36px', animation: 'fadeUp 0.6s ease 0.3s both' }}>In the next 2 minutes, set up your account and generate your first AI reply.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '380px', margin: '0 auto 36px', textAlign: 'left' }}>
         {promises.map((p, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: '14px',
-            padding: '14px 18px', borderRadius: '14px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(10px)',
-            animation: `fadeUp 0.5s ease ${0.4 + i * 0.1}s both`,
-          }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderRadius: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', animation: `fadeUp 0.5s ease ${0.4 + i * 0.1}s both` }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: `${p.color}15`, border: `1px solid ${p.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <span style={{ fontSize: '18px' }}>{p.icon}</span>
             </div>
@@ -134,19 +107,9 @@ function Step1({ onNext }) {
           </div>
         ))}
       </div>
-
-      <button onClick={onNext} style={{
-        background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-        color: 'white', border: 'none',
-        padding: '15px 40px', borderRadius: '14px', fontSize: '16px',
-        fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-        width: '100%', maxWidth: '380px', letterSpacing: '-0.2px',
-        boxShadow: '0 8px 32px rgba(99,102,241,0.35)',
-        animation: 'fadeUp 0.5s ease 0.7s both',
-      }}
+      <button onClick={onNext} style={{ background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)', color: 'white', border: 'none', padding: '15px 40px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', width: '100%', maxWidth: '380px', letterSpacing: '-0.2px', boxShadow: '0 8px 32px rgba(99,102,241,0.35)', animation: 'fadeUp 0.5s ease 0.7s both' }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.5)' }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.35)' }}
-      >
+        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.35)' }}>
         Let's get started →
       </button>
     </div>
@@ -160,56 +123,26 @@ function Step2({ onNext, businessName, setBusinessName, platform, setPlatform })
 
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>
-        Tell us about your business
-      </h2>
-      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>
-        This helps Replio personalize your AI replies.
-      </p>
-
-      {/* Business name */}
+      <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>Tell us about your business</h2>
+      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>This helps Replio personalize your AI replies.</p>
       <div style={{ marginBottom: '24px' }}>
-        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          Business name
-        </label>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Business name</label>
         <input type="text" placeholder="e.g. Le Petit Bistro" value={businessName}
           onChange={e => setBusinessName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && canContinue && onNext()}
-          style={{
-            width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '15px',
-            border: '1px solid rgba(255,255,255,0.1)', color: 'white',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            boxSizing: 'border-box', outline: 'none', transition: 'all 0.2s',
-            backdropFilter: 'blur(10px)',
-          }}
+          style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '15px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', backgroundColor: 'rgba(255,255,255,0.05)', boxSizing: 'border-box', outline: 'none', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}
           onFocus={e => { e.currentTarget.style.border = '1px solid rgba(99,102,241,0.6)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
           onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none' }}
-          autoFocus
-        />
+          autoFocus />
       </div>
-
-      {/* Platform */}
       <div style={{ marginBottom: '32px' }}>
-        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          Primary review platform
-        </label>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Primary review platform</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           {PLATFORMS.map(p => (
-            <button key={p.id} onClick={() => setPlatform(p.id)} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
-              border: platform === p.id ? `1.5px solid ${p.color}` : '1px solid rgba(255,255,255,0.08)',
-              backgroundColor: platform === p.id ? p.bg : 'rgba(255,255,255,0.03)',
-              transition: 'all 0.2s', outline: 'none', fontSize: '13px',
-              fontWeight: platform === p.id ? 600 : 400,
-              color: platform === p.id ? p.color : '#94a3b8',
-              boxShadow: platform === p.id ? `0 4px 16px ${p.color}20` : 'none',
-            }}
+            <button key={p.id} onClick={() => setPlatform(p.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderRadius: '12px', cursor: 'pointer', border: platform === p.id ? `1.5px solid ${p.color}` : '1px solid rgba(255,255,255,0.08)', backgroundColor: platform === p.id ? p.bg : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', outline: 'none', fontSize: '13px', fontWeight: platform === p.id ? 600 : 400, color: platform === p.id ? p.color : '#94a3b8', boxShadow: platform === p.id ? `0 4px 16px ${p.color}20` : 'none' }}
               onMouseEnter={e => { if (platform !== p.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' } }}
-              onMouseLeave={e => { if (platform !== p.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' } }}
-            >
-              {p.icon}
-              {p.label}
+              onMouseLeave={e => { if (platform !== p.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' } }}>
+              {p.icon}{p.label}
               {platform === p.id && (
                 <div style={{ marginLeft: 'auto', width: '18px', height: '18px', borderRadius: '50%', backgroundColor: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -219,18 +152,9 @@ function Step2({ onNext, businessName, setBusinessName, platform, setPlatform })
           ))}
         </div>
       </div>
-
-      <button onClick={onNext} disabled={!canContinue} style={{
-        background: canContinue ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)',
-        color: canContinue ? 'white' : '#475569', border: 'none',
-        padding: '15px 32px', borderRadius: '14px', fontSize: '15px',
-        fontWeight: 700, cursor: canContinue ? 'pointer' : 'not-allowed',
-        transition: 'all 0.2s', width: '100%',
-        boxShadow: canContinue ? '0 8px 24px rgba(99,102,241,0.3)' : 'none',
-      }}
+      <button onClick={onNext} disabled={!canContinue} style={{ background: canContinue ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)', color: canContinue ? 'white' : '#475569', border: 'none', padding: '15px 32px', borderRadius: '14px', fontSize: '15px', fontWeight: 700, cursor: canContinue ? 'pointer' : 'not-allowed', transition: 'all 0.2s', width: '100%', boxShadow: canContinue ? '0 8px 24px rgba(99,102,241,0.3)' : 'none' }}
         onMouseEnter={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(99,102,241,0.45)' } }}
-        onMouseLeave={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' } }}
-      >
+        onMouseLeave={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' } }}>
         Continue →
       </button>
     </div>
@@ -271,100 +195,49 @@ function Step3({ onNext, businessName, platform }) {
 
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>
-        Try your first AI reply
-      </h2>
-      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>
-        Paste a real review from your {platform} page and watch the magic. ✨
-      </p>
-
+      <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>Try your first AI reply</h2>
+      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Paste a real review from your {platform} page and watch the magic. ✨</p>
       {phase === 'idle' || phase === 'generating' ? (
         <>
-          {/* Stars */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Rating</label>
             <div style={{ display: 'flex', gap: '8px' }}>
               {[1,2,3,4,5].map(i => (
-                <button key={i} onClick={() => setRating(i)}
-                  onMouseEnter={() => setHoverRating(i)} onMouseLeave={() => setHoverRating(0)}
+                <button key={i} onClick={() => setRating(i)} onMouseEnter={() => setHoverRating(i)} onMouseLeave={() => setHoverRating(0)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', transition: 'transform 0.15s' }}
                   onMouseDown={e => e.currentTarget.style.transform = 'scale(0.85)'}
-                  onMouseUp={e => e.currentTarget.style.transform = 'scale(1.1)'}
-                >
-                  <svg width="32" height="32" viewBox="0 0 24 24"
-                    fill={(hoverRating || rating) >= i ? '#f59e0b' : 'rgba(255,255,255,0.1)'}
-                    style={{ transition: 'fill 0.15s', filter: (hoverRating || rating) >= i ? 'drop-shadow(0 0 6px rgba(245,158,11,0.5))' : 'none' }}>
+                  onMouseUp={e => e.currentTarget.style.transform = 'scale(1.1)'}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill={(hoverRating || rating) >= i ? '#f59e0b' : 'rgba(255,255,255,0.1)'} style={{ transition: 'fill 0.15s', filter: (hoverRating || rating) >= i ? 'drop-shadow(0 0 6px rgba(245,158,11,0.5))' : 'none' }}>
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Review text */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Review text</label>
-            <textarea placeholder="Paste or type a customer review here..." value={reviewText}
-              onChange={e => setReviewText(e.target.value)} rows={4}
-              style={{
-                width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px',
-                border: '1px solid rgba(255,255,255,0.1)', color: 'white',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                boxSizing: 'border-box', outline: 'none', resize: 'none', lineHeight: '1.6',
-                fontFamily: 'inherit', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
-              }}
+            <textarea placeholder="Paste or type a customer review here..." value={reviewText} onChange={e => setReviewText(e.target.value)} rows={4}
+              style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', backgroundColor: 'rgba(255,255,255,0.05)', boxSizing: 'border-box', outline: 'none', resize: 'none', lineHeight: '1.6', fontFamily: 'inherit', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}
               onFocus={e => { e.currentTarget.style.border = '1px solid rgba(99,102,241,0.6)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
-              onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none' }}
-            />
+              onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none' }} />
           </div>
-
-          <button onClick={generate} disabled={!canGenerate || phase === 'generating'} style={{
-            background: canGenerate ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)',
-            color: canGenerate ? 'white' : '#475569', border: 'none',
-            padding: '15px 32px', borderRadius: '14px', fontSize: '15px',
-            fontWeight: 700, cursor: canGenerate ? 'pointer' : 'not-allowed',
-            transition: 'all 0.2s', width: '100%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            boxShadow: canGenerate ? '0 8px 24px rgba(99,102,241,0.3)' : 'none',
-          }}>
-            {phase === 'generating' ? (
-              <>
-                <svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-                Replio AI is writing...
-              </>
-            ) : <><span>✨</span> Generate AI reply</>}
+          <button onClick={generate} disabled={!canGenerate || phase === 'generating'} style={{ background: canGenerate ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)', color: canGenerate ? 'white' : '#475569', border: 'none', padding: '15px 32px', borderRadius: '14px', fontSize: '15px', fontWeight: 700, cursor: canGenerate ? 'pointer' : 'not-allowed', transition: 'all 0.2s', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: canGenerate ? '0 8px 24px rgba(99,102,241,0.3)' : 'none' }}>
+            {phase === 'generating' ? (<><svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>Replio AI is writing...</>) : <><span>✨</span> Generate AI reply</>}
           </button>
         </>
       ) : (
         <div>
-          {/* Review recap */}
           <div style={{ padding: '14px 16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '12px' }}>
             <div style={{ display: 'flex', gap: '3px', marginBottom: '8px' }}>
-              {[1,2,3,4,5].map(i => (
-                <svg key={i} width="13" height="13" viewBox="0 0 24 24" fill={i <= rating ? '#f59e0b' : 'rgba(255,255,255,0.1)'}>
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              ))}
+              {[1,2,3,4,5].map(i => (<svg key={i} width="13" height="13" viewBox="0 0 24 24" fill={i <= rating ? '#f59e0b' : 'rgba(255,255,255,0.1)'}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>))}
             </div>
             <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: '1.6' }}>{reviewText}</p>
           </div>
-
-          {/* AI Reply — style terminal */}
-          <div style={{
-            borderRadius: '14px', overflow: 'hidden', marginBottom: '20px',
-            border: '1px solid rgba(99,102,241,0.3)',
-            boxShadow: '0 8px 32px rgba(99,102,241,0.15)',
-          }}>
-            {/* Terminal header */}
+          <div style={{ borderRadius: '14px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(99,102,241,0.3)', boxShadow: '0 8px 32px rgba(99,102,241,0.15)' }}>
             <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(99,102,241,0.15)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}/>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }}/>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }}/>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}/><div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }}/><div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }}/>
               <span style={{ fontSize: '11px', color: '#818cf8', marginLeft: '6px', fontWeight: 500 }}>AI Reply — {businessName}</span>
-              {phase === 'done' && <span style={{ marginLeft: 'auto', fontSize: '10px', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                Ready to use
-              </span>}
+              {phase === 'done' && <span style={{ marginLeft: 'auto', fontSize: '10px', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>Ready to use</span>}
             </div>
             <div style={{ padding: '16px', backgroundColor: 'rgba(15,23,42,0.8)', minHeight: '80px' }}>
               <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.8', margin: 0 }}>
@@ -373,30 +246,19 @@ function Step3({ onNext, businessName, platform }) {
               </p>
             </div>
           </div>
-
           {phase === 'done' && (
-            <button onClick={onNext} style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-              color: 'white', border: 'none',
-              padding: '15px 32px', borderRadius: '14px', fontSize: '15px',
-              fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', width: '100%',
-              boxShadow: '0 8px 24px rgba(99,102,241,0.35)',
-              animation: 'popIn 0.5s cubic-bezier(0.16,1,0.3,1)',
-            }}
+            <button onClick={onNext} style={{ background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)', color: 'white', border: 'none', padding: '15px 32px', borderRadius: '14px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', width: '100%', boxShadow: '0 8px 24px rgba(99,102,241,0.35)', animation: 'popIn 0.5s cubic-bezier(0.16,1,0.3,1)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(99,102,241,0.5)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.35)' }}
-            >
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.35)' }}>
               Go to my dashboard →
             </button>
           )}
         </div>
       )}
-
       {(phase === 'idle' || phase === 'generating') && (
         <button onClick={onNext} style={{ background: 'none', border: 'none', color: '#475569', fontSize: '13px', cursor: 'pointer', marginTop: '14px', width: '100%', transition: 'color 0.2s' }}
           onMouseEnter={e => e.currentTarget.style.color = '#64748b'}
-          onMouseLeave={e => e.currentTarget.style.color = '#475569'}
-        >
+          onMouseLeave={e => e.currentTarget.style.color = '#475569'}>
           Skip for now
         </button>
       )}
@@ -410,8 +272,7 @@ function Step4() {
   const [checkedItems, setCheckedItems] = useState([false, false, false, false])
 
   useEffect(() => {
-    setTimeout(() => setVisible(true), 80)
-    // Animation checklist séquentielle
+    setTimeout(() => setVisible(true), 80);
     [0, 1, 2, 3].forEach(i => {
       setTimeout(() => {
         setCheckedItems(prev => { const next = [...prev]; next[i] = true; return next })
@@ -428,74 +289,28 @@ function Step4() {
 
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)', textAlign: 'center' }}>
-      {/* Icône succès */}
       <div style={{ position: 'relative', width: '96px', height: '96px', margin: '0 auto 28px' }}>
         <div style={{ position: 'absolute', inset: '-16px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.2) 0%, transparent 70%)', animation: 'glowPulse 2s ease-in-out infinite' }}/>
-        <div style={{
-          width: '96px', height: '96px', borderRadius: '28px',
-          background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          animation: 'popIn 0.7s cubic-bezier(0.16,1,0.3,1)',
-          boxShadow: '0 16px 48px rgba(34,197,94,0.3)',
-        }}>
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
+        <div style={{ width: '96px', height: '96px', borderRadius: '28px', background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'popIn 0.7s cubic-bezier(0.16,1,0.3,1)', boxShadow: '0 16px 48px rgba(34,197,94,0.3)' }}>
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
       </div>
-
-      <h2 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '10px', animation: 'fadeUp 0.5s ease 0.2s both' }}>
-        You're all set! 🚀
-      </h2>
-      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '360px', margin: '0 auto 32px', animation: 'fadeUp 0.5s ease 0.3s both' }}>
-        Replio is ready. Manage your reputation and reply to every review in seconds.
-      </p>
-
-      {/* Checklist animée */}
+      <h2 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '10px', animation: 'fadeUp 0.5s ease 0.2s both' }}>You're all set! 🚀</h2>
+      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '360px', margin: '0 auto 32px', animation: 'fadeUp 0.5s ease 0.3s both' }}>Replio is ready. Manage your reputation and reply to every review in seconds.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '340px', margin: '0 auto 32px', textAlign: 'left' }}>
         {items.map((item, i) => (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
-            padding: '12px 16px', borderRadius: '12px',
-            backgroundColor: checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.08)' : 'rgba(34,197,94,0.08)') : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.2)' : 'rgba(34,197,94,0.2)') : 'rgba(255,255,255,0.06)'}`,
-            transition: 'all 0.4s ease',
-            transform: checkedItems[i] ? 'scale(1)' : 'scale(0.98)',
-          }}>
-            <div style={{
-              width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-              backgroundColor: checkedItems[i] ? item.color : 'rgba(255,255,255,0.1)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.3s ease',
-              boxShadow: checkedItems[i] ? `0 0 12px ${item.color}40` : 'none',
-            }}>
-              {checkedItems[i]
-                ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                : <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)' }}/>
-              }
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', backgroundColor: checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.08)' : 'rgba(34,197,94,0.08)') : 'rgba(255,255,255,0.03)', border: `1px solid ${checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.2)' : 'rgba(34,197,94,0.2)') : 'rgba(255,255,255,0.06)'}`, transition: 'all 0.4s ease', transform: checkedItems[i] ? 'scale(1)' : 'scale(0.98)' }}>
+            <div style={{ width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0, backgroundColor: checkedItems[i] ? item.color : 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', boxShadow: checkedItems[i] ? `0 0 12px ${item.color}40` : 'none' }}>
+              {checkedItems[i] ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> : <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)' }}/>}
             </div>
-            <span style={{ fontSize: '13px', color: checkedItems[i] ? (item.soon ? '#818cf8' : '#4ade80') : '#475569', fontWeight: checkedItems[i] ? 500 : 400, transition: 'color 0.3s ease' }}>
-              {item.text}
-            </span>
-            {item.soon && checkedItems[i] && (
-              <span style={{ marginLeft: 'auto', fontSize: '9px', color: '#6366f1', backgroundColor: 'rgba(99,102,241,0.15)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>Coming soon</span>
-            )}
+            <span style={{ fontSize: '13px', color: checkedItems[i] ? (item.soon ? '#818cf8' : '#4ade80') : '#475569', fontWeight: checkedItems[i] ? 500 : 400, transition: 'color 0.3s ease' }}>{item.text}</span>
+            {item.soon && checkedItems[i] && <span style={{ marginLeft: 'auto', fontSize: '9px', color: '#6366f1', backgroundColor: 'rgba(99,102,241,0.15)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>Coming soon</span>}
           </div>
         ))}
       </div>
-
-      <button onClick={() => navigate('/dashboard', { replace: true })} style={{
-        background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-        color: 'white', border: 'none',
-        padding: '16px 40px', borderRadius: '14px', fontSize: '16px',
-        fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s',
-        width: '100%', maxWidth: '340px',
-        boxShadow: '0 8px 32px rgba(99,102,241,0.35)',
-        animation: 'fadeUp 0.5s ease 1.8s both',
-      }}
+      <button onClick={() => navigate('/dashboard', { replace: true })} style={{ background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)', color: 'white', border: 'none', padding: '16px 40px', borderRadius: '14px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', width: '100%', maxWidth: '340px', boxShadow: '0 8px 32px rgba(99,102,241,0.35)', animation: 'fadeUp 0.5s ease 1.8s both' }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(99,102,241,0.5)' }}
-        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.35)' }}
-      >
+        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.35)' }}>
         Open my dashboard →
       </button>
     </div>
@@ -513,6 +328,24 @@ function Onboarding() {
 
   useEffect(() => { setTimeout(() => setFloatersVisible(true), 300) }, [])
 
+  const saveToSupabase = async (name, plt) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      await supabase.from('business_profiles').upsert({
+        user_id: user.id,
+        business_name: name || null,
+        tone: 'professional',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' })
+      // Garder localStorage pour la checklist dashboard (nom/plateforme)
+      if (name) localStorage.setItem('replio_business_name', name)
+      if (plt) localStorage.setItem('replio_platform', plt)
+    } catch (e) {
+      console.error('Failed to save profile:', e)
+    }
+  }
+
   const goNext = () => {
     if (animating) return
     setAnimating(true)
@@ -521,60 +354,35 @@ function Onboarding() {
       setStep(s => s + 1)
       setAnimating(false)
     }, 300)
-
-    if (step === 3) {
-      localStorage.setItem('replio_onboarded', '1')
-      if (businessName) localStorage.setItem('replio_business_name', businessName)
-      if (platform) localStorage.setItem('replio_platform', platform)
-    }
   }
 
+  // Sauvegarder dans Supabase quand on arrive à l'étape 3 (Done)
   useEffect(() => {
     if (step === 3) {
-      localStorage.setItem('replio_onboarded', '1')
-      if (businessName) localStorage.setItem('replio_business_name', businessName)
-      if (platform) localStorage.setItem('replio_platform', platform)
+      saveToSupabase(businessName, platform)
     }
   }, [step])
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
-
-      {/* Fond radial gradient */}
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 70%)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse 60% 40% at 80% 100%, rgba(129,140,248,0.08) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-
-      {/* Cercles décoratifs */}
       <div style={{ position: 'fixed', top: '-150px', right: '-150px', width: '400px', height: '400px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.1)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', top: '-80px', right: '-80px', width: '250px', height: '250px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.07)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', bottom: '-100px', left: '-100px', width: '300px', height: '300px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.08)', pointerEvents: 'none' }}/>
-
-      {/* Icônes flottantes */}
       <FloatingIcons visible={floatersVisible} />
-
       <div style={{ width: '100%', maxWidth: '480px', position: 'relative', zIndex: 1 }}>
-
-        {/* Logo */}
         <div style={{ marginBottom: '36px', display: 'flex', justifyContent: step === 0 ? 'center' : 'flex-start' }}>
           <img src="/replio-logo-wordmark-white.svg" alt="Replio" style={{ height: '30px' }} />
         </div>
-
-        {/* Step indicator */}
         {step > 0 && <StepIndicator current={step} />}
-
-        {/* Steps avec animation slide */}
-        <div style={{
-          opacity: animating ? 0 : 1,
-          transform: animating ? `translateX(${direction * 20}px)` : 'translateX(0)',
-          transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
-        }}>
+        <div style={{ opacity: animating ? 0 : 1, transform: animating ? `translateX(${direction * 20}px)` : 'translateX(0)', transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)' }}>
           {step === 0 && <Step1 onNext={goNext} />}
           {step === 1 && <Step2 onNext={goNext} businessName={businessName} setBusinessName={setBusinessName} platform={platform} setPlatform={setPlatform} />}
           {step === 2 && <Step3 onNext={goNext} businessName={businessName} platform={platform} />}
           {step === 3 && <Step4 />}
         </div>
       </div>
-
       <style>{`
         @keyframes popIn { from{opacity:0;transform:scale(0.75)} to{opacity:1;transform:scale(1)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
