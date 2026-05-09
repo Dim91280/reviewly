@@ -15,6 +15,7 @@ import DashboardPage from './DashboardPage'
 import Reviews from './Reviews'
 import Account from './Account'
 import Onboarding from './Onboarding'
+import ResetPassword from './ResetPassword'
 
 function ProtectedRoute({ session }) {
   if (!session) return <Navigate to="/auth" replace />
@@ -60,6 +61,8 @@ function App() {
       setSession(session)
       if (!session) {
         navigate('/', { replace: true })
+      } else if (event === 'PASSWORD_RECOVERY') {
+        navigate('/reset-password', { replace: true })
       } else if (event === 'SIGNED_IN') {
         const onboarded = await checkOnboarded(session.user.id)
         if (!onboarded) {
@@ -97,7 +100,8 @@ function App() {
           <Route path="/account" element={<Account />} />
         </Route>
       </Route>
-
+      
+<Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
