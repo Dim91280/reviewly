@@ -11,6 +11,15 @@ const TONES = [
   { id: 'luxury', label: 'Luxury', description: 'Elegant, refined and premium', icon: '✨' },
 ]
 
+const SECTORS = [
+  { id: 'restaurant', label: 'Restaurant & Bar', icon: '🍽️' },
+  { id: 'hotel', label: 'Hotel & Stay', icon: '🏨' },
+  { id: 'retail', label: 'Retail & Shop', icon: '🛍️' },
+  { id: 'beauty', label: 'Beauty & Wellness', icon: '💆' },
+  { id: 'health', label: 'Health & Medical', icon: '🏥' },
+  { id: 'other', label: 'Other', icon: '🏢' },
+]
+
 function Account() {
   const { session, subscription } = useOutletContext()
   const navigate = useNavigate()
@@ -24,6 +33,8 @@ function Account() {
 
   const [businessName, setBusinessName] = useState('')
   const [tone, setTone] = useState('professional')
+  const [sector, setSector] = useState('')
+  const [avoidWords, setAvoidWords] = useState('')
   const [savingTone, setSavingTone] = useState(false)
   const [toneSaved, setToneSaved] = useState(false)
 
@@ -44,14 +55,24 @@ function Account() {
 
   const loadBusinessProfile = async () => {
     const { data } = await supabase.from('business_profiles').select('*').eq('user_id', session.user.id).maybeSingle()
-    if (data) { setBusinessName(data.business_name || ''); setTone(data.tone || 'professional') }
+    if (data) {
+      setBusinessName(data.business_name || '')
+      setTone(data.tone || 'professional')
+      setSector(data.sector || '')
+      setAvoidWords(data.avoid_words || '')
+    }
   }
 
   const saveBusinessProfile = async () => {
     setSavingTone(true)
     setToneSaved(false)
     const { error } = await supabase.from('business_profiles').upsert({
-      user_id: session.user.id, business_name: businessName, tone, updated_at: new Date().toISOString(),
+      user_id: session.user.id,
+      business_name: businessName,
+      tone,
+      sector: sector || null,
+      avoid_words: avoidWords || null,
+      updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' })
     setSavingTone(false)
     if (!error) { setToneSaved(true); setTimeout(() => setToneSaved(false), 2500) }
@@ -112,9 +133,11 @@ function Account() {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#eef2ff' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
             </div>
-            <h2 className="text-sm font-semibold text-gray-900">AI Tone of Voice</h2>
+            <h2 className="text-sm font-semibold text-gray-900">AI Settings</h2>
           </div>
           <p className="text-xs text-gray-400 mb-5 ml-9">Customize how your AI replies sound to customers.</p>
+
+          {/* Business name */}
           <div className="mb-5">
             <label className="block text-xs font-medium text-gray-500 mb-1.5">Business name</label>
             <input type="text" placeholder="e.g. Le Petit Bistro" value={businessName} onChange={e => setBusinessName(e.target.value)}
@@ -124,6 +147,25 @@ function Account() {
               onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none' }} />
             <p className="text-xs text-gray-400 mt-1.5">Used to personalize AI replies for your business.</p>
           </div>
+
+          {/* Sector */}
+          <div className="mb-5">
+            <label className="block text-xs font-medium text-gray-500 mb-3">Business sector</label>
+            <div className="grid grid-cols-2 gap-2">
+              {SECTORS.map(s => (
+                <button key={s.id} onClick={() => setSector(s.id)} className="flex items-center gap-2 p-3 rounded-xl border transition-all text-left"
+                  style={{ borderColor: sector === s.id ? '#6366f1' : '#f1f5f9', backgroundColor: sector === s.id ? '#eef2ff' : '#f8fafc', boxShadow: sector === s.id ? '0 0 0 1px #6366f1' : 'none' }}
+                  onMouseEnter={e => { if (sector !== s.id) e.currentTarget.style.backgroundColor = '#f1f5f9' }}
+                  onMouseLeave={e => { if (sector !== s.id) e.currentTarget.style.backgroundColor = '#f8fafc' }}>
+                  <span style={{ fontSize: '15px' }}>{s.icon}</span>
+                  <span className="text-xs font-medium" style={{ color: sector === s.id ? '#6366f1' : '#374151' }}>{s.label}</span>
+                  {sector === s.id && <div className="ml-auto w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#6366f1' }}><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></div>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reply tone */}
           <div className="mb-5">
             <label className="block text-xs font-medium text-gray-500 mb-3">Reply tone</label>
             <div className="grid grid-cols-2 gap-2.5">
@@ -142,6 +184,8 @@ function Account() {
               ))}
             </div>
           </div>
+
+          {/* Preview */}
           <div className="rounded-xl p-3.5 mb-5" style={{ backgroundColor: '#f8fafc', border: '1px solid #f1f5f9' }}>
             <p className="text-xs font-medium text-gray-500 mb-1.5">Preview style</p>
             <p className="text-xs text-gray-600 italic">
@@ -153,6 +197,21 @@ function Account() {
               {tone === 'luxury' && '"We are most grateful for your valued feedback. Excellence is our standard, and your experience is our highest priority."'}
             </p>
           </div>
+
+          {/* Words to avoid */}
+          <div className="mb-5">
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              Words to avoid <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+            <input type="text" placeholder="e.g. competitor, discount, promo"
+              value={avoidWords} onChange={e => setAvoidWords(e.target.value)}
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border focus:outline-none transition-all"
+              style={{ borderColor: '#e5e7eb', color: '#111827' }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none' }} />
+            <p className="text-xs text-gray-400 mt-1.5">Separate words with commas. The AI will never use them in replies.</p>
+          </div>
+
           <button onClick={saveBusinessProfile} disabled={savingTone}
             className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl text-white transition-all disabled:opacity-50"
             style={{ backgroundColor: '#6366f1' }}
@@ -172,7 +231,6 @@ function Account() {
             </div>
 
           ) : subscription ? (
-            /* Abonnement actif */
             <>
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -202,7 +260,6 @@ function Account() {
             </>
 
           ) : isInTrial ? (
-            /* Trial en cours */
             <div>
               <div className="flex items-center gap-3 p-4 rounded-xl mb-4" style={{ backgroundColor: '#f8fafc', border: '1px solid #f1f5f9' }}>
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#eef2ff' }}>
@@ -212,9 +269,7 @@ function Account() {
                   <p className="text-sm font-semibold text-gray-900">Free trial</p>
                   <p className="text-xs text-gray-400">{daysLeft} day{daysLeft !== 1 ? 's' : ''} remaining — no credit card required</p>
                 </div>
-                <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg" style={{ backgroundColor: '#eef2ff', color: '#6366f1' }}>
-                  Trial
-                </span>
+                <span className="ml-auto text-xs font-semibold px-2.5 py-1 rounded-lg" style={{ backgroundColor: '#eef2ff', color: '#6366f1' }}>Trial</span>
               </div>
               <p className="text-xs text-gray-400 mb-3">Choose a plan to continue after your trial ends.</p>
               <button
@@ -228,7 +283,6 @@ function Account() {
             </div>
 
           ) : (
-            /* Trial expiré sans subscription */
             <div>
               <div className="flex items-center gap-3 p-4 rounded-xl mb-4" style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2' }}>
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#fef2f2' }}>
