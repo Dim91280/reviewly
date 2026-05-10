@@ -90,7 +90,7 @@ function AppLayout({ session }) {
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Your trial has expired</h2>
         <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>Choose a plan to continue using Replio.</p>
         <div className="space-y-3">
-          <button onClick={() => navigate('/')}
+          <button onClick={() => { window.location.href = 'https://replios.com/#pricing' }}
             className="w-full text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
             style={{ backgroundColor: '#6366f1' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
@@ -151,7 +151,7 @@ function AppLayout({ session }) {
 
       {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
-        <div onClick={() => navigate('/')} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
+        <div onClick={() => { window.location.href = 'https://replios.com' }} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <img src="/replio-logo-wordmark.svg" alt="Replio" height="30" style={{ height: '30px' }} />
         </div>
 
@@ -228,7 +228,7 @@ function AppLayout({ session }) {
               </div>
             </div>
             <button
-              onClick={() => { navigate('/'); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 300) }}
+              onClick={() => { window.location.href = 'https://replios.com/#pricing' }}
               className="text-xs font-semibold px-4 py-2 rounded-xl text-white transition-all"
               style={{ backgroundColor: '#6366f1' }}
               onMouseEnter={e => {
