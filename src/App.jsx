@@ -64,11 +64,15 @@ function App() {
       } else if (event === 'PASSWORD_RECOVERY') {
         navigate('/reset-password', { replace: true })
       } else if (event === 'SIGNED_IN') {
-        const onboarded = await checkOnboarded(session.user.id)
-        if (!onboarded) {
-          navigate('/onboarding', { replace: true })
-        } else {
-          navigate('/dashboard', { replace: true })
+        // Éviter de rediriger si on est déjà dans l'app
+        const currentPath = window.location.pathname
+        if (currentPath === '/auth' || currentPath === '/') {
+          const onboarded = await checkOnboarded(session.user.id)
+          if (!onboarded) {
+            navigate('/onboarding', { replace: true })
+          } else {
+            navigate('/dashboard', { replace: true })
+          }
         }
       }
     })
