@@ -151,11 +151,10 @@ function AppLayout({ session }) {
 
       {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
-        <div onClick={() => { window.location.href = 'https://replios.com' }} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
+        <div onClick={() => { window.location.href = 'https://replios.com/#home' }} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
           <img src="/replio-logo-wordmark.svg" alt="Replio" height="30" style={{ height: '30px' }} />
         </div>
 
-        {/* Plan badge */}
         <div className="px-2 mb-6">
           <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{
             backgroundColor: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
@@ -178,9 +177,9 @@ function AppLayout({ session }) {
 
       {/* Navbar mobile */}
       <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
-        <Link to="/" style={{ textDecoration: 'none' }} className="flex items-center gap-2">
+        <a href="https://replios.com/#home" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
           <img src="/replio-logo-wordmark.svg" alt="Replio" height="26" style={{ height: '26px' }} />
-        </Link>
+        </a>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
           {mobileMenuOpen ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

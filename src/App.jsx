@@ -36,13 +36,23 @@ function ProtectedRoute({ session }) {
 }
 
 function Landing({ onStartFree, session }) {
+  useEffect(() => {
+    if (window.location.hash === '#pricing') {
+      setTimeout(() => {
+        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar onStartFree={onStartFree} onSignIn={onStartFree} session={session} />
       <Hero onStartFree={onStartFree} />
       <Problems />
       <Features />
-      <Pricing onStartFree={onStartFree} />
+      <div id="pricing">
+        <Pricing onStartFree={onStartFree} />
+      </div>
       <Testimonials />
       <FAQ />
       <Footer onStartFree={onStartFree} />
@@ -73,10 +83,10 @@ function App() {
 
       if (session) {
         const path = window.location.pathname
-        if ((path === '/' || path === '/auth' || path === '') && !window.location.hash.includes('pricing')) {
-  const onboarded = await checkOnboarded(session.user.id)
-  navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
-}
+        if ((path === '/' || path === '/auth' || path === '') && !window.location.hash) {
+          const onboarded = await checkOnboarded(session.user.id)
+          navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
+        }
       }
 
       initializing = false
@@ -97,7 +107,7 @@ function App() {
 
       if (event === 'SIGNED_IN') {
         const currentPath = window.location.pathname
-        if (currentPath === '/auth' || currentPath === '/' || currentPath === '') {
+        if ((currentPath === '/auth' || currentPath === '/' || currentPath === '') && !window.location.hash) {
           const onboarded = await checkOnboarded(session.user.id)
           navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
         }
