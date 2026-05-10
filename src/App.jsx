@@ -73,10 +73,10 @@ function App() {
 
       if (session) {
         const path = window.location.pathname
-        if (path === '/' || path === '/auth' || path === '') {
-          const onboarded = await checkOnboarded(session.user.id)
-          navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
-        }
+        if ((path === '/' || path === '/auth' || path === '') && !window.location.hash.includes('pricing')) {
+  const onboarded = await checkOnboarded(session.user.id)
+  navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
+}
       }
 
       initializing = false
