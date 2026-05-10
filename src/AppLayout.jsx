@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { supabase } from './supabase'
 
@@ -8,6 +8,7 @@ function AppLayout({ session }) {
   const [subscription, setSubscription] = useState(null)
   const [subLoading, setSubLoading] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const retryTimerRef = useRef(null)
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
@@ -16,19 +17,25 @@ function AppLayout({ session }) {
   useEffect(() => { fetchSubscription(); fetchReviews() }, [])
   useEffect(() => {
     if (!subLoading && isSuccess) navigate('/dashboard', { replace: true })
-  }, [subLoading])
+  }, [subLoading, isSuccess])
   useEffect(() => { setMobileMenuOpen(false) }, [pathname])
+  useEffect(() => () => { clearTimeout(retryTimerRef.current) }, [])
 
   const fetchSubscription = async (retries = 8) => {
     const { data } = await supabase.from('subscriptions').select('*').eq('user_id', session.user.id).eq('status', 'active').maybeSingle()
-    if (!data && retries > 0 && isSuccess) { setTimeout(() => fetchSubscription(retries - 1), 2000); return }
+    if (!data && retries > 0 && isSuccess) {
+      retryTimerRef.current = setTimeout(() => fetchSubscription(retries - 1), 2000)
+      return
+    }
     setSubscription(data)
     setSubLoading(false)
   }
 
   const fetchReviews = async () => {
     const { data, error } = await supabase.from('reviews').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
-    if (!error) setReviews(data.map(r => ({ ...r, aiReply: null, loading: false, manualReply: undefined, showManual: false })))
+    if (!error && data) {
+      setReviews(data.map(r => ({ ...r, aiReply: null, loading: false, manualReply: undefined, showManual: false })))
+    }
     setLoading(false)
   }
 
@@ -42,11 +49,6 @@ function AppLayout({ session }) {
       console.error(err)
       setReviews(prev => prev.map(r => r.id === review.id ? { ...r, loading: false } : r))
     }
-  }
-
-  const markAsReplied = async (id) => {
-    await supabase.from('reviews').update({ replied: true }).eq('id', id)
-    setReviews(prev => prev.map(r => r.id === id ? { ...r, replied: true, aiReply: null, showManual: false, manualReply: undefined } : r))
   }
 
   const addReview = async (reviewData) => {
@@ -142,7 +144,7 @@ function AppLayout({ session }) {
     </>
   )
 
-  const outletContext = { reviews, setReviews, subscription, generateReply, markAsReplied, addReview, loading, pendingCount, session }
+  const outletContext = { reviews, setReviews, subscription, generateReply, addReview, loading, pendingCount, session }
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>

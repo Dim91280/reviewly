@@ -42,7 +42,7 @@ function Stars({ rating }) {
   )
 }
 
-function ReviewCard({ review, generateReply, markAsReplied, setReviews }) {
+function ReviewCard({ review, generateReply, setReviews }) {
   const [expanded, setExpanded] = useState(!review.replied)
   const [saving, setSaving] = useState(false)
 
@@ -309,7 +309,7 @@ function FilterBtn({ value, current, onChange }) {
 }
 
 function Reviews() {
-  const { reviews, setReviews, generateReply, markAsReplied, addReview, loading } = useOutletContext()
+  const { reviews, setReviews, generateReply, addReview, loading } = useOutletContext()
   const [filterPlatform, setFilterPlatform] = useState('All')
   const [filterRating, setFilterRating] = useState('All')
   const [filterStatus, setFilterStatus] = useState('All')
@@ -465,7 +465,6 @@ function Reviews() {
               key={review.id}
               review={review}
               generateReply={generateReply}
-              markAsReplied={markAsReplied}
               setReviews={setReviews}
             />
           ))}

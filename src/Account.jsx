@@ -65,8 +65,8 @@ function Account() {
   const connectGoogle = async () => {
     const { data: { session: s } } = await supabase.auth.getSession()
     const oauthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
-      client_id: '384919697301-pihlkma2tc9edj94btdg05g62hd544jl.apps.googleusercontent.com',
-      redirect_uri: 'https://wfjsynilylbjymwjusvi.supabase.co/functions/v1/google-oauth-callback',
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      redirect_uri: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/google-oauth-callback`,
       response_type: 'code',
       scope: 'https://www.googleapis.com/auth/business.manage',
       access_type: 'offline', prompt: 'consent', state: s.access_token,

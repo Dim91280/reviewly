@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from './supabase'
 import Navbar from './Navbar'
@@ -10,12 +10,25 @@ import FAQ from './FAQ'
 import Testimonials from './Testimonials'
 import Footer from './Footer'
 import Auth from './Auth'
-import AppLayout from './AppLayout'
-import DashboardPage from './DashboardPage'
-import Reviews from './Reviews'
-import Account from './Account'
-import Onboarding from './Onboarding'
-import ResetPassword from './ResetPassword'
+
+const AppLayout = lazy(() => import('./AppLayout'))
+const DashboardPage = lazy(() => import('./DashboardPage'))
+const Reviews = lazy(() => import('./Reviews'))
+const Account = lazy(() => import('./Account'))
+const Onboarding = lazy(() => import('./Onboarding'))
+const ResetPassword = lazy(() => import('./ResetPassword'))
+
+function Spinner() {
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+      <svg style={{ animation: 'spin 1s linear infinite' }} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5">
+        <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10"/>
+        <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
+      </svg>
+    </div>
+  )
+}
 
 function ProtectedRoute({ session }) {
   if (!session) return <Navigate to="/auth" replace />
@@ -52,13 +65,30 @@ function App() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    let initializing = true
+
+    const initialize = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
       setSession(session)
+
+      if (session) {
+        const path = window.location.pathname
+        if (path === '/' || path === '/auth' || path === '') {
+          const onboarded = await checkOnboarded(session.user.id)
+          navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
+        }
+      }
+
+      initializing = false
       setLoading(false)
-    })
+    }
+
+    initialize()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session)
+
+      if (initializing) return
 
       if (event === 'PASSWORD_RECOVERY') {
         navigate('/reset-password', { replace: true })
@@ -69,11 +99,7 @@ function App() {
         const currentPath = window.location.pathname
         if (currentPath === '/auth' || currentPath === '/' || currentPath === '') {
           const onboarded = await checkOnboarded(session.user.id)
-          if (!onboarded) {
-            navigate('/onboarding', { replace: true })
-          } else {
-            navigate('/dashboard', { replace: true })
-          }
+          navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
         }
       }
 
@@ -83,43 +109,37 @@ function App() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [navigate])
 
-  if (loading) return (
-  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-    <svg style={{ animation: 'spin 1s linear infinite' }} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5">
-      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
-      <path d="M12 2a10 10 0 0 1 10 10"/>
-      <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
-    </svg>
-  </div>
-)
+  if (loading) return <Spinner />
 
   return (
-    <Routes>
-      <Route path="/" element={<Landing onStartFree={() => navigate('/auth')} session={session} />} />
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        <Route path="/" element={<Landing onStartFree={() => navigate('/auth')} session={session} />} />
 
-      <Route path="/auth" element={
-        session
-          ? <Navigate to="/dashboard" replace />
-          : <Auth onBack={() => navigate('/')} />
-      } />
+        <Route path="/auth" element={
+          session
+            ? <Navigate to="/dashboard" replace />
+            : <Auth onBack={() => navigate('/')} />
+        } />
 
-      <Route element={<ProtectedRoute session={session} />}>
-        <Route path="/onboarding" element={<Onboarding />} />
-      </Route>
-
-      <Route element={<ProtectedRoute session={session} />}>
-        <Route element={<AppLayout session={session} />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/account" element={<Account />} />
+        <Route element={<ProtectedRoute session={session} />}>
+          <Route path="/onboarding" element={<Onboarding />} />
         </Route>
-      </Route>
 
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route element={<ProtectedRoute session={session} />}>
+          <Route element={<AppLayout session={session} />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/reviews" element={<Reviews />} />
+            <Route path="/account" element={<Account />} />
+          </Route>
+        </Route>
+
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   )
 }
 
