@@ -52,15 +52,20 @@ function App() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
+    })
 
-      if (!session) return
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session)
 
       if (event === 'PASSWORD_RECOVERY') {
         navigate('/reset-password', { replace: true })
-      } else if (event === 'SIGNED_IN') {
+        return
+      }
+
+      if (event === 'SIGNED_IN') {
         const currentPath = window.location.pathname
         if (currentPath === '/auth' || currentPath === '/' || currentPath === '') {
           const onboarded = await checkOnboarded(session.user.id)
@@ -71,12 +76,10 @@ function App() {
           }
         }
       }
-    })
 
-    // Fallback si onAuthStateChange tarde
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
+      if (event === 'SIGNED_OUT') {
+        navigate('/', { replace: true })
+      }
     })
 
     return () => subscription.unsubscribe()
