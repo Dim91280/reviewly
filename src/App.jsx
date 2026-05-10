@@ -52,21 +52,17 @@ function App() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
-    })
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session)
-      if (!session) {
-        navigate('/', { replace: true })
-      } else if (event === 'PASSWORD_RECOVERY') {
+      setLoading(false)
+
+      if (!session) return
+
+      if (event === 'PASSWORD_RECOVERY') {
         navigate('/reset-password', { replace: true })
       } else if (event === 'SIGNED_IN') {
-        // Éviter de rediriger si on est déjà dans l'app
         const currentPath = window.location.pathname
-        if (currentPath === '/auth' || currentPath === '/') {
+        if (currentPath === '/auth' || currentPath === '/' || currentPath === '') {
           const onboarded = await checkOnboarded(session.user.id)
           if (!onboarded) {
             navigate('/onboarding', { replace: true })
@@ -75,6 +71,12 @@ function App() {
           }
         }
       }
+    })
+
+    // Fallback si onAuthStateChange tarde
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
@@ -92,7 +94,6 @@ function App() {
           : <Auth onBack={() => navigate('/')} />
       } />
 
-      {/* Onboarding — protégé, hors AppLayout */}
       <Route element={<ProtectedRoute session={session} />}>
         <Route path="/onboarding" element={<Onboarding />} />
       </Route>
@@ -104,8 +105,8 @@ function App() {
           <Route path="/account" element={<Account />} />
         </Route>
       </Route>
-      
-<Route path="/reset-password" element={<ResetPassword />} />
+
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
