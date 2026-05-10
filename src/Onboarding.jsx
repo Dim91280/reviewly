@@ -17,6 +17,22 @@ const PLATFORMS = [
   )},
 ]
 
+const SECTORS = [
+  { id: 'restaurant', label: 'Restaurant & Bar', icon: '🍽️' },
+  { id: 'hotel', label: 'Hôtel & Hébergement', icon: '🏨' },
+  { id: 'retail', label: 'Commerce & Boutique', icon: '🛍️' },
+  { id: 'beauty', label: 'Beauté & Bien-être', icon: '💆' },
+  { id: 'health', label: 'Santé & Médical', icon: '🏥' },
+  { id: 'other', label: 'Autre', icon: '🏢' },
+]
+
+const TONES = [
+  { id: 'professional', label: 'Professionnel', desc: 'Formel et soigné', icon: '👔' },
+  { id: 'friendly', label: 'Chaleureux', desc: 'Humain et proche', icon: '😊' },
+  { id: 'enthusiastic', label: 'Dynamique', desc: 'Énergique et positif', icon: '⚡' },
+  { id: 'luxury', label: 'Premium', desc: 'Élégant et raffiné', icon: '✨' },
+]
+
 const FLOATERS = [
   { icon: '⭐', x: '8%', y: '15%', delay: 0, size: 22 },
   { icon: '💬', x: '88%', y: '12%', delay: 0.8, size: 20 },
@@ -45,7 +61,7 @@ function FloatingIcons({ visible }) {
 }
 
 function StepIndicator({ current }) {
-  const labels = ['Welcome', 'Business', 'AI Reply', 'Done']
+  const labels = ['Welcome', 'Business', 'AI Setup', 'Try AI', 'Done']
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0', marginBottom: '40px' }}>
       {labels.map((label, i) => (
@@ -156,6 +172,74 @@ function Step2({ onNext, businessName, setBusinessName, platform, setPlatform })
         onMouseEnter={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(99,102,241,0.45)' } }}
         onMouseLeave={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' } }}>
         Continue →
+      </button>
+    </div>
+  )
+}
+
+function Step2b({ onNext, sector, setSector, tone, setTone, avoidWords, setAvoidWords }) {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => { setTimeout(() => setVisible(true), 80) }, [])
+  const canContinue = sector && tone
+
+  return (
+    <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
+      <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>Configurez votre IA</h2>
+      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>Replio adapte chaque réponse à votre secteur et votre style.</p>
+
+      {/* Secteur */}
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Secteur d'activité</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {SECTORS.map(s => (
+            <button key={s.id} onClick={() => setSector(s.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '12px', cursor: 'pointer', border: sector === s.id ? '1.5px solid #6366f1' : '1px solid rgba(255,255,255,0.08)', backgroundColor: sector === s.id ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', outline: 'none', fontSize: '13px', fontWeight: sector === s.id ? 600 : 400, color: sector === s.id ? '#a5b4fc' : '#94a3b8', boxShadow: sector === s.id ? '0 4px 16px rgba(99,102,241,0.2)' : 'none', textAlign: 'left' }}
+              onMouseEnter={e => { if (sector !== s.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' } }}
+              onMouseLeave={e => { if (sector !== s.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' } }}>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>{s.icon}</span>
+              <span>{s.label}</span>
+              {sector === s.id && (
+                <div style={{ marginLeft: 'auto', width: '16px', height: '16px', borderRadius: '50%', backgroundColor: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Ton */}
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Style de réponse</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {TONES.map(t => (
+            <button key={t.id} onClick={() => setTone(t.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', borderRadius: '12px', cursor: 'pointer', border: tone === t.id ? '1.5px solid #6366f1' : '1px solid rgba(255,255,255,0.08)', backgroundColor: tone === t.id ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.03)', transition: 'all 0.2s', outline: 'none', textAlign: 'left' }}
+              onMouseEnter={e => { if (tone !== t.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' } }}
+              onMouseLeave={e => { if (tone !== t.id) { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' } }}>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>{t.icon}</span>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: tone === t.id ? 600 : 400, color: tone === t.id ? '#a5b4fc' : '#94a3b8' }}>{t.label}</div>
+                <div style={{ fontSize: '11px', color: '#475569', marginTop: '1px' }}>{t.desc}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mots à éviter */}
+      <div style={{ marginBottom: '32px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '4px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Mots à éviter <span style={{ color: '#475569', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optionnel)</span></label>
+        <p style={{ fontSize: '12px', color: '#475569', marginBottom: '8px', marginTop: 0 }}>Ex : concurrent, réduction, promo</p>
+        <input type="text" placeholder="Séparez les mots par des virgules..." value={avoidWords}
+          onChange={e => setAvoidWords(e.target.value)}
+          style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', fontSize: '14px', border: '1px solid rgba(255,255,255,0.1)', color: 'white', backgroundColor: 'rgba(255,255,255,0.05)', boxSizing: 'border-box', outline: 'none', transition: 'all 0.2s', backdropFilter: 'blur(10px)' }}
+          onFocus={e => { e.currentTarget.style.border = '1px solid rgba(99,102,241,0.6)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)' }}
+          onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none' }} />
+      </div>
+
+      <button onClick={onNext} disabled={!canContinue} style={{ background: canContinue ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)', color: canContinue ? 'white' : '#475569', border: 'none', padding: '15px 32px', borderRadius: '14px', fontSize: '15px', fontWeight: 700, cursor: canContinue ? 'pointer' : 'not-allowed', transition: 'all 0.2s', width: '100%', boxShadow: canContinue ? '0 8px 24px rgba(99,102,241,0.3)' : 'none' }}
+        onMouseEnter={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(99,102,241,0.45)' } }}
+        onMouseLeave={e => { if (canContinue) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' } }}>
+        Continuer →
       </button>
     </div>
   )
@@ -321,6 +405,9 @@ function Onboarding() {
   const [step, setStep] = useState(0)
   const [businessName, setBusinessName] = useState('')
   const [platform, setPlatform] = useState('')
+  const [sector, setSector] = useState('')
+  const [tone, setTone] = useState('professional')
+  const [avoidWords, setAvoidWords] = useState('')
   const [direction, setDirection] = useState(1)
   const [animating, setAnimating] = useState(false)
   const [floatersVisible, setFloatersVisible] = useState(false)
@@ -328,17 +415,18 @@ function Onboarding() {
 
   useEffect(() => { setTimeout(() => setFloatersVisible(true), 300) }, [])
 
-  const saveToSupabase = async (name, plt) => {
+  const saveToSupabase = async (name, plt, sec, tn, avoid) => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       await supabase.from('business_profiles').upsert({
         user_id: user.id,
         business_name: name || null,
-        tone: 'professional',
+        tone: tn || 'professional',
+        sector: sec || null,
+        avoid_words: avoid || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
-      // Garder localStorage pour la checklist dashboard (nom/plateforme)
       if (name) localStorage.setItem('replio_business_name', name)
       if (plt) localStorage.setItem('replio_platform', plt)
     } catch (e) {
@@ -356,12 +444,16 @@ function Onboarding() {
     }, 300)
   }
 
-  // Sauvegarder dans Supabase quand on arrive à l'étape 3 (Done)
+  // Sauvegarder quand on arrive à l'étape "Try AI" (step 3)
   useEffect(() => {
     if (step === 3) {
-      saveToSupabase(businessName, platform)
+      saveToSupabase(businessName, platform, sector, tone, avoidWords)
     }
   }, [step])
+
+  // step 0 = Welcome, 1 = Business, 2 = AI Setup, 3 = Try AI, 4 = Done
+  // StepIndicator reçoit step - 1 pour ignorer Welcome (step 0)
+  const indicatorStep = step > 0 ? step - 1 : null
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -379,8 +471,9 @@ function Onboarding() {
         <div style={{ opacity: animating ? 0 : 1, transform: animating ? `translateX(${direction * 20}px)` : 'translateX(0)', transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)' }}>
           {step === 0 && <Step1 onNext={goNext} />}
           {step === 1 && <Step2 onNext={goNext} businessName={businessName} setBusinessName={setBusinessName} platform={platform} setPlatform={setPlatform} />}
-          {step === 2 && <Step3 onNext={goNext} businessName={businessName} platform={platform} />}
-          {step === 3 && <Step4 />}
+          {step === 2 && <Step2b onNext={goNext} sector={sector} setSector={setSector} tone={tone} setTone={setTone} avoidWords={avoidWords} setAvoidWords={setAvoidWords} />}
+          {step === 3 && <Step3 onNext={goNext} businessName={businessName} platform={platform} />}
+          {step === 4 && <Step4 />}
         </div>
       </div>
       <style>{`

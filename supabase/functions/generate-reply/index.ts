@@ -15,6 +15,15 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
   luxury: 'Use an elegant, refined and premium tone. Be sophisticated and convey exclusivity and excellence.',
 }
 
+const SECTOR_CONTEXT: Record<string, string> = {
+  restaurant: 'This is a restaurant or bar. Mention the culinary experience, hospitality, or invite them back to try other dishes.',
+  hotel: 'This is a hotel or accommodation. Mention comfort, service quality, or invite them to return for their next stay.',
+  retail: 'This is a retail store or boutique. Mention product quality, the in-store experience, or invite them to discover new arrivals.',
+  beauty: 'This is a beauty or wellness business (salon, spa, etc.). Mention the quality of care, relaxation, or invite them to book again.',
+  health: 'This is a health or medical practice. Be reassuring, mention the quality of care, and maintain a respectful professional tone.',
+  other: '',
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -25,9 +34,10 @@ serve(async (req) => {
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
 
-    // Try to get user's tone preference
     let tone = 'professional'
     let businessName = bodyBusinessName || 'our business'
+    let sector = ''
+    let avoidWords = ''
 
     const authHeader = req.headers.get('Authorization')
     if (authHeader) {
@@ -45,24 +55,32 @@ serve(async (req) => {
           )
           const { data: profile } = await adminClient
             .from('business_profiles')
-            .select('tone, business_name')
+            .select('tone, business_name, sector, avoid_words')
             .eq('user_id', user.id)
             .maybeSingle()
           if (profile) {
             tone = profile.tone || 'professional'
             businessName = profile.business_name || bodyBusinessName || 'our business'
+            sector = profile.sector || ''
+            avoidWords = profile.avoid_words || ''
           }
         }
       } catch {
-        // Fallback to default tone if profile fetch fails
+        // Fallback to defaults
       }
     }
 
     const toneInstruction = TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.professional
+    const sectorContext = SECTOR_CONTEXT[sector] || ''
+    const avoidInstruction = avoidWords
+      ? `Never use these words or expressions in your reply: ${avoidWords}.`
+      : ''
 
     const prompt = `You are responding to a customer review on behalf of ${businessName}.
 
 Tone instruction: ${toneInstruction}
+${sectorContext ? `\nSector context: ${sectorContext}` : ''}
+${avoidInstruction ? `\n${avoidInstruction}` : ''}
 
 Write a reply (2-3 sentences max) to this ${rating}-star review from ${authorName || 'a customer'}:
 "${reviewText}"
