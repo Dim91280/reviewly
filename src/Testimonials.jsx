@@ -19,31 +19,31 @@ function Testimonials() {
 
   const testimonials = [
     {
-      name: "Marie Dubois",
+      name: "Marie D.",
       business: "Restaurant owner, Lyon",
       avatar: "MD",
       flag: "🇫🇷",
-      text: "Since I started using Replio, I reply to every review in under a minute. My rating went from 4.1 to 4.6 in 3 months.",
-      metric: "+0.5★",
-      metricLabel: "in 3 months"
+      text: "Since I started using Replio, I reply to every review in under a minute. My rating improved noticeably in just a few months.",
+      metric: "< 1min",
+      metricLabel: "to reply"
     },
     {
-      name: "Carlos Méndez",
+      name: "Carlos M.",
       business: "Hairdresser, Madrid",
       avatar: "CM",
       flag: "🇪🇸",
       text: "I used to miss negative reviews for days. Now I get an alert instantly and can respond before it damages my reputation.",
-      metric: "< 1min",
-      metricLabel: "response time"
+      metric: "100%",
+      metricLabel: "response rate"
     },
     {
-      name: "Thomas Becker",
-      business: "Plumber, Berlin",
+      name: "Thomas B.",
+      business: "Hotel manager, Berlin",
       avatar: "TB",
       flag: "🇩🇪",
-      text: "The SMS review request feature doubled my number of Google reviews in 6 weeks. My phone keeps ringing.",
-      metric: "2x",
-      metricLabel: "more reviews"
+      text: "The AI replies sound genuinely personal — my customers often think I wrote them myself. It saves me hours every week.",
+      metric: "2h",
+      metricLabel: "saved per week"
     }
   ]
 

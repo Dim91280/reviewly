@@ -77,27 +77,27 @@ function Pricing({ onStartFree }) {
         <div className="flex flex-col md:flex-row gap-5">
 
           {/* Solo */}
-<div
-  className="flex-1 rounded-2xl p-7"
-  style={{
-    backgroundColor: '#1e293b',
-    border: '1px solid rgba(99,102,241,0.15)',
-    opacity: inView ? 1 : 0,
-    transform: inView ? 'translateY(0)' : 'translateY(32px)',
-    transition: 'all 0.6s ease 0.1s',
-    cursor: 'default',
-  }}
-  onMouseEnter={e => {
-    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.5)'
-    e.currentTarget.style.boxShadow = '0 0 30px rgba(99,102,241,0.15)'
-    e.currentTarget.style.transform = 'translateY(-4px)'
-  }}
-  onMouseLeave={e => {
-    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.15)'
-    e.currentTarget.style.boxShadow = 'none'
-    e.currentTarget.style.transform = 'translateY(0)'
-  }}
->
+          <div
+            className="flex-1 rounded-2xl p-7"
+            style={{
+              backgroundColor: '#1e293b',
+              border: '1px solid rgba(99,102,241,0.15)',
+              opacity: inView ? 1 : 0,
+              transform: inView ? 'translateY(0)' : 'translateY(32px)',
+              transition: 'all 0.6s ease 0.1s',
+              cursor: 'default',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.border = '1px solid rgba(99,102,241,0.5)'
+              e.currentTarget.style.boxShadow = '0 0 30px rgba(99,102,241,0.15)'
+              e.currentTarget.style.transform = 'translateY(-4px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.border = '1px solid rgba(99,102,241,0.15)'
+              e.currentTarget.style.boxShadow = 'none'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
             <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#475569' }}>Solo</p>
             <div className="flex items-baseline gap-1 mb-1">
               <span className="text-4xl font-bold text-white">€19</span>
@@ -106,7 +106,12 @@ function Pricing({ onStartFree }) {
             <p className="text-xs mb-7" style={{ color: '#475569' }}>Perfect to get started</p>
 
             <ul className="space-y-3 mb-8">
-              {["Google monitoring", "Real-time alerts", "AI-powered replies", "1 location"].map((item, i) => (
+              {[
+                "Google Business Profile sync",
+                "Real-time review alerts",
+                "AI-powered replies",
+                "1 location",
+              ].map((item, i) => (
                 <li key={i} className="flex items-center gap-2.5 text-sm" style={{ color: '#94a3b8' }}>
                   <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(99,102,241,0.2)' }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -135,28 +140,28 @@ function Pricing({ onStartFree }) {
           </div>
 
           {/* Pro */}
-<div
-  className="flex-1 rounded-2xl p-7 relative"
-  style={{
-    background: 'linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%)',
-    border: '1px solid rgba(99,102,241,0.4)',
-    boxShadow: '0 0 40px rgba(99,102,241,0.15)',
-    opacity: inView ? 1 : 0,
-    transform: inView ? 'translateY(0)' : 'translateY(32px)',
-    transition: 'all 0.6s ease 0.2s',
-    cursor: 'default',
-  }}
-  onMouseEnter={e => {
-    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.8)'
-    e.currentTarget.style.boxShadow = '0 0 50px rgba(99,102,241,0.3)'
-    e.currentTarget.style.transform = 'translateY(-4px)'
-  }}
-  onMouseLeave={e => {
-    e.currentTarget.style.border = '1px solid rgba(99,102,241,0.4)'
-    e.currentTarget.style.boxShadow = '0 0 40px rgba(99,102,241,0.15)'
-    e.currentTarget.style.transform = 'translateY(0)'
-  }}
->
+          <div
+            className="flex-1 rounded-2xl p-7 relative"
+            style={{
+              background: 'linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%)',
+              border: '1px solid rgba(99,102,241,0.4)',
+              boxShadow: '0 0 40px rgba(99,102,241,0.15)',
+              opacity: inView ? 1 : 0,
+              transform: inView ? 'translateY(0)' : 'translateY(32px)',
+              transition: 'all 0.6s ease 0.2s',
+              cursor: 'default',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.border = '1px solid rgba(99,102,241,0.8)'
+              e.currentTarget.style.boxShadow = '0 0 50px rgba(99,102,241,0.3)'
+              e.currentTarget.style.transform = 'translateY(-4px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.border = '1px solid rgba(99,102,241,0.4)'
+              e.currentTarget.style.boxShadow = '0 0 40px rgba(99,102,241,0.15)'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
             {/* Badge Popular */}
             <span
               className="absolute top-5 right-5 text-xs font-semibold px-3 py-1 rounded-lg"
@@ -173,7 +178,13 @@ function Pricing({ onStartFree }) {
             <p className="text-xs mb-7" style={{ color: '#475569' }}>For growing businesses</p>
 
             <ul className="space-y-3 mb-8">
-              {["Everything in Solo", "SMS review requests", "Facebook + TripAdvisor", "Analytics dashboard", "3 locations"].map((item, i) => (
+              {[
+                "Everything in Solo",
+                "Advanced AI tone customization",
+                "Reputation analytics dashboard",
+                "Priority support",
+                "3 locations",
+              ].map((item, i) => (
                 <li key={i} className="flex items-center gap-2.5 text-sm" style={{ color: '#cbd5e1' }}>
                   <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(99,102,241,0.3)' }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>

@@ -20,11 +20,11 @@ function FAQ() {
   const faqs = [
     {
       q: "Which platforms do you support?",
-      a: "Currently Google Business Profile, TripAdvisor and Facebook. More platforms coming soon."
+      a: "Replio currently supports Google Business Profile. Connect your account via Google OAuth and your reviews sync automatically."
     },
     {
       q: "How does the AI reply feature work?",
-      a: "Our AI analyzes the review content and generates a personalized, professional reply in seconds. You can edit it before sending."
+      a: "Our AI analyzes the review content, your business sector, and your preferred tone to generate a personalized, professional reply in seconds. You can edit it before publishing."
     },
     {
       q: "Can I cancel anytime?",
@@ -40,7 +40,7 @@ function FAQ() {
     },
     {
       q: "What languages does the AI support?",
-      a: "The AI can generate replies in 12 European languages including English, French, Spanish, German, Italian, Portuguese and more."
+      a: "The AI can generate replies in the language of the review — French, English, Spanish, German, Italian and more are supported automatically."
     }
   ]
 

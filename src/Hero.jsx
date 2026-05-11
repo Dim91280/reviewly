@@ -20,24 +20,9 @@ function FloatingIcon({ style, children }) {
 
 function Hero({ onStartFree }) {
   const [visible, setVisible] = useState(false)
-  const [count1, setCount1] = useState(0)
-  const [count2, setCount2] = useState(0)
-  const [count3, setCount3] = useState(0)
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 100)
-    const duration = 1500
-    const steps = 40
-    const interval = duration / steps
-    let step = 0
-    const timer = setInterval(() => {
-      step++
-      setCount1(Math.min(Math.round((step / steps) * 500), 500))
-      setCount2(Math.min(Math.round((step / steps) * 48) / 10, 4.8))
-      setCount3(Math.min(Math.round((step / steps) * 12), 12))
-      if (step >= steps) clearInterval(timer)
-    }, interval)
-    return () => clearInterval(timer)
   }, [])
 
   return (
@@ -47,14 +32,6 @@ function Hero({ onStartFree }) {
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
-        }
-        @keyframes float2 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-        }
-        @keyframes float3 {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
         }
       `}</style>
 
@@ -100,19 +77,6 @@ function Hero({ onStartFree }) {
           </div>
         </FloatingIcon>
 
-        {/* TripAdvisor - milieu gauche */}
-        <FloatingIcon style={{ top: '45%', left: '4%', animationDuration: '4s', animationDelay: '1s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#00aa6c', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><path d="M12 4c-4 0-8 3-8 8h16c0-5-4-8-8-8z"/></svg>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>TripAdvisor</div>
-              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★★</div>
-            </div>
-          </div>
-        </FloatingIcon>
-
         {/* AI Reply - milieu droit */}
         <FloatingIcon style={{ top: '42%', right: '4%', animationDuration: '3.8s', animationDelay: '0.8s' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -122,19 +86,6 @@ function Hero({ onStartFree }) {
             <div style={{ textAlign: 'left' }}>
               <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>AI replied</div>
               <div style={{ fontSize: '9px', color: '#22c55e' }}>✓ Sent</div>
-            </div>
-          </div>
-        </FloatingIcon>
-
-        {/* Facebook - bas gauche */}
-        <FloatingIcon style={{ bottom: '22%', left: '6%', animationDuration: '4.2s', animationDelay: '1.5s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#1877f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Facebook</div>
-              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★☆</div>
             </div>
           </div>
         </FloatingIcon>
@@ -167,7 +118,7 @@ function Hero({ onStartFree }) {
           transition: 'all 0.6s ease'
         }}>
           <span style={{ color: '#6366f1' }}>●</span>
-          AI replies in 12 European languages
+          AI-powered replies for local businesses
         </div>
 
         {/* Titre */}
@@ -194,7 +145,7 @@ function Hero({ onStartFree }) {
           transform: visible ? 'translateY(0)' : 'translateY(20px)',
           transition: 'all 0.7s ease 0.2s'
         }}>
-          Monitor Google, Facebook and TripAdvisor from one dashboard. Reply in one click with AI.
+          Connect your Google Business Profile and reply to every review in one click with AI.
         </p>
 
         {/* CTA */}
@@ -230,9 +181,9 @@ function Hero({ onStartFree }) {
           transition: 'all 0.7s ease 0.5s'
         }}>
           {[
-            { value: `${count1}+`, label: 'businesses' },
-            { value: `${count2.toFixed(1)}★`, label: 'average rating' },
-            { value: `${count3}`, label: 'languages' },
+            { value: '< 1min', label: 'to reply' },
+            { value: '100%', label: 'response rate' },
+            { value: 'GDPR', label: 'compliant' },
           ].map((stat, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: '24px', fontWeight: '700', color: 'white' }}>{stat.value}</span>
@@ -272,8 +223,8 @@ function Hero({ onStartFree }) {
             </div>
             <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
               {[
-                { name: 'Marie D.', stars: 5, text: 'Service exceptionnel !', platform: 'Google', replied: true },
-                { name: 'Thomas B.', stars: 4, text: 'Très bon rapport qualité-prix.', platform: 'TripAdvisor', replied: false },
+                { name: 'Marie D.', stars: 5, platform: 'Google', replied: true },
+                { name: 'Thomas B.', stars: 4, platform: 'Google', replied: false },
               ].map((r, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: i === 0 ? '1px solid #f8fafc' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
