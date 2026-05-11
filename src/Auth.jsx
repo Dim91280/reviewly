@@ -376,14 +376,14 @@ function Auth({ onBack }) {
       if (error) {
         setMessage(error.message)
       } else {
-        supabase.functions.invoke('send-welcome-email', {
-  body: JSON.stringify({ email, name: email.split('@')[0] }),
-  headers: { 'Content-Type': 'application/json' }
-})
-        setSuccess(true)
-        setMessage('Check your email to confirm your account!')
-      }
+     supabase.functions.invoke('send-welcome-email', {
+        body: JSON.stringify({ email, name: email.split('@')[0] }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      setSuccess(true)
+      setMessage('Check your email to confirm your account!')
     }
+  }
     setLoading(false)
   }
 
