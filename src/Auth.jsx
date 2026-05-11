@@ -8,12 +8,12 @@ const REVIEWS = [
     reply: "Hi Thomas, thank you for your honest feedback. We're actively working on our staffing during peak hours. We'd love to welcome you back for a better experience!",
   },
   {
-    id: 2, author: 'Sophie L.', platform: 'TripAdvisor', rating: 5, initials: 'SL', color: '#00aa6c',
+    id: 2, author: 'Sophie L.', platform: 'Google', rating: 5, initials: 'SL', color: '#4285F4',
     text: "Absolutely amazing experience! The food was outstanding and service was impeccable.",
     reply: "Sophie, thank you so much for these kind words! It means the world to our team. We look forward to seeing you again very soon!",
   },
   {
-    id: 3, author: 'Marc D.', platform: 'Facebook', rating: 2, initials: 'MD', color: '#1877f2',
+    id: 3, author: 'Marc D.', platform: 'Google', rating: 2, initials: 'MD', color: '#4285F4',
     text: "Disappointed with our visit. The reservation was lost and we waited 40 minutes.",
     reply: "Marc, we sincerely apologize for this experience. This is not our standard. Please contact us directly so we can make it right for you.",
   },
@@ -33,9 +33,7 @@ function RatingMeter({ mounted }) {
   const [pulse, setPulse] = useState(false)
   const targetRating = 4.7
   const ratingRef = useRef(3.8)
-  const feedRef = useRef([])
 
-  // Rating progression
   useEffect(() => {
     if (!mounted) return
     const interval = setInterval(() => {
@@ -51,7 +49,6 @@ function RatingMeter({ mounted }) {
     return () => clearInterval(interval)
   }, [mounted])
 
-  // Feed events
   useEffect(() => {
     if (!mounted) return
     FEED_EVENTS.forEach(ev => {
@@ -68,8 +65,6 @@ function RatingMeter({ mounted }) {
   const radius = 52
   const circumference = Math.PI * radius
   const strokeDash = circumference * pct
-
-  // Arc semi-circle: starts at 180deg (left), ends at 0deg (right)
   const cx = 70, cy = 70
 
   return (
@@ -79,7 +74,6 @@ function RatingMeter({ mounted }) {
       border: '1px solid rgba(255,255,255,0.07)',
       marginBottom: '10px'
     }}>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
         <div>
           <p style={{ fontSize: '11px', color: '#475569', margin: 0 }}>Google rating · Le Petit Bistro</p>
@@ -96,16 +90,13 @@ function RatingMeter({ mounted }) {
         </div>
       </div>
 
-      {/* Speedometer */}
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px' }}>
         <div style={{ position: 'relative', width: '140px', height: '80px', flexShrink: 0 }}>
           <svg width="140" height="85" viewBox="0 0 140 90" style={{ overflow: 'visible' }}>
-            {/* Track arc */}
             <path
               d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
               fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" strokeLinecap="round"
             />
-            {/* Progress arc */}
             <path
               d={`M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`}
               fill="none"
@@ -121,7 +112,6 @@ function RatingMeter({ mounted }) {
                 <stop offset="100%" stopColor="#6366f1"/>
               </linearGradient>
             </defs>
-            {/* Tick marks */}
             {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
               const angle = Math.PI * (1 - t)
               const x1 = cx + (radius - 14) * Math.cos(angle)
@@ -130,10 +120,8 @@ function RatingMeter({ mounted }) {
               const y2 = cy - (radius - 8) * Math.sin(angle)
               return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.12)" strokeWidth="1.5"/>
             })}
-            {/* Labels */}
             <text x={cx - radius - 4} y={cy + 14} fontSize="9" fill="#334155" textAnchor="middle">3.8</text>
             <text x={cx + radius + 4} y={cy + 14} fontSize="9" fill="#334155" textAnchor="middle">5.0</text>
-            {/* Center value */}
             <text x={cx} y={cy - 6} fontSize="22" fontWeight="700" fill={pulse ? '#818cf8' : 'white'} textAnchor="middle"
               style={{ transition: 'fill 0.3s ease' }}>
               {rating.toFixed(1)}
@@ -142,7 +130,6 @@ function RatingMeter({ mounted }) {
           </svg>
         </div>
 
-        {/* Feed événements */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px', minHeight: '72px', justifyContent: 'center' }}>
           {feedItems.length === 0 && (
             <p style={{ fontSize: '10px', color: '#1e293b', margin: 0 }}>Starting up...</p>
@@ -229,11 +216,8 @@ function LiveDemo({ mounted }) {
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-
-      {/* Rating Meter */}
       <RatingMeter mounted={mounted} />
 
-      {/* Live preview header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: '10px', color: '#475569', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Live preview</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -242,7 +226,6 @@ function LiveDemo({ mounted }) {
         </div>
       </div>
 
-      {/* Stats */}
       <div style={{ display: 'flex', gap: '6px' }}>
         {[
           { label: 'Pending', value: Math.max(0, 3 - repliedCount), color: '#f59e0b' },
@@ -256,7 +239,6 @@ function LiveDemo({ mounted }) {
         ))}
       </div>
 
-      {/* Card review animée */}
       <div style={{
         borderRadius: '14px', overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.07)',
@@ -330,7 +312,6 @@ function LiveDemo({ mounted }) {
         </div>
       </div>
 
-      {/* Progress dots */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
         {REVIEWS.map((_, i) => (
           <div key={i} style={{
@@ -363,26 +344,24 @@ function Auth({ onBack }) {
   const [success, setSuccess] = useState(false)
   const [forgotSent, setForgotSent] = useState(false)
 
-const handleForgotPassword = async () => {
-  if (!email) { setMessage('Enter your email above first'); return }
-  setLoading(true)
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://replios.com/reset-password',
-  })
-  if (error) setMessage(error.message)
-  else { setForgotSent(true); setMessage('Reset link sent — check your inbox!') }
-  setLoading(false)
-}
+  const handleForgotPassword = async () => {
+    if (!email) { setMessage('Enter your email above first'); return }
+    setLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://replios.com/reset-password',
+    })
+    if (error) setMessage(error.message)
+    else { setForgotSent(true); setMessage('Reset link sent — check your inbox!') }
+    setLoading(false)
+  }
 
-const handleGoogleLogin = async () => {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: 'https://replios.com',
-    }
-  })
-  if (error) setMessage(error.message)
-}
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: 'https://replios.com' }
+    })
+    if (error) setMessage(error.message)
+  }
 
   useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
 
@@ -393,9 +372,16 @@ const handleGoogleLogin = async () => {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
     } else {
-      const { error } = await supabase.auth.signUp({ email, password })
-      if (error) setMessage(error.message)
-      else { setSuccess(true); setMessage('Check your email to confirm your account!') }
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        setMessage(error.message)
+      } else {
+        supabase.functions.invoke('send-welcome-email', {
+          body: { email, name: email.split('@')[0] }
+        })
+        setSuccess(true)
+        setMessage('Check your email to confirm your account!')
+      }
     }
     setLoading(false)
   }
@@ -419,7 +405,7 @@ const handleGoogleLogin = async () => {
           <LiveDemo mounted={mounted} />
         </div>
 
-        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2025 Replio. All rights reserved.</p>
+        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replio. All rights reserved.</p>
       </div>
 
       {/* Panel droit */}
@@ -502,7 +488,8 @@ const handleGoogleLogin = async () => {
               : isLogin ? 'Sign in →' : 'Create account →'
             }
           </button>
-<button onClick={handleGoogleLogin}
+
+          <button onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all mt-4"
             style={{ border: '1px solid #e5e7eb', color: '#374151', backgroundColor: 'white' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = '#6366f1'}
@@ -516,7 +503,7 @@ const handleGoogleLogin = async () => {
             </svg>
             Continue with Google
           </button>
-          
+
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1" style={{ height: '1px', backgroundColor: '#f1f5f9' }}/>
             <span className="text-xs" style={{ color: '#cbd5e1' }}>or</span>
