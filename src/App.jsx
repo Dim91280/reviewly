@@ -17,6 +17,8 @@ const Reviews = lazy(() => import('./Reviews'))
 const Account = lazy(() => import('./Account'))
 const Onboarding = lazy(() => import('./Onboarding'))
 const ResetPassword = lazy(() => import('./ResetPassword'))
+const Privacy = lazy(() => import('./Privacy'))
+const Terms = lazy(() => import('./Terms'))
 
 function Spinner() {
   return (
@@ -145,7 +147,9 @@ function App() {
             <Route path="/account" element={<Account />} />
           </Route>
         </Route>
-
+        
+<Route path="/privacy" element={<Privacy />} />
+<Route path="/terms" element={<Terms />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function useInView(threshold = 0.2) {
   const ref = useRef(null)
@@ -97,16 +98,16 @@ function Footer({ onStartFree }) {
 </div>
 
           <div className="flex gap-6 text-xs" style={{ color: '#334155' }}>
-            <a href="#" className="transition-colors" style={{ color: '#334155' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-              onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
-              Privacy
-            </a>
-            <a href="#" className="transition-colors" style={{ color: '#334155' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-              onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
-              Terms
-            </a>
+            <Link to="/privacy" className="transition-colors" style={{ color: '#334155' }}
+  onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+  onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
+  Privacy
+</Link>
+            <Link to="/terms" className="transition-colors" style={{ color: '#334155' }}
+  onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+  onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
+  Terms
+</Link>
             <a href="#" className="transition-colors" style={{ color: '#334155' }}
               onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
               onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
