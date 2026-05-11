@@ -108,16 +108,16 @@ function Footer({ onStartFree }) {
   onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
   Terms
 </Link>
-            <a href="#" className="transition-colors" style={{ color: '#334155' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-              onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
-              Contact
-            </a>
+            <a href="mailto:contact@replios.com" className="transition-colors" style={{ color: '#334155' }}
+  onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+  onMouseLeave={e => e.currentTarget.style.color = '#334155'}>
+  Contact
+</a>
           </div>
 
           <div className="flex items-center gap-4 text-xs" style={{ color: '#334155' }}>
             <span>GDPR compliant</span>
-            <span>© 2025 Replio</span>
+            <span>© 2026 Replio</span>
           </div>
         </div>
       </div>
