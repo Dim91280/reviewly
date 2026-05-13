@@ -375,10 +375,7 @@ function Auth({ onBack }) {
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) {
         setMessage(error.message)
-      } else {
-     supabase.functions.invoke('send-welcome-email', {
-  body: { email, name: email.split('@')[0] }
-})
+   } else {
       setSuccess(true)
       setMessage('Check your email to confirm your account!')
     }
