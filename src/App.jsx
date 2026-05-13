@@ -109,6 +109,7 @@ function App() {
 
       if (event === 'SIGNED_IN') {
         const currentPath = window.location.pathname
+        if (currentPath === '/onboarding') return
         if ((currentPath === '/auth' || currentPath === '/' || currentPath === '') && !window.location.hash) {
           const onboarded = await checkOnboarded(session.user.id)
           navigate(onboarded ? '/dashboard' : '/onboarding', { replace: true })
@@ -147,9 +148,9 @@ function App() {
             <Route path="/account" element={<Account />} />
           </Route>
         </Route>
-        
-<Route path="/privacy" element={<Privacy />} />
-<Route path="/terms" element={<Terms />} />
+
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
