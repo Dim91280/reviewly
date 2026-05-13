@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from './supabase'
 
 const PLATFORMS = [
@@ -111,7 +111,7 @@ function Step1({ onNext }) {
           </svg>
         </div>
       </div>
-      <h1 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '12px', animation: 'fadeUp 0.6s ease 0.2s both' }}>Welcome to Replio 🎉</h1>
+      <h1 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '12px', animation: 'fadeUp 0.6s ease 0.2s both' }}>Welcome to Replios 🎉</h1>
       <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '380px', margin: '0 auto 36px', animation: 'fadeUp 0.6s ease 0.3s both' }}>In the next 2 minutes, set up your account and generate your first AI reply.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '380px', margin: '0 auto 36px', textAlign: 'left' }}>
         {promises.map((p, i) => (
@@ -140,7 +140,7 @@ function Step2({ onNext, businessName, setBusinessName, platform, setPlatform })
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
       <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>Tell us about your business</h2>
-      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>This helps Replio personalize your AI replies.</p>
+      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>This helps Replios personalize your AI replies.</p>
       <div style={{ marginBottom: '24px' }}>
         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Business name</label>
         <input type="text" placeholder="e.g. Le Petit Bistro" value={businessName}
@@ -185,9 +185,8 @@ function Step2b({ onNext, sector, setSector, tone, setTone, avoidWords, setAvoid
   return (
     <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
       <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', letterSpacing: '-0.5px', marginBottom: '6px' }}>Configurez votre IA</h2>
-      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>Replio adapte chaque réponse à votre secteur et votre style.</p>
+      <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '28px' }}>Replios adapte chaque réponse à votre secteur et votre style.</p>
 
-      {/* Secteur */}
       <div style={{ marginBottom: '24px' }}>
         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Secteur d'activité</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -207,7 +206,6 @@ function Step2b({ onNext, sector, setSector, tone, setTone, avoidWords, setAvoid
         </div>
       </div>
 
-      {/* Ton */}
       <div style={{ marginBottom: '24px' }}>
         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Style de réponse</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -225,7 +223,6 @@ function Step2b({ onNext, sector, setSector, tone, setTone, avoidWords, setAvoid
         </div>
       </div>
 
-      {/* Mots à éviter */}
       <div style={{ marginBottom: '32px' }}>
         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginBottom: '4px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Mots à éviter <span style={{ color: '#475569', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optionnel)</span></label>
         <p style={{ fontSize: '12px', color: '#475569', marginBottom: '8px', marginTop: 0 }}>Ex : concurrent, réduction, promo</p>
@@ -306,7 +303,7 @@ function Step3({ onNext, businessName, platform }) {
               onBlur={e => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none' }} />
           </div>
           <button onClick={generate} disabled={!canGenerate || phase === 'generating'} style={{ background: canGenerate ? 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)' : 'rgba(255,255,255,0.06)', color: canGenerate ? 'white' : '#475569', border: 'none', padding: '15px 32px', borderRadius: '14px', fontSize: '15px', fontWeight: 700, cursor: canGenerate ? 'pointer' : 'not-allowed', transition: 'all 0.2s', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: canGenerate ? '0 8px 24px rgba(99,102,241,0.3)' : 'none' }}>
-            {phase === 'generating' ? (<><svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>Replio AI is writing...</>) : <><span>✨</span> Generate AI reply</>}
+            {phase === 'generating' ? (<><svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>Replios AI is writing...</>) : <><span>✨</span> Generate AI reply</>}
           </button>
         </>
       ) : (
@@ -380,7 +377,7 @@ function Step4() {
         </div>
       </div>
       <h2 style={{ fontSize: '30px', fontWeight: 800, color: 'white', letterSpacing: '-0.8px', marginBottom: '10px', animation: 'fadeUp 0.5s ease 0.2s both' }}>You're all set! 🚀</h2>
-      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '360px', margin: '0 auto 32px', animation: 'fadeUp 0.5s ease 0.3s both' }}>Replio is ready. Manage your reputation and reply to every review in seconds.</p>
+      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.7', maxWidth: '360px', margin: '0 auto 32px', animation: 'fadeUp 0.5s ease 0.3s both' }}>Replios is ready. Manage your reputation and reply to every review in seconds.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '340px', margin: '0 auto 32px', textAlign: 'left' }}>
         {items.map((item, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', backgroundColor: checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.08)' : 'rgba(34,197,94,0.08)') : 'rgba(255,255,255,0.03)', border: `1px solid ${checkedItems[i] ? (item.soon ? 'rgba(99,102,241,0.2)' : 'rgba(34,197,94,0.2)') : 'rgba(255,255,255,0.06)'}`, transition: 'all 0.4s ease', transform: checkedItems[i] ? 'scale(1)' : 'scale(0.98)' }}>
@@ -411,7 +408,26 @@ function Onboarding() {
   const [direction, setDirection] = useState(1)
   const [animating, setAnimating] = useState(false)
   const [floatersVisible, setFloatersVisible] = useState(false)
+  const [verifying, setVerifying] = useState(false)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  // Vérifier le token email si présent dans l'URL
+  useEffect(() => {
+    const tokenHash = searchParams.get('token_hash')
+    const type = searchParams.get('type')
+
+    if (tokenHash && type === 'signup') {
+      setVerifying(true)
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'signup' })
+        .then(({ error }) => {
+          if (error) console.error('Email verification error:', error)
+          setVerifying(false)
+          // Nettoyer l'URL sans recharger la page
+          window.history.replaceState({}, '', '/onboarding')
+        })
+    }
+  }, [])
 
   useEffect(() => { setTimeout(() => setFloatersVisible(true), 300) }, [])
 
@@ -442,16 +458,23 @@ function Onboarding() {
     }, 300)
   }
 
-  // Sauvegarder quand on arrive à l'étape "Try AI" (step 3)
   useEffect(() => {
     if (step === 4) {
       saveToSupabase(businessName, platform, sector, tone, avoidWords)
     }
   }, [step])
 
-  // step 0 = Welcome, 1 = Business, 2 = AI Setup, 3 = Try AI, 4 = Done
-  // StepIndicator reçoit step - 1 pour ignorer Welcome (step 0)
-  const indicatorStep = step > 0 ? step - 1 : null
+  if (verifying) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg style={{ animation: 'spin 1s linear infinite' }} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5">
+          <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+          <path d="M12 2a10 10 0 0 1 10 10"/>
+          <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
+        </svg>
+      </div>
+    )
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -463,7 +486,7 @@ function Onboarding() {
       <FloatingIcons visible={floatersVisible} />
       <div style={{ width: '100%', maxWidth: '480px', position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '36px', display: 'flex', justifyContent: step === 0 ? 'center' : 'flex-start' }}>
-          <img src="/replio-logo-wordmark-white.svg" alt="Replio" style={{ height: '30px' }} />
+          <img src="/replio-logo-wordmark-white.svg" alt="Replios" style={{ height: '30px' }} />
         </div>
         {step > 0 && <StepIndicator current={step} />}
         <div style={{ opacity: animating ? 0 : 1, transform: animating ? `translateX(${direction * 20}px)` : 'translateX(0)', transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)' }}>
