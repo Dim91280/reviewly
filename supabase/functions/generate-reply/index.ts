@@ -76,23 +76,24 @@ serve(async (req) => {
       ? `Never use these words or expressions in your reply: ${avoidWords}.`
       : ''
 
-    const prompt = `You are responding to a customer review on behalf of ${businessName}.
+    const prompt = `RÈGLE ABSOLUE : Détecte la langue de l'avis et réponds OBLIGATOIREMENT dans cette même langue. Avis en français = réponse en français. Avis en anglais = réponse en anglais.
 
-Tone instruction: ${toneInstruction}
-${sectorContext ? `\nSector context: ${sectorContext}` : ''}
-${avoidInstruction ? `\n${avoidInstruction}` : ''}
+Tu réponds aux avis clients au nom de ${businessName}.
 
-Write a reply (2-3 sentences max) to this ${rating}-star review from ${authorName || 'a customer'}:
+Ton : ${toneInstruction}
+${sectorContext ? `Contexte : ${sectorContext}` : ''}
+${avoidInstruction ? `${avoidInstruction}` : ''}
+
+Rédige une réponse (2-3 phrases max) à cet avis ${rating} étoile(s) :
 "${reviewText}"
 
-Rules:
-- Stay in character with the tone instruction
-- Be genuine, don't use generic phrases
-- If negative review (1-2 stars): acknowledge the issue and offer to make it right
-- If positive review (4-5 stars): express genuine gratitude
-- If neutral review (3 stars): acknowledge feedback and show commitment to improvement
-- Never mention the star rating explicitly
-- Reply directly, no preamble`
+Règles :
+- Sois authentique, évite les formules génériques
+- Avis négatif (1-2 étoiles) : reconnais le problème et propose de rectifier
+- Avis positif (4-5 étoiles) : exprime une vraie gratitude
+- Avis neutre (3 étoiles) : prends en compte le retour et montre ta volonté d'amélioration
+- Ne mentionne jamais le nombre d'étoiles
+- Réponds directement, sans introduction`
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
