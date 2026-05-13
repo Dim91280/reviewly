@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabase'
 
+// Whitelist beta — seuls ces emails peuvent s'inscrire
+const BETA_WHITELIST = [
+  'quelever.d@gmail.com',
+]
+
 const REVIEWS = [
   {
     id: 1, author: 'Thomas M.', platform: 'Google', rating: 3, initials: 'TM', color: '#4285F4',
@@ -78,7 +83,7 @@ function RatingMeter({ mounted }) {
         <div>
           <p style={{ fontSize: '11px', color: '#475569', margin: 0 }}>Google rating · Le Petit Bistro</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-            <span style={{ fontSize: '10px', color: '#334155' }}>Before Replio</span>
+            <span style={{ fontSize: '10px', color: '#334155' }}>Before Replios</span>
             <span style={{ fontSize: '10px', color: '#475569' }}>3.8★</span>
             <span style={{ fontSize: '10px', color: '#475569' }}>→</span>
             <span style={{ fontSize: '10px', color: '#22c55e', fontWeight: 600 }}>Now {rating.toFixed(1)}★</span>
@@ -288,7 +293,7 @@ function LiveDemo({ mounted }) {
               <div style={{ width: '16px', height: '16px', borderRadius: '4px', backgroundColor: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="#6366f1"><circle cx="12" cy="12" r="10"/></svg>
               </div>
-              <span style={{ fontSize: '11px', color: '#818cf8' }}>Replio AI is analyzing...</span>
+              <span style={{ fontSize: '11px', color: '#818cf8' }}>Replios AI is analyzing...</span>
               <div style={{ display: 'flex', gap: '3px', marginLeft: 'auto' }}>
                 {[0,1,2].map(i => (
                   <div key={i} style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#6366f1', animation: `bounce 1s ease-in-out ${i * 0.15}s infinite` }}/>
@@ -368,18 +373,34 @@ function Auth({ onBack }) {
   const handleSubmit = async () => {
     setLoading(true)
     setMessage('')
+
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
     } else {
-      const { data, error } = await supabase.auth.signUp({ email, password })
+      // Vérifier la whitelist beta
+      if (!BETA_WHITELIST.includes(email.toLowerCase().trim())) {
+        // Email non autorisé → enregistrer en waitlist
+        await supabase.from('waitlist').upsert(
+          { email: email.toLowerCase().trim() },
+          { onConflict: 'email' }
+        )
+        setSuccess(true)
+        setMessage("You're on the waitlist! We'll notify you as soon as Replios opens.")
+        setLoading(false)
+        return
+      }
+
+      // Email autorisé → inscription normale
+      const { error } = await supabase.auth.signUp({ email, password })
       if (error) {
         setMessage(error.message)
-   } else {
-      setSuccess(true)
-      setMessage('Check your email to confirm your account!')
+      } else {
+        setSuccess(true)
+        setMessage('Check your email to confirm your account!')
+      }
     }
-  }
+
     setLoading(false)
   }
 
@@ -395,14 +416,14 @@ function Auth({ onBack }) {
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 70%)', pointerEvents: 'none' }}/>
 
         <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-          <img src="/replio-logo-wordmark-white.svg" alt="Replio" style={{ height: '30px' }} />
+          <img src="/replio-logo-wordmark-white.svg" alt="Replios" style={{ height: '30px' }} />
         </div>
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1, overflowY: 'auto' }}>
           <LiveDemo mounted={mounted} />
         </div>
 
-        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replio. All rights reserved.</p>
+        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replios. All rights reserved.</p>
       </div>
 
       {/* Panel droit */}
@@ -410,7 +431,7 @@ function Auth({ onBack }) {
         <div className="w-full max-w-sm" style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.1s' }}>
 
           <div className="flex items-center gap-2 mb-10 md:hidden">
-            <img src="/replio-logo-wordmark.svg" alt="Replio" style={{ height: '28px' }} />
+            <img src="/replio-logo-wordmark.svg" alt="Replios" style={{ height: '28px' }} />
           </div>
 
           {!isLogin && (
@@ -482,7 +503,7 @@ function Auth({ onBack }) {
                   <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
                   Loading...
                 </span>
-              : isLogin ? 'Sign in →' : 'Create account →'
+              : isLogin ? 'Sign in →' : 'Join the waitlist →'
             }
           </button>
 
