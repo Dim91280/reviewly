@@ -427,8 +427,6 @@ function Onboarding() {
         avoid_words: avoid || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
-      if (name) localStorage.setItem('replio_business_name', name)
-      if (plt) localStorage.setItem('replio_platform', plt)
     } catch (e) {
       console.error('Failed to save profile:', e)
     }
@@ -446,7 +444,7 @@ function Onboarding() {
 
   // Sauvegarder quand on arrive à l'étape "Try AI" (step 3)
   useEffect(() => {
-    if (step === 3) {
+    if (step === 4) {
       saveToSupabase(businessName, platform, sector, tone, avoidWords)
     }
   }, [step])
