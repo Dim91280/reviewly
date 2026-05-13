@@ -137,9 +137,8 @@ function App() {
             : <Auth onBack={() => navigate('/')} />
         } />
 
-        <Route element={<ProtectedRoute session={session} />}>
-          <Route path="/onboarding" element={<Onboarding />} />
-        </Route>
+        {/* /onboarding non protégé pour permettre la vérification email par token */}
+        <Route path="/onboarding" element={<Onboarding />} />
 
         <Route element={<ProtectedRoute session={session} />}>
           <Route element={<AppLayout session={session} />}>
