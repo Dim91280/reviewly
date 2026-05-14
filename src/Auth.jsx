@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from './supabase'
 
 const REVIEWS = [
@@ -334,15 +335,46 @@ function LiveDemo({ mounted }) {
   )
 }
 
+// ── Panel gauche réutilisable ──────────────────────────────────────
+function LeftPanel({ mounted }) {
+  return (
+    <div className="hidden md:flex flex-col w-1/2 p-10 relative overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+      <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '350px', height: '350px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.1)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', top: '-55px', right: '-55px', width: '230px', height: '230px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.07)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 70%)', pointerEvents: 'none' }}/>
+      <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+        <img src="/replio-logo-wordmark-white.svg" alt="Replios" style={{ height: '30px' }} />
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1, overflowY: 'auto' }}>
+        <LiveDemo mounted={mounted} />
+      </div>
+      <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replios. All rights reserved.</p>
+    </div>
+  )
+}
+
 function Auth({ onBack }) {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [mounted, setMounted] = useState(false)
-  const [success, setSuccess] = useState(false)
   const [forgotSent, setForgotSent] = useState(false)
+
+  // OTP flow
+  const [phase, setPhase] = useState('form') // 'form' | 'otp'
+  const [otp, setOtp] = useState('')
+  const [otpError, setOtpError] = useState('')
+  const [resendSuccess, setResendSuccess] = useState(false)
+  const otpInputRef = useRef(null)
+
+  useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
+
+  useEffect(() => {
+    if (phase === 'otp') setTimeout(() => otpInputRef.current?.focus(), 100)
+  }, [phase])
 
   const handleForgotPassword = async () => {
     if (!email) { setMessage('Enter your email above first'); return }
@@ -363,8 +395,6 @@ function Auth({ onBack }) {
     if (error) setMessage(error.message)
   }
 
-  useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
-
   const handleSubmit = async () => {
     setLoading(true)
     setMessage('')
@@ -377,37 +407,168 @@ function Auth({ onBack }) {
       if (error) {
         setMessage(error.message)
       } else {
-        setSuccess(true)
-        setMessage('Check your email to confirm your account!')
+        setPhase('otp')
       }
     }
 
     setLoading(false)
   }
 
-  const switchMode = () => { setIsLogin(!isLogin); setMessage(''); setSuccess(false) }
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) { setOtpError('Enter the 6-digit code'); return }
+    setLoading(true)
+    setOtpError('')
 
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'signup',
+    })
+
+    if (error) {
+      setOtpError('Invalid or expired code. Please try again.')
+    } else {
+      navigate('/onboarding')
+    }
+
+    setLoading(false)
+  }
+
+  const handleResendOtp = async () => {
+    setLoading(true)
+    setOtpError('')
+    setResendSuccess(false)
+    const { error } = await supabase.auth.resend({ type: 'signup', email })
+    if (error) setOtpError(error.message)
+    else setResendSuccess(true)
+    setLoading(false)
+  }
+
+  const switchMode = () => { setIsLogin(!isLogin); setMessage(''); setPhase('form') }
+
+  // ── Écran OTP ──────────────────────────────────────────────────
+  if (phase === 'otp') {
+    return (
+      <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+        <LeftPanel mounted={mounted} />
+
+        <div className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="w-full max-w-sm" style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.1s' }}>
+
+            <div className="flex items-center gap-2 mb-10 md:hidden">
+              <img src="/replio-logo-wordmark.svg" alt="Replios" style={{ height: '28px' }} />
+            </div>
+
+            <div className="flex justify-center mb-6">
+              <div style={{
+                width: '52px', height: '52px', borderRadius: '14px',
+                backgroundColor: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.5">
+                  <rect x="2" y="4" width="20" height="16" rx="3"/>
+                  <path d="m2 7 10 7 10-7"/>
+                </svg>
+              </div>
+            </div>
+
+            <h1 className="text-2xl font-bold mb-1 text-center" style={{ color: '#111827', letterSpacing: '-0.5px' }}>
+              Check your email
+            </h1>
+            <p className="text-sm mb-1 text-center" style={{ color: '#94a3b8' }}>
+              We sent a 6-digit code to
+            </p>
+            <p className="text-sm font-medium mb-8 text-center" style={{ color: '#374151' }}>
+              {email}
+            </p>
+
+            <div>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: '#374151' }}>Verification code</label>
+              <input
+                ref={otpInputRef}
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                value={otp}
+                onChange={e => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 6)
+                  setOtp(val)
+                  setOtpError('')
+                }}
+                onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
+                className="w-full px-4 py-3 text-center text-xl font-bold rounded-xl transition-all focus:outline-none"
+                style={{
+                  border: `1px solid ${otpError ? '#ef4444' : '#e5e7eb'}`,
+                  color: '#111827',
+                  backgroundColor: 'white',
+                  letterSpacing: '0.3em',
+                }}
+                onFocus={e => e.currentTarget.style.border = `1px solid ${otpError ? '#ef4444' : '#6366f1'}`}
+                onBlur={e => e.currentTarget.style.border = `1px solid ${otpError ? '#ef4444' : '#e5e7eb'}`}
+              />
+              {otpError && (
+                <p className="text-xs mt-2" style={{ color: '#ef4444' }}>{otpError}</p>
+              )}
+              {resendSuccess && !otpError && (
+                <p className="text-xs mt-2" style={{ color: '#059669' }}>✓ New code sent!</p>
+              )}
+            </div>
+
+            <button
+              onClick={handleVerifyOtp}
+              disabled={loading || otp.length !== 6}
+              className="w-full text-white font-medium py-2.5 rounded-xl mt-5 text-sm disabled:opacity-50 transition-all"
+              style={{ backgroundColor: '#6366f1' }}
+              onMouseEnter={e => { if (!loading && otp.length === 6) { e.currentTarget.style.backgroundColor = '#4f46e5'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(99,102,241,0.3)' }}}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#6366f1'; e.currentTarget.style.boxShadow = 'none' }}
+            >
+              {loading
+                ? <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                    Verifying...
+                  </span>
+                : 'Verify →'
+              }
+            </button>
+
+            <p className="text-center text-xs mt-5" style={{ color: '#94a3b8' }}>
+              Didn't receive it?{' '}
+              <button
+                onClick={handleResendOtp}
+                disabled={loading}
+                className="font-medium"
+                style={{ color: '#6366f1' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#4f46e5'}
+                onMouseLeave={e => e.currentTarget.style.color = '#6366f1'}
+              >
+                Resend code
+              </button>
+            </p>
+
+            <p className="text-center mt-4">
+              <button
+                onClick={() => { setPhase('form'); setOtp(''); setOtpError(''); setResendSuccess(false) }}
+                className="text-xs transition-colors"
+                style={{ color: '#cbd5e1' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#64748b'}
+                onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}
+              >
+                ← Back
+              </button>
+            </p>
+
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Écran principal (form) ─────────────────────────────────────
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+      <LeftPanel mounted={mounted} />
 
-      {/* Panel gauche */}
-      <div className="hidden md:flex flex-col w-1/2 p-10 relative overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '350px', height: '350px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.1)', pointerEvents: 'none' }}/>
-        <div style={{ position: 'absolute', top: '-55px', right: '-55px', width: '230px', height: '230px', borderRadius: '50%', border: '1px solid rgba(99,102,241,0.07)', pointerEvents: 'none' }}/>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-
-        <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-          <img src="/replio-logo-wordmark-white.svg" alt="Replios" style={{ height: '30px' }} />
-        </div>
-
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1, overflowY: 'auto' }}>
-          <LiveDemo mounted={mounted} />
-        </div>
-
-        <p style={{ fontSize: '11px', color: '#1e293b', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replios. All rights reserved.</p>
-      </div>
-
-      {/* Panel droit */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm" style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.1s' }}>
 
@@ -465,11 +626,11 @@ function Auth({ onBack }) {
 
           {message && (
             <div className="mt-4 px-4 py-3 rounded-xl text-sm flex items-center gap-2" style={{
-              backgroundColor: success ? 'rgba(16,185,129,0.08)' : 'rgba(99,102,241,0.08)',
-              color: success ? '#059669' : '#6366f1',
-              border: `1px solid ${success ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)'}`
+              backgroundColor: forgotSent ? 'rgba(16,185,129,0.08)' : 'rgba(99,102,241,0.08)',
+              color: forgotSent ? '#059669' : '#6366f1',
+              border: `1px solid ${forgotSent ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)'}`
             }}>
-              {success ? '✓' : 'ℹ'} {message}
+              {forgotSent ? '✓' : 'ℹ'} {message}
             </div>
           )}
 
