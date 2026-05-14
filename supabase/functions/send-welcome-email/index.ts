@@ -1,10 +1,26 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SERVICE_ROLE_KEY')!
+const HOOK_SECRET = Deno.env.get('SEND_EMAIL_HOOK_SECRET')!
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+// Vérifie la signature HMAC du hook Supabase
+async function verifyHookSignature(req: Request, body: string): Promise<boolean> {
+  try {
+    const signature = req.headers.get('x-supabase-signature')
+    if (!signature) return false
+
+    const secret = HOOK_SECRET.replace('v1,whsec_', '')
+    const keyData = Uint8Array.from(atob(secret), c => c.charCodeAt(0))
+    const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify'])
+    const sigBytes = Uint8Array.from(atob(signature.replace('v1,', '')), c => c.charCodeAt(0))
+    const bodyBytes = new TextEncoder().encode(body)
+    return await crypto.subtle.verify('HMAC', key, sigBytes, bodyBytes)
+  } catch {
+    return false
+  }
 }
 
 Deno.serve(async (req) => {
@@ -18,121 +34,44 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Empty body' }), { status: 400, headers: corsHeaders })
     }
 
-    const { email, name } = JSON.parse(body)
+    // Vérifier la signature si le secret est défini
+    if (HOOK_SECRET) {
+      const valid = await verifyHookSignature(req, body)
+      if (!valid) {
+        return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401, headers: corsHeaders })
+      }
+    }
+
+    const payload = JSON.parse(body)
+
+    // Format du hook Supabase Send Email
+    // payload.email_data.token = le code OTP
+    // payload.email_data.email_action_type = 'signup' | 'recovery' | etc.
+    // payload.user.email = l'email du destinataire
+    const email = payload?.user?.email
+    const token = payload?.email_data?.token
+    const emailActionType = payload?.email_data?.email_action_type
+
     if (!email) {
       return new Response(JSON.stringify({ error: 'Missing email' }), { status: 400, headers: corsHeaders })
     }
 
-    const firstName = name?.split(' ')[0] || 'there'
+    // Ne traiter que les emails de signup et recovery
+    // Pour les autres types, laisser Supabase gérer
+    let subject = ''
+    let html = ''
 
-    // Récupérer le lien de confirmation
-    const generateRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/generate_link`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        'apikey': SUPABASE_SERVICE_ROLE_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type: 'signup',
-        email,
-        options: {
-          redirect_to: 'https://replios.com/dashboard',
-        },
-      }),
-    })
-
-    const generateData = await generateRes.json()
-    const confirmationUrl = generateData?.action_link || 'https://replios.com'
-
-    const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
-    <tr>
-      <td align="center">
-        <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-
-          <!-- Header -->
-          <tr>
-            <td style="background:#0f172a;padding:32px 40px;">
-              <img src="https://replios.com/replio-logo-wordmark-white.svg" alt="Replio" height="28" style="display:block;">
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:40px;">
-              <p style="margin:0 0 16px;font-size:22px;font-weight:700;color:#0f172a;">
-                Welcome to Replio, ${firstName} 👋
-              </p>
-              <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.7;">
-                One last step — confirm your email address to activate your account.
-              </p>
-
-              <!-- CTA confirmation -->
-              <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-                <tr>
-                  <td style="background:#6366f1;border-radius:10px;">
-                    <a href="${confirmationUrl}" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">
-                      Confirm my email →
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Steps -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:12px;padding:24px;margin-bottom:28px;">
-                <tr>
-                  <td>
-                    <p style="margin:0 0 16px;font-size:13px;font-weight:600;color:#0f172a;text-transform:uppercase;letter-spacing:0.05em;">Get started in 3 steps</p>
-                    ${[
-                      ['1', 'Connect your Google Business Profile', 'Link your account in the Account tab'],
-                      ['2', 'Set your reply tone', 'Tell Replio how you like to communicate'],
-                      ['3', 'Reply to your first review', 'One click and your AI reply is ready'],
-                    ].map(([num, title, desc]) => `
-                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
-                      <tr>
-                        <td width="28" valign="top">
-                          <div style="width:24px;height:24px;background:#6366f1;border-radius:50%;text-align:center;line-height:24px;font-size:11px;font-weight:700;color:white;">${num}</div>
-                        </td>
-                        <td style="padding-left:12px;">
-                          <p style="margin:0;font-size:14px;font-weight:600;color:#0f172a;">${title}</p>
-                          <p style="margin:2px 0 0;font-size:13px;color:#64748b;">${desc}</p>
-                        </td>
-                      </tr>
-                    </table>`).join('')}
-                  </td>
-                </tr>
-              </table>
-
-              <p style="margin:0;font-size:14px;color:#94a3b8;line-height:1.6;">
-                Your 14-day free trial starts after confirmation. No credit card needed.<br>
-                Questions? Reply to this email — I read every message.
-              </p>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="padding:24px 40px;border-top:1px solid #f1f5f9;">
-              <p style="margin:0;font-size:12px;color:#cbd5e1;">
-                © 2026 Replio · <a href="https://replios.com/privacy" style="color:#94a3b8;">Privacy</a> · <a href="https://replios.com/terms" style="color:#94a3b8;">Terms</a>
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
+    if (emailActionType === 'signup' || emailActionType === 'email_change') {
+      subject = 'Your Replios verification code'
+      html = getOtpEmailHtml(token)
+    } else if (emailActionType === 'recovery') {
+      subject = 'Reset your Replios password'
+      html = getRecoveryEmailHtml(payload?.email_data?.token_hash, payload?.email_data?.redirect_to)
+    } else {
+      // Autres types (invite, etc.) — email générique
+      subject = 'Action required on your Replios account'
+      html = getOtpEmailHtml(token)
+    }
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -141,24 +80,103 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Dimitri from Replio <contact@replios.com>',
+        from: 'Replios <noreply@replios.com>',
         to: [email],
-        subject: 'Confirm your Replio account 👋',
+        subject,
         html,
       }),
     })
 
     const data = await res.json()
-
     if (!res.ok) {
       console.error('Resend error:', data)
       return new Response(JSON.stringify({ error: data }), { status: 500, headers: corsHeaders })
     }
 
-    return new Response(JSON.stringify({ success: true, id: data.id }), { status: 200, headers: corsHeaders })
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders })
 
   } catch (err) {
     console.error('Unexpected error:', err)
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: corsHeaders })
   }
 })
+
+function getOtpEmailHtml(token: string): string {
+  return `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="480" cellpadding="0" cellspacing="0" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+          <tr>
+            <td style="background:#0f172a;padding:28px 40px;">
+              <span style="color:white;font-size:20px;font-weight:700;letter-spacing:-0.5px;">Replios</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px;">
+              <p style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;letter-spacing:-0.5px;">Verify your email</p>
+              <p style="margin:0 0 32px;font-size:15px;color:#94a3b8;line-height:1.6;">Enter this code in the Replios app to confirm your account and start your 14-day free trial.</p>
+              <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:24px;text-align:center;margin-bottom:32px;">
+                <p style="margin:0 0 8px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;font-weight:500;">Verification code</p>
+                <p style="margin:0;font-size:40px;font-weight:700;letter-spacing:12px;color:#111827;">${token}</p>
+              </div>
+              <p style="margin:0;font-size:13px;color:#cbd5e1;line-height:1.6;">This code expires in 1 hour. If you didn't create a Replios account, you can safely ignore this email.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid #f1f5f9;">
+              <p style="margin:0;font-size:12px;color:#cbd5e1;">© 2026 Replios · <a href="https://replios.com/privacy" style="color:#6366f1;text-decoration:none;">Privacy</a> · <a href="https://replios.com/terms" style="color:#6366f1;text-decoration:none;">Terms</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+function getRecoveryEmailHtml(tokenHash: string, redirectTo: string): string {
+  const resetUrl = `https://replios.com/reset-password?token_hash=${tokenHash}&type=recovery&redirect_to=${redirectTo || 'https://replios.com'}`
+  return `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="480" cellpadding="0" cellspacing="0" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+          <tr>
+            <td style="background:#0f172a;padding:28px 40px;">
+              <span style="color:white;font-size:20px;font-weight:700;letter-spacing:-0.5px;">Replios</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px;">
+              <p style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;letter-spacing:-0.5px;">Reset your password</p>
+              <p style="margin:0 0 32px;font-size:15px;color:#94a3b8;line-height:1.6;">Click the button below to reset your Replios password. This link expires in 1 hour.</p>
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                <tr>
+                  <td style="background:#6366f1;border-radius:10px;">
+                    <a href="${resetUrl}" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">
+                      Reset password →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0;font-size:13px;color:#cbd5e1;line-height:1.6;">If you didn't request a password reset, you can safely ignore this email.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid #f1f5f9;">
+              <p style="margin:0;font-size:12px;color:#cbd5e1;">© 2026 Replios · <a href="https://replios.com/privacy" style="color:#6366f1;text-decoration:none;">Privacy</a> · <a href="https://replios.com/terms" style="color:#6366f1;text-decoration:none;">Terms</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}

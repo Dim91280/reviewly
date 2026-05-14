@@ -1,255 +1,300 @@
 import { useEffect, useState } from 'react'
 
-function FloatingIcon({ style, children }) {
-  return (
-    <div style={{
-      position: 'absolute',
-      borderRadius: '16px',
-      padding: '10px',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(99,102,241,0.2)',
-      backgroundColor: 'rgba(15,23,42,0.8)',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-      animation: 'float 3s ease-in-out infinite',
-      ...style
-    }}>
-      {children}
-    </div>
-  )
-}
-
 function Hero({ onStartFree }) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    setTimeout(() => setVisible(true), 100)
+    setTimeout(() => setVisible(true), 80)
   }, [])
 
+  const fade = (delay = 0) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(22px)',
+    transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
+  })
+
   return (
-    <section className="relative overflow-hidden flex flex-col items-center text-center px-6 py-28 md:py-36" style={{ backgroundColor: '#0f172a' }}>
+    <section style={{
+      background: '#05080F',
+      padding: '96px 48px 80px',
+      textAlign: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
 
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
-
-      {/* Dégradé lumineux */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse 80% 50% at 50% -5%, rgba(99,102,241,0.35) 0%, transparent 70%)'
+      {/* Glows */}
+      <div style={{
+        position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)',
+        width: '900px', height: '600px',
+        background: 'radial-gradient(ellipse, rgba(99,102,241,0.22) 0%, transparent 65%)',
+        pointerEvents: 'none', zIndex: 0,
+      }} />
+      <div style={{
+        position: 'absolute', top: '200px', left: '20%',
+        width: '400px', height: '400px',
+        background: 'radial-gradient(ellipse, rgba(34,211,238,0.06) 0%, transparent 70%)',
+        pointerEvents: 'none', zIndex: 0,
       }} />
 
-      {/* Grille décorative */}
-      <div className="absolute inset-0 pointer-events-none opacity-10" style={{
-        backgroundImage: 'linear-gradient(rgba(99,102,241,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.3) 1px, transparent 1px)',
-        backgroundSize: '60px 60px'
-      }} />
-
-      {/* Icônes flottantes - desktop only */}
-      <div className="hidden md:block">
-        {/* Google - haut gauche */}
-        <FloatingIcon style={{ top: '15%', left: '8%', animationDuration: '3s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Google</div>
-              <div style={{ fontSize: '9px', color: '#fbbf24' }}>★★★★★</div>
-            </div>
-          </div>
-        </FloatingIcon>
-
-        {/* Notification - haut droit */}
-        <FloatingIcon style={{ top: '12%', right: '7%', animationDuration: '3.5s', animationDelay: '0.5s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>New review!</div>
-              <div style={{ fontSize: '9px', color: '#64748b' }}>2 seconds ago</div>
-            </div>
-          </div>
-        </FloatingIcon>
-
-        {/* AI Reply - milieu droit */}
-        <FloatingIcon style={{ top: '42%', right: '4%', animationDuration: '3.8s', animationDelay: '0.8s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #6366f1, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>AI replied</div>
-              <div style={{ fontSize: '9px', color: '#22c55e' }}>✓ Sent</div>
-            </div>
-          </div>
-        </FloatingIcon>
-
-        {/* Score - bas droit */}
-        <FloatingIcon style={{ bottom: '25%', right: '6%', animationDuration: '3.2s', animationDelay: '0.3s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '16px' }}>📈</span>
-            </div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: '#f1f5f9' }}>Score 95/100</div>
-              <div style={{ fontSize: '9px', color: '#22c55e' }}>↑ +5 this week</div>
-            </div>
-          </div>
-        </FloatingIcon>
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center">
+      <div style={{ position: 'relative', zIndex: 1 }}>
 
         {/* Badge */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          border: '1px solid rgba(99,102,241,0.4)',
-          color: '#a5b4fc', backgroundColor: 'rgba(99,102,241,0.1)',
-          borderRadius: '9999px', padding: '6px 16px',
-          fontSize: '12px', fontWeight: '500', marginBottom: '32px',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'all 0.6s ease'
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          padding: '5px 14px 5px 6px',
+          background: 'rgba(99,102,241,0.1)',
+          border: '1px solid rgba(99,102,241,0.25)',
+          borderRadius: '100px',
+          fontSize: '12px', color: '#818CF8', fontWeight: '500',
+          marginBottom: '36px', cursor: 'default',
+          ...fade(0),
         }}>
-          <span style={{ color: '#6366f1' }}>●</span>
-          AI-powered replies for local businesses
+          <span style={{
+            background: '#6366F1', color: '#fff',
+            fontSize: '11px', fontWeight: '700',
+            padding: '3px 10px', borderRadius: '100px', letterSpacing: '0.02em',
+          }}>New</span>
+          <span style={{
+            width: '5px', height: '5px', borderRadius: '50%', background: '#22D3EE',
+            animation: 'rpBlink 2s ease-in-out infinite', display: 'inline-block',
+          }} />
+          Chrome extension available — reply from Google Business
         </div>
 
-        {/* Titre */}
-        <h1 className="text-5xl md:text-7xl font-bold leading-tight max-w-4xl mb-6 tracking-tight text-white" style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.7s ease 0.1s'
+        {/* H1 */}
+        <h1 style={{
+          fontSize: 'clamp(42px, 6vw, 72px)',
+          fontWeight: '900',
+          letterSpacing: '-3px',
+          lineHeight: '1.02',
+          color: '#F1F5F9',
+          marginBottom: '8px',
+          ...fade(0.08),
         }}>
-          All your reviews.<br />
-          One place.{' '}
+          Your reviews,<br />
           <span style={{
-            background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
+            background: 'linear-gradient(135deg, #A5B4FC 0%, #818CF8 30%, #22D3EE 100%)',
             WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            2 minutes a day.
-          </span>
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>answered instantly.</span>
         </h1>
 
-        {/* Sous-titre */}
-        <p className="text-lg max-w-lg mb-10 leading-relaxed" style={{
-          color: '#94a3b8',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.7s ease 0.2s'
+        {/* Subtitle */}
+        <p style={{
+          fontSize: '18px', color: '#64748B', lineHeight: '1.65',
+          maxWidth: '500px', margin: '24px auto 48px', fontWeight: '400',
+          ...fade(0.16),
         }}>
-          Connect your Google Business Profile and reply to every review in one click with AI.
+          Replios is the AI assistant that turns{' '}
+          <span style={{ color: '#94A3B8', fontWeight: '500' }}>every Google review</span>{' '}
+          into a perfectly crafted reply — in your tone, your language, in seconds.
         </p>
 
-        {/* CTA */}
+        {/* CTAs */}
         <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.7s ease 0.3s'
+          display: 'flex', gap: '14px', justifyContent: 'center',
+          marginBottom: '20px', flexWrap: 'wrap',
+          ...fade(0.24),
         }}>
-          <button onClick={onStartFree}
-            className="text-white font-semibold px-8 py-3.5 rounded-xl text-base"
-            style={{ backgroundColor: '#6366f1', transition: 'all 0.2s' }}
+          <button
+            onClick={onStartFree}
+            style={{
+              padding: '14px 28px', fontSize: '15px', fontWeight: '700',
+              color: '#fff', background: '#6366F1', border: 'none',
+              borderRadius: '11px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              transition: 'all 0.2s',
+            }}
             onMouseEnter={e => {
-              e.currentTarget.style.backgroundColor = '#4f46e5'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(99,102,241,0.4)'
+              e.currentTarget.style.background = '#4F46E5'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.4)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.backgroundColor = '#6366f1'
+              e.currentTarget.style.background = '#6366F1'
               e.currentTarget.style.transform = 'translateY(0)'
               e.currentTarget.style.boxShadow = 'none'
             }}
           >
-            Try free 14 days →
+            🚀 Start free — 14 days
           </button>
-          <p className="text-xs" style={{ color: '#475569' }}>No credit card required · Cancel anytime</p>
+          <button style={{
+            padding: '14px 28px', fontSize: '15px', fontWeight: '500',
+            color: '#94A3B8', background: 'transparent',
+            border: '1px solid rgba(255,255,255,0.12)', borderRadius: '11px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            transition: 'all 0.2s',
+          }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#F1F5F9'
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'
+              e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = '#94A3B8'
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+              e.currentTarget.style.background = 'transparent'
+            }}
+          >
+            ▶ See it in action
+          </button>
         </div>
 
-        {/* Compteurs */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '48px', marginTop: '56px',
-          opacity: visible ? 1 : 0,
-          transition: 'all 0.7s ease 0.5s'
-        }}>
-          {[
-            { value: '< 1min', label: 'to reply' },
-            { value: '100%', label: 'response rate' },
-            { value: 'GDPR', label: 'compliant' },
-          ].map((stat, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={{ fontSize: '24px', fontWeight: '700', color: 'white' }}>{stat.value}</span>
-              <span style={{ fontSize: '11px', marginTop: '4px', color: '#475569' }}>{stat.label}</span>
-            </div>
-          ))}
-        </div>
+        <p style={{ fontSize: '12px', color: '#334155', letterSpacing: '0.02em', ...fade(0.28) }}>
+          No credit card · Cancel anytime · GDPR compliant
+        </p>
 
-        {/* Mockup dashboard */}
+        {/* Dashboard preview */}
         <div style={{
-          marginTop: '64px', width: '100%', maxWidth: '768px',
-          borderRadius: '16px', overflow: 'hidden',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0) perspective(1000px) rotateX(2deg)' : 'translateY(30px) perspective(1000px) rotateX(5deg)',
-          transition: 'all 0.9s ease 0.6s',
-          boxShadow: '0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.2)',
+          margin: '64px auto 0',
+          maxWidth: '900px',
+          position: 'relative',
+          ...fade(0.36),
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', backgroundColor: '#1e293b' }}>
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
-            <div style={{ flex: 1, margin: '0 16px', height: '20px', borderRadius: '6px', backgroundColor: '#0f172a', maxWidth: '200px' }} />
-          </div>
-          <div style={{ padding: '24px', backgroundColor: '#f8fafc' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              {[
-                { label: 'Reputation score', value: '95', sub: 'Excellent', color: '#22c55e' },
-                { label: 'Average rating', value: '4.8', sub: 'Based on 124 reviews', color: '#6366f1' },
-                { label: 'Response rate', value: '100%', sub: 'Great job', color: '#22c55e' },
-              ].map((s, i) => (
-                <div key={i} style={{ backgroundColor: 'white', borderRadius: '12px', padding: '12px', border: '1px solid #f1f5f9' }}>
-                  <p style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '4px' }}>{s.label}</p>
-                  <p style={{ fontSize: '20px', fontWeight: '700', color: '#111827' }}>{s.value}</p>
-                  <p style={{ fontSize: '10px', color: s.color }}>{s.sub}</p>
-                </div>
-              ))}
+          {/* Glow border */}
+          <div style={{
+            position: 'absolute', inset: '-2px', borderRadius: '18px',
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.4), rgba(34,211,238,0.15), transparent 60%)',
+            zIndex: 0, filter: 'blur(1px)',
+          }} />
+
+          {/* Window */}
+          <div style={{
+            position: 'relative', zIndex: 1,
+            background: '#0D1220',
+            borderRadius: '16px',
+            border: '1px solid rgba(255,255,255,0.08)',
+            overflow: 'hidden',
+          }}>
+            {/* Window bar */}
+            <div style={{
+              background: '#0A0E1A', padding: '14px 18px',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              borderBottom: '1px solid rgba(255,255,255,0.07)',
+            }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FF5F57' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFBD2E' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#28CA42' }} />
+              <div style={{
+                flex: 1, margin: '0 16px',
+                background: 'rgba(255,255,255,0.04)', borderRadius: '6px',
+                padding: '5px 12px', fontSize: '12px', color: '#334155',
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}>
+                <span style={{ color: '#22D3EE', fontSize: '13px' }}>🔒</span>
+                replios.com/dashboard
+              </div>
             </div>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-              {[
-                { name: 'Marie D.', stars: 5, platform: 'Google', replied: true },
-                { name: 'Thomas B.', stars: 4, platform: 'Google', replied: false },
-              ].map((r, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: i === 0 ? '1px solid #f8fafc' : 'none' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: '#6366f1' }}>
-                      {r.name[0]}
+
+            {/* Dashboard body */}
+            <div style={{ padding: '24px' }}>
+
+              {/* Stats row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { label: 'Replios Score', value: '87', trend: '↑ +4 pts this month', color: '#6366F1', trendColor: '#10B981' },
+                  { label: 'Average rating', value: '4.8 ★', trend: '↑ +0.3 vs last month', color: '#F59E0B', trendColor: '#10B981' },
+                  { label: 'Reply rate', value: '94%', trend: '↑ Industry avg: 42%', color: '#22D3EE', trendColor: '#10B981' },
+                  { label: 'Pending replies', value: '3', trend: '⚠ 1 negative review', color: '#10B981', trendColor: '#F59E0B' },
+                ].map((s, i) => (
+                  <div key={i} style={{
+                    background: 'rgba(255,255,255,0.025)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: '10px', padding: '16px 18px',
+                    borderTop: `2px solid ${s.color}`,
+                  }}>
+                    <div style={{ fontSize: '11px', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600', marginBottom: '10px' }}>{s.label}</div>
+                    <div style={{ fontSize: '26px', fontWeight: '800', letterSpacing: '-1px', color: '#F1F5F9', marginBottom: '4px' }}>{s.value}</div>
+                    <div style={{ fontSize: '11px', fontWeight: '600', color: s.trendColor }}>{s.trend}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mini charts */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                {[
+                  { title: 'Rating trend', badge: '+0.3 this month', badgeColor: '#10B981', bars: [60, 65, 55, 72, 78, 82, 88, 90], barColor: '#6366F1' },
+                  { title: 'Reviews this month', badge: '+12 new', badgeColor: '#22D3EE', bars: [40, 55, 50, 70, 65, 85, 75, 95], barColor: '#22D3EE' },
+                ].map((c, i) => (
+                  <div key={i} style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: '10px', padding: '16px',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '12px', color: '#64748B', fontWeight: '600' }}>{c.title}</span>
+                      <span style={{
+                        fontSize: '10px', padding: '2px 8px', borderRadius: '100px',
+                        background: `rgba(${c.badgeColor === '#10B981' ? '16,185,129' : '34,211,238'},0.1)`,
+                        color: c.badgeColor, fontWeight: '600',
+                      }}>{c.badge}</span>
                     </div>
-                    <div>
-                      <p style={{ fontSize: '11px', fontWeight: '600', color: '#111827' }}>{r.name}</p>
-                      <p style={{ fontSize: '10px', color: '#f59e0b' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</p>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', height: '56px' }}>
+                      {c.bars.map((h, j) => (
+                        <div key={j} style={{
+                          flex: 1, height: `${h}%`, borderRadius: '3px 3px 0 0',
+                          background: j === c.bars.length - 1 ? c.barColor : `${c.barColor}${Math.round(30 + j * 8).toString(16)}`,
+                          opacity: 0.7 + j * 0.04,
+                        }} />
+                      ))}
                     </div>
                   </div>
-                  <span style={{
-                    fontSize: '10px', fontWeight: '500', padding: '3px 10px', borderRadius: '6px',
-                    backgroundColor: r.replied ? '#f0fdf4' : '#fefce8',
-                    color: r.replied ? '#16a34a' : '#ca8a04'
+                ))}
+              </div>
+
+              {/* Reviews list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { initials: 'MR', name: 'Marie R.', text: 'Excellent accueil, plats savoureux. Je recommande vivement !', stars: 5, starColor: '#F59E0B', tag: '✓ Replied', tagStyle: { color: '#10B981', background: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)' }, ava: 'linear-gradient(135deg,#6366F1,#818CF8)' },
+                  { initials: 'TL', name: 'Thomas L.', text: 'Service un peu lent, mais la qualité est toujours au rendez-vous.', stars: 4, starColor: '#F59E0B', tag: 'Reply with AI', tagStyle: { color: '#818CF8', background: 'rgba(99,102,241,0.08)', borderColor: 'rgba(99,102,241,0.2)' }, ava: 'linear-gradient(135deg,#22D3EE,#0EA5E9)' },
+                  { initials: 'SB', name: 'Sophie B.', text: 'Déçue par la réponse du personnel lors de ma réclamation.', stars: 2, starColor: '#EF4444', tag: '⚡ Reply now', tagStyle: { color: '#F87171', background: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' }, ava: 'linear-gradient(135deg,#EF4444,#F97316)' },
+                ].map((r, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '8px', padding: '11px 14px',
                   }}>
-                    {r.replied ? '✓ Replied' : 'Pending'}
-                  </span>
-                </div>
-              ))}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        width: '30px', height: '30px', borderRadius: '50%',
+                        background: r.ava, display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: '11px', fontWeight: '700',
+                        color: '#fff', flexShrink: 0,
+                      }}>{r.initials}</div>
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: '600', color: '#CBD5E1', marginBottom: '2px' }}>{r.name}</div>
+                        <div style={{ fontSize: '11px', color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '280px' }}>{r.text}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                      <span style={{ fontSize: '11px', color: r.starColor, letterSpacing: '1px' }}>
+                        {'★'.repeat(r.stars)}{'★'.repeat(5 - r.stars).split('').map(() => '☆').join('')}
+                      </span>
+                      <span style={{
+                        padding: '4px 10px', borderRadius: '5px',
+                        fontSize: '11px', fontWeight: '600', cursor: 'pointer',
+                        border: '1px solid', ...r.tagStyle,
+                      }}>{r.tag}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
         </div>
 
       </div>
+
+      <style>{`
+        @keyframes rpBlink {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(0.8); }
+        }
+      `}</style>
+
     </section>
   )
 }
