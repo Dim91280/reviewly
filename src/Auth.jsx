@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabase'
 
-// Whitelist beta — seuls ces emails peuvent s'inscrire
-const BETA_WHITELIST = [
-  'quelever.d@gmail.com',
-]
-
 const REVIEWS = [
   {
     id: 1, author: 'Thomas M.', platform: 'Google', rating: 3, initials: 'TM', color: '#4285F4',
@@ -378,20 +373,6 @@ function Auth({ onBack }) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
     } else {
-      // Vérifier la whitelist beta
-      if (!BETA_WHITELIST.includes(email.toLowerCase().trim())) {
-        // Email non autorisé → enregistrer en waitlist
-        await supabase.from('waitlist').upsert(
-          { email: email.toLowerCase().trim() },
-          { onConflict: 'email' }
-        )
-        setSuccess(true)
-        setMessage("You're on the waitlist! We'll notify you as soon as Replios opens.")
-        setLoading(false)
-        return
-      }
-
-      // Email autorisé → inscription normale
       const { error } = await supabase.auth.signUp({ email, password })
       if (error) {
         setMessage(error.message)
@@ -503,7 +484,7 @@ function Auth({ onBack }) {
                   <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
                   Loading...
                 </span>
-              : isLogin ? 'Sign in →' : 'Join the waitlist →'
+              : isLogin ? 'Sign in →' : 'Create account →'
             }
           </button>
 
