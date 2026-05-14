@@ -4,7 +4,7 @@ import { supabase } from './supabase'
 const PRICE_SOLO = 'price_1TTicgB0aG7UyaOPr2HonNB7'
 const PRICE_PRO = 'price_1TTifSB0aG7UyaOPdWJfXheQ'
 
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.1) {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
   useEffect(() => {
@@ -77,16 +77,13 @@ function Pricing({ onStartFree }) {
 
   return (
     <section id="pricing" ref={sectionRef} style={{
-      padding: '100px 48px',
+      padding: 'clamp(60px, 8vw, 100px) clamp(20px, 5vw, 48px)',
       background: '#05080F',
-      position: 'relative',
-      overflow: 'hidden',
+      position: 'relative', overflow: 'hidden',
     }}>
 
-      {/* Glow */}
       <div style={{
-        position: 'absolute', top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: '700px', height: '400px',
         background: 'radial-gradient(ellipse, rgba(99,102,241,0.1) 0%, transparent 65%)',
         pointerEvents: 'none',
@@ -99,69 +96,62 @@ function Pricing({ onStartFree }) {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '10px',
             fontSize: '11px', fontWeight: '700', textTransform: 'uppercase',
-            letterSpacing: '0.12em', color: '#818CF8', marginBottom: '20px',
+            letterSpacing: '0.12em', color: '#818CF8', marginBottom: '16px',
           }}>
             <span style={{ width: '24px', height: '1px', background: '#6366F1', display: 'inline-block' }} />
             Pricing
             <span style={{ width: '24px', height: '1px', background: '#6366F1', display: 'inline-block' }} />
           </div>
           <h2 style={{
-            fontSize: 'clamp(32px, 4vw, 46px)', fontWeight: '900',
-            letterSpacing: '-2px', lineHeight: '1.05', color: '#F1F5F9',
-            marginBottom: '16px',
+            fontSize: 'clamp(28px, 5vw, 46px)', fontWeight: '900',
+            letterSpacing: '-2px', lineHeight: '1.05', color: '#F1F5F9', marginBottom: '12px',
           }}>
             Simple pricing.<br />Serious results.
           </h2>
-          <p style={{ fontSize: '16px', color: '#64748B', lineHeight: '1.65' }}>
+          <p style={{ fontSize: '15px', color: '#64748B', lineHeight: '1.65' }}>
             14-day free trial on every plan. No credit card required.
           </p>
         </div>
 
-        {/* Cards */}
+        {/* Cards — stacked on mobile, side by side on desktop */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '20px', marginTop: '60px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '20px', marginTop: '48px',
         }}>
 
           {/* Solo */}
           <div style={{
             background: '#0D1220',
             border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '18px', padding: '36px',
+            borderRadius: '18px', padding: '32px',
             transition: 'border-color 0.2s',
             ...fade(0.1),
           }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
           >
-            <div style={{
-              fontSize: '12px', fontWeight: '700', textTransform: 'uppercase',
-              letterSpacing: '0.1em', color: '#475569', marginBottom: '12px',
-            }}>Solo</div>
-
+            <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#475569', marginBottom: '12px' }}>Solo</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginBottom: '6px' }}>
-              <span style={{ fontSize: '22px', fontWeight: '600', color: '#64748B', alignSelf: 'flex-start', marginTop: '8px' }}>€</span>
-              <span style={{ fontSize: '56px', fontWeight: '900', letterSpacing: '-3px', color: '#F1F5F9' }}>19</span>
+              <span style={{ fontSize: '20px', fontWeight: '600', color: '#64748B', alignSelf: 'flex-start', marginTop: '6px' }}>€</span>
+              <span style={{ fontSize: 'clamp(44px, 10vw, 56px)', fontWeight: '900', letterSpacing: '-3px', color: '#F1F5F9' }}>19</span>
               <span style={{ fontSize: '14px', color: '#475569', marginLeft: '4px' }}>/month</span>
             </div>
-
             <p style={{
               fontSize: '13px', color: '#475569', lineHeight: '1.55',
-              marginBottom: '28px', paddingBottom: '28px',
+              marginBottom: '24px', paddingBottom: '24px',
               borderBottom: '1px solid rgba(255,255,255,0.07)',
             }}>
               For solo owners managing one location. Everything you need to take control of your reputation.
             </p>
-
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '28px' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
               {soloFeatures.map((ft, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#94A3B8' }}>
-                  <span style={{ fontSize: '14px', color: '#10B981', flexShrink: 0 }}>✓</span>
+                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', color: '#94A3B8' }}>
+                  <span style={{ fontSize: '14px', color: '#10B981', flexShrink: 0, marginTop: '1px' }}>✓</span>
                   {ft}
                 </li>
               ))}
             </ul>
-
             <button
               onClick={() => handleCheckout(PRICE_SOLO, 'solo')}
               disabled={loading === 'solo'}
@@ -172,8 +162,6 @@ function Pricing({ onStartFree }) {
                 background: 'rgba(255,255,255,0.04)', color: '#94A3B8',
                 transition: 'all 0.2s', opacity: loading === 'solo' ? 0.5 : 1,
               }}
-              onMouseEnter={e => { if (loading !== 'solo') { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#F1F5F9' } }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#94A3B8' }}
             >
               {loading === 'solo' ? 'Loading...' : 'Start free trial'}
             </button>
@@ -183,7 +171,7 @@ function Pricing({ onStartFree }) {
           <div style={{
             background: 'linear-gradient(160deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04))',
             border: '1px solid rgba(99,102,241,0.35)',
-            borderRadius: '18px', padding: '36px',
+            borderRadius: '18px', padding: '32px',
             position: 'relative',
             transition: 'border-color 0.2s',
             ...fade(0.18),
@@ -191,43 +179,34 @@ function Pricing({ onStartFree }) {
             onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(99,102,241,0.6)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(99,102,241,0.35)'}
           >
-            {/* Badge */}
             <div style={{
               position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
               background: '#6366F1', color: '#fff',
-              fontSize: '10px', fontWeight: '800',
-              padding: '4px 16px', borderRadius: '100px',
-              textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap',
+              fontSize: '10px', fontWeight: '800', padding: '4px 16px',
+              borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap',
             }}>Most popular</div>
 
-            <div style={{
-              fontSize: '12px', fontWeight: '700', textTransform: 'uppercase',
-              letterSpacing: '0.1em', color: '#818CF8', marginBottom: '12px',
-            }}>Pro</div>
-
+            <div style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#818CF8', marginBottom: '12px' }}>Pro</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginBottom: '6px' }}>
-              <span style={{ fontSize: '22px', fontWeight: '600', color: '#818CF8', alignSelf: 'flex-start', marginTop: '8px' }}>€</span>
-              <span style={{ fontSize: '56px', fontWeight: '900', letterSpacing: '-3px', color: '#F1F5F9' }}>29</span>
+              <span style={{ fontSize: '20px', fontWeight: '600', color: '#818CF8', alignSelf: 'flex-start', marginTop: '6px' }}>€</span>
+              <span style={{ fontSize: 'clamp(44px, 10vw, 56px)', fontWeight: '900', letterSpacing: '-3px', color: '#F1F5F9' }}>29</span>
               <span style={{ fontSize: '14px', color: '#475569', marginLeft: '4px' }}>/month</span>
             </div>
-
             <p style={{
               fontSize: '13px', color: '#475569', lineHeight: '1.55',
-              marginBottom: '28px', paddingBottom: '28px',
+              marginBottom: '24px', paddingBottom: '24px',
               borderBottom: '1px solid rgba(255,255,255,0.07)',
             }}>
               For ambitious businesses that want to dominate their local market and protect their reputation at scale.
             </p>
-
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '28px' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
               {proFeatures.map((ft, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#94A3B8' }}>
-                  <span style={{ fontSize: '14px', color: '#10B981', flexShrink: 0 }}>✓</span>
+                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', color: '#94A3B8' }}>
+                  <span style={{ fontSize: '14px', color: '#10B981', flexShrink: 0, marginTop: '1px' }}>✓</span>
                   {ft}
                 </li>
               ))}
             </ul>
-
             <button
               onClick={() => handleCheckout(PRICE_PRO, 'pro')}
               disabled={loading === 'pro'}
@@ -237,22 +216,15 @@ function Pricing({ onStartFree }) {
                 border: 'none', background: '#6366F1', color: '#fff',
                 transition: 'all 0.2s', opacity: loading === 'pro' ? 0.5 : 1,
               }}
-              onMouseEnter={e => { if (loading !== 'pro') { e.currentTarget.style.background = '#4F46E5'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(99,102,241,0.35)' } }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#6366F1'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
             >
               {loading === 'pro' ? 'Loading...' : 'Start free trial →'}
             </button>
           </div>
         </div>
 
-        {/* Trust line */}
-        <p style={{
-          textAlign: 'center', fontSize: '12px', color: '#334155',
-          marginTop: '32px', ...fade(0.3),
-        }}>
+        <p style={{ textAlign: 'center', fontSize: '12px', color: '#334155', marginTop: '28px', ...fade(0.3) }}>
           🔒 Secure payment · GDPR compliant · Cancel anytime
         </p>
-
       </div>
     </section>
   )
