@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-function useInView(threshold = 0.2) {
+function useInView(threshold = 0.15) {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
   useEffect(() => {
@@ -13,77 +13,133 @@ function useInView(threshold = 0.2) {
   return [ref, inView]
 }
 
+const problems = [
+  {
+    emoji: '😓',
+    title: 'Manual monitoring',
+    text: "You check Google reviews manually every morning — wasting 30 minutes you don't have.",
+    accent: 'rgba(239,68,68,0.15)',
+    border: 'rgba(239,68,68,0.2)',
+  },
+  {
+    emoji: '😤',
+    title: 'Slow responses',
+    text: 'A negative review stays unanswered for days, damaging your reputation while you sleep.',
+    accent: 'rgba(245,158,11,0.12)',
+    border: 'rgba(245,158,11,0.2)',
+  },
+  {
+    emoji: '😕',
+    title: 'No visibility',
+    text: 'You have no idea what your overall reputation score is or how you compare to competitors.',
+    accent: 'rgba(99,102,241,0.12)',
+    border: 'rgba(99,102,241,0.2)',
+  },
+]
+
 function Problems() {
   const [sectionRef, inView] = useInView()
 
-  const problems = [
-    {
-      emoji: "😓",
-      title: "Manual monitoring",
-      text: "You check Google reviews manually every morning — wasting 30 minutes you don't have."
-    },
-    {
-      emoji: "😤",
-      title: "Slow responses",
-      text: "A negative review stays unanswered for days, damaging your reputation while you sleep."
-    },
-    {
-      emoji: "😕",
-      title: "No visibility",
-      text: "You have no idea what your overall reputation score is or how you compare to competitors."
-    }
-  ]
+  const fade = (delay = 0) => ({
+    opacity: inView ? 1 : 0,
+    transform: inView ? 'translateY(0)' : 'translateY(28px)',
+    transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
+  })
 
   return (
-    <section ref={sectionRef} className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
+    <section ref={sectionRef} style={{
+      background: '#05080F',
+      padding: 'clamp(60px, 8vw, 100px) clamp(20px, 5vw, 48px)',
+      position: 'relative', overflow: 'hidden',
+    }}>
 
-      {/* Transition depuis le Hero sombre */}
-      <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none" style={{
-        background: 'linear-gradient(to bottom, #0f172a, #ffffff)'
+      {/* Subtle glow */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '600px', height: '300px',
+        background: 'radial-gradient(ellipse, rgba(239,68,68,0.06) 0%, transparent 70%)',
+        pointerEvents: 'none',
       }} />
 
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="text-center mb-14" style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? 'translateY(0)' : 'translateY(24px)',
-          transition: 'all 0.6s ease'
-        }}>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>The problem</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Sound familiar?</h2>
-          <p className="text-gray-400 mt-3 text-sm">Managing reviews manually is a losing battle.</p>
+      <div style={{ maxWidth: '860px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '48px', ...fade(0) }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '10px',
+            fontSize: '11px', fontWeight: '700', textTransform: 'uppercase',
+            letterSpacing: '0.12em', color: '#F87171', marginBottom: '16px',
+          }}>
+            <span style={{ width: '24px', height: '1px', background: '#EF4444', display: 'inline-block' }} />
+            The problem
+            <span style={{ width: '24px', height: '1px', background: '#EF4444', display: 'inline-block' }} />
+          </div>
+          <h2 style={{
+            fontSize: 'clamp(28px, 5vw, 42px)', fontWeight: '900',
+            letterSpacing: '-1.5px', lineHeight: '1.05', color: '#F1F5F9',
+            marginBottom: '12px',
+          }}>
+            Sound familiar?
+          </h2>
+          <p style={{ fontSize: '15px', color: '#475569' }}>
+            Managing reviews manually is a losing battle.
+          </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-5">
-          {problems.map((problem, index) => (
-            <div
-              key={index}
-              className="flex-1 rounded-2xl p-6 border group cursor-default"
-              style={{
-                borderColor: '#f1f5f9',
-                backgroundColor: '#fafafa',
-                opacity: inView ? 1 : 0,
-                transform: inView ? 'translateY(0)' : 'translateY(32px)',
-                transition: `all 0.6s ease ${0.1 + index * 0.15}s`,
-              }}
+        {/* Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '12px',
+        }}>
+          {problems.map((p, i) => (
+            <div key={i} style={{
+              background: p.accent,
+              border: `1px solid ${p.border}`,
+              borderRadius: '14px',
+              padding: '28px 24px',
+              transition: 'transform 0.2s, border-color 0.2s',
+              cursor: 'default',
+              ...fade(0.1 + i * 0.12),
+            }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#e0e7ff'
-                e.currentTarget.style.backgroundColor = '#fafafe'
-                e.currentTarget.style.transform = 'translateY(-4px)'
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(99,102,241,0.08)'
+                e.currentTarget.style.transform = 'translateY(-3px)'
+                e.currentTarget.style.borderColor = p.border.replace('0.2', '0.4')
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#f1f5f9'
-                e.currentTarget.style.backgroundColor = '#fafafa'
                 e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = 'none'
+                e.currentTarget.style.borderColor = p.border
               }}
             >
-              <span className="text-3xl mb-4 block">{problem.emoji}</span>
-              <h3 className="font-semibold text-gray-900 mb-2 text-sm">{problem.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{problem.text}</p>
+              <span style={{ fontSize: '32px', display: 'block', marginBottom: '16px' }}>{p.emoji}</span>
+              <h3 style={{
+                fontSize: '15px', fontWeight: '700', color: '#E2E8F0',
+                marginBottom: '10px', letterSpacing: '-0.3px',
+              }}>{p.title}</h3>
+              <p style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65' }}>{p.text}</p>
             </div>
           ))}
         </div>
+
+        {/* Bridge arrow */}
+        <div style={{
+          textAlign: 'center', marginTop: '48px',
+          ...fade(0.4),
+        }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '12px',
+            padding: '12px 24px',
+            background: 'rgba(99,102,241,0.08)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            borderRadius: '100px',
+            fontSize: '13px', color: '#818CF8', fontWeight: '500',
+          }}>
+            <span>There's a better way</span>
+            <span style={{ fontSize: '16px' }}>↓</span>
+          </div>
+        </div>
+
       </div>
     </section>
   )
