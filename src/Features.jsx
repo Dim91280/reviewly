@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-function useInView(threshold = 0.2) {
+function useInView(threshold = 0.15) {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
   useEffect(() => {
@@ -16,108 +16,214 @@ function useInView(threshold = 0.2) {
 function Features() {
   const [sectionRef, inView] = useInView()
 
-  const features = [
-    {
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        </svg>
-      ),
-      tag: 'Monitoring',
-      title: "Real-time alerts",
-      description: "Get notified instantly the moment a new review is posted on your Google Business Profile — never miss one again.",
-      stat: '< 1min',
-      statLabel: 'response time'
-    },
-    {
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      ),
-      tag: 'AI',
-      title: "AI-powered replies",
-      description: "Respond to any review in one click with smart, personalized suggestions — tailored to your business tone and sector.",
-      stat: '1 click',
-      statLabel: 'to reply'
-    },
-    {
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
-          <path d="M12 20h9"/>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-        </svg>
-      ),
-      tag: 'Reputation',
-      title: "Track your reputation",
-      description: "Monitor your average rating, response rate, and reputation score from one clean dashboard. Know exactly where you stand.",
-      stat: '100%',
-      statLabel: 'visibility'
-    }
-  ]
+  const fade = (delay = 0) => ({
+    opacity: inView ? 1 : 0,
+    transform: inView ? 'translateY(0)' : 'translateY(28px)',
+    transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
+  })
+
+  const cardBase = {
+    background: '#0D1220',
+    border: '1px solid rgba(255,255,255,0.07)',
+    borderRadius: '14px',
+    padding: '28px',
+    position: 'relative',
+    overflow: 'hidden',
+    transition: 'border-color 0.2s, transform 0.2s',
+  }
 
   return (
-    <section id="features" ref={sectionRef} className="py-24 px-6" style={{ backgroundColor: '#ffffff' }}>
-      <div className="max-w-4xl mx-auto">
+    <section id="features" ref={sectionRef} style={{ padding: '100px 48px', background: '#05080F' }}>
 
-        <div className="text-center mb-14" style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? 'translateY(0)' : 'translateY(24px)',
-          transition: 'all 0.6s ease'
+      {/* Header */}
+      <div style={{ marginBottom: '60px', ...fade(0) }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '10px',
+          fontSize: '11px', fontWeight: '700', textTransform: 'uppercase',
+          letterSpacing: '0.12em', color: '#22D3EE', marginBottom: '20px',
         }}>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#6366f1' }}>Features</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Your reputation, under control</h2>
-          <p className="text-gray-400 mt-3 text-sm">Everything you need. Nothing you don't.</p>
+          <span style={{ width: '24px', height: '1px', background: '#22D3EE', display: 'inline-block' }} />
+          Features
+          <span style={{ width: '24px', height: '1px', background: '#22D3EE', display: 'inline-block' }} />
+        </div>
+        <h2 style={{
+          fontSize: 'clamp(32px, 4vw, 46px)', fontWeight: '900',
+          letterSpacing: '-2px', lineHeight: '1.05', color: '#F1F5F9',
+          marginBottom: '16px',
+        }}>
+          Built for owners,<br />not for analysts.
+        </h2>
+        <p style={{ fontSize: '16px', color: '#64748B', lineHeight: '1.65', maxWidth: '440px' }}>
+          Every feature is designed for one thing: help you reply faster, better, and protect your reputation effortlessly.
+        </p>
+      </div>
+
+      {/* Bento grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateRows: 'auto auto',
+        gap: '12px',
+      }}>
+
+        {/* Card 1 — large wide — AI replies */}
+        <div style={{ ...cardBase, gridColumn: 'span 2', background: 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(99,102,241,0.06))', borderColor: 'rgba(99,102,241,0.25)', ...fade(0.08) }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.45)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'; e.currentTarget.style.transform = 'translateY(0)' }}
+        >
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)', opacity: 0 }} className="rp-shine" />
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '10px', marginBottom: '18px',
+            background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+          }}>✨</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#F1F5F9', marginBottom: '10px', letterSpacing: '-0.3px' }}>
+            AI replies that sound like you
+          </div>
+          <div style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65', marginBottom: '20px' }}>
+            Replios learns your sector, your tone, and even the words you never use. Every reply is uniquely yours — warm, professional, personal.
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+            <span style={{
+              fontSize: '48px', fontWeight: '900', letterSpacing: '-3px',
+              background: 'linear-gradient(135deg, #818CF8, #22D3EE)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>8 sec</span>
+            <span style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>average time to generate a perfect reply</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="rounded-2xl p-6 border flex flex-col"
-              style={{
-                borderColor: '#f1f5f9',
-                backgroundColor: '#fafafe',
-                opacity: inView ? 1 : 0,
-                transform: inView ? 'translateY(0)' : 'translateY(32px)',
-                transition: `all 0.6s ease ${0.1 + index * 0.15}s`,
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#e0e7ff'
-                e.currentTarget.style.backgroundColor = '#ffffff'
-                e.currentTarget.style.transform = 'translateY(-4px)'
-                e.currentTarget.style.boxShadow = '0 16px 40px rgba(99,102,241,0.1)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#f1f5f9'
-                e.currentTarget.style.backgroundColor = '#fafafe'
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
-            >
-              {/* Tag */}
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-lg mb-4 self-start" style={{ backgroundColor: '#eef2ff', color: '#6366f1' }}>
-                {feature.tag}
-              </span>
+        {/* Card 2 — Replios Score */}
+        <div style={{ ...cardBase, ...fade(0.14) }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)' }}
+        >
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '10px', marginBottom: '18px',
+            background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+          }}>🛡️</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#F1F5F9', marginBottom: '10px', letterSpacing: '-0.3px' }}>
+            Replios Score
+          </div>
+          <div style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65', marginBottom: '16px' }}>
+            Your personal reputation indicator. Track your score weekly and see exactly what to improve.
+          </div>
+          {/* Mini bars */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', height: '44px' }}>
+            {[40, 55, 48, 68, 62, 80, 90].map((h, i) => (
+              <div key={i} style={{
+                flex: 1, height: `${h}%`, borderRadius: '3px 3px 0 0',
+                background: i === 6 ? '#6366F1' : `rgba(99,102,241,${0.25 + i * 0.07})`,
+              }} />
+            ))}
+          </div>
+        </div>
 
-              {/* Icon */}
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: '#eef2ff' }}>
-                {feature.icon}
-              </div>
-
-              {/* Content */}
-              <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed flex-1">{feature.description}</p>
-
-              {/* Stat */}
-              <div className="mt-5 pt-4 border-t flex items-baseline gap-2" style={{ borderColor: '#f1f5f9' }}>
-                <span className="text-2xl font-bold" style={{ color: '#6366f1' }}>{feature.stat}</span>
-                <span className="text-xs text-gray-400">{feature.statLabel}</span>
-              </div>
+        {/* Card 3 — Negative alerts */}
+        <div style={{ ...cardBase, ...fade(0.2) }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(249,115,22,0.25)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)' }}
+        >
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '10px', marginBottom: '18px',
+            background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+          }}>🔔</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#F1F5F9', marginBottom: '10px', letterSpacing: '-0.3px' }}>
+            Instant negative alerts
+          </div>
+          <div style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65', marginBottom: '14px' }}>
+            Get notified the moment a bad review lands. Respond before the damage spreads.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{
+              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: '7px', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <span style={{ fontSize: '13px' }}>⚡</span>
+              <span style={{ fontSize: '11px', color: '#FCA5A5', fontWeight: '500' }}>New 2★ review — Sophie B. just posted</span>
             </div>
-          ))}
+            <div style={{
+              background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)',
+              borderRadius: '7px', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <span style={{ fontSize: '13px' }}>📊</span>
+              <span style={{ fontSize: '11px', color: '#FCD34D', fontWeight: '500' }}>Weekly report ready — score up +4 pts</span>
+            </div>
+          </div>
         </div>
+
+        {/* Card 4 — Language detection */}
+        <div style={{ ...cardBase, ...fade(0.26) }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'translateY(0)' }}
+        >
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '10px', marginBottom: '18px',
+            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+          }}>🌐</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#F1F5F9', marginBottom: '10px', letterSpacing: '-0.3px' }}>
+            Auto language detection
+          </div>
+          <div style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65', marginBottom: '14px' }}>
+            Reviews in French, English, Spanish, Italian? Replios replies in the same language automatically.
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {[
+              { flag: '🇫🇷', lang: 'Français', active: true },
+              { flag: '🇬🇧', lang: 'English', active: true },
+              { flag: '🇪🇸', lang: 'Español', active: false },
+              { flag: '🇩🇪', lang: 'Deutsch', active: false },
+              { flag: '🇮🇹', lang: 'Italiano', active: false },
+              { flag: '🇵🇹', lang: 'Português', active: false },
+            ].map(({ flag, lang, active }) => (
+              <span key={lang} style={{
+                padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: '600',
+                background: active ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${active ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                color: active ? '#818CF8' : '#475569',
+              }}>{flag} {lang}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Card 5 — Chrome extension wide */}
+        <div style={{ ...cardBase, gridColumn: 'span 2', background: 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(34,211,238,0.02))', borderColor: 'rgba(34,211,238,0.15)', ...fade(0.32) }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(34,211,238,0.35)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(34,211,238,0.15)'; e.currentTarget.style.transform = 'translateY(0)' }}
+        >
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '10px', marginBottom: '18px',
+            background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+          }}>🧩</div>
+          <div style={{ fontSize: '15px', fontWeight: '700', color: '#F1F5F9', marginBottom: '10px', letterSpacing: '-0.3px' }}>
+            Chrome extension — reply without leaving Google Business
+          </div>
+          <div style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.65' }}>
+            Install the Replios extension, open Google Business, click "Reply with AI" on any review. The reply is generated and injected directly into Google's text field. One click to publish. Zero friction.
+          </div>
+          <div style={{ display: 'flex', gap: '24px', marginTop: '20px' }}>
+            {[
+              { num: '1', text: 'Install in 30 seconds' },
+              { num: '2', text: 'Button on every review' },
+              { num: '3', text: 'Click → publish' },
+            ].map(({ num, text }) => (
+              <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{
+                  width: '22px', height: '22px', borderRadius: '6px', flexShrink: 0,
+                  background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', fontWeight: '700', color: '#22D3EE',
+                }}>{num}</div>
+                <span style={{ fontSize: '12px', color: '#64748B' }}>{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   )
