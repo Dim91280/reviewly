@@ -2,6 +2,19 @@ import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { supabase } from './supabase'
 
+const D = {
+  bg: '#05080F',
+  sidebar: '#080C14',
+  surface: '#0D1220',
+  border: 'rgba(255,255,255,0.07)',
+  border2: 'rgba(255,255,255,0.12)',
+  indigo: '#6366F1',
+  indigoLight: '#818CF8',
+  text: '#F1F5F9',
+  text2: '#64748B',
+  text3: '#334155',
+}
+
 function AppLayout({ session }) {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
@@ -69,38 +82,43 @@ function AppLayout({ session }) {
   const isInTrial = accountAge < 14
   const daysLeft = 13 - accountAge
 
+  // Loading screen
   if (subLoading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
-      <div className="text-center">
-        <div className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: '#6366f1', borderTopColor: 'transparent' }}></div>
-        <p className="text-sm" style={{ color: '#94a3b8' }}>{isSuccess ? 'Activating your subscription...' : 'Loading...'}</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: D.bg }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{
+          width: '36px', height: '36px', border: `3px solid rgba(99,102,241,0.2)`,
+          borderTopColor: D.indigo, borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite', margin: '0 auto 16px',
+        }}/>
+        <p style={{ fontSize: '13px', color: D.text2 }}>{isSuccess ? 'Activating your subscription...' : 'Loading...'}</p>
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 
+  // Trial expired
   if (!subscription && !isInTrial) return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: '#f8fafc' }}>
-      <div className="bg-white rounded-2xl border p-10 max-w-md w-full text-center" style={{ borderColor: '#f1f5f9' }}>
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#eef2ff' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: D.bg }}>
+      <div style={{ background: D.surface, borderRadius: '20px', border: `1px solid ${D.border}`, padding: '48px 40px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+        <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={D.indigoLight} strokeWidth="1.5">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            <path d="M12 8l1.5 3h3l-2.5 2 1 3-3-2-3 2 1-3-2.5-2h3z"/>
           </svg>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Your trial has expired</h2>
-        <p className="text-sm mb-8" style={{ color: '#94a3b8' }}>Choose a plan to continue using Replio.</p>
-        <div className="space-y-3">
-          <button onClick={() => { window.location.href = 'https://replios.com/#pricing' }}
-            className="w-full text-white font-medium py-2.5 rounded-xl text-sm transition-colors"
-            style={{ backgroundColor: '#6366f1' }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#4f46e5'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#6366f1'}>
-            View plans →
-          </button>
-          <button onClick={() => supabase.auth.signOut()} className="w-full text-sm" style={{ color: '#94a3b8' }}>
-            Sign out
-          </button>
-        </div>
+        <h2 style={{ fontSize: '20px', fontWeight: '700', color: D.text, marginBottom: '8px', letterSpacing: '-0.5px' }}>Your trial has expired</h2>
+        <p style={{ fontSize: '14px', color: D.text2, marginBottom: '32px', lineHeight: '1.6' }}>Choose a plan to continue using Replios.</p>
+        <button onClick={() => { window.location.href = 'https://replios.com/#pricing' }} style={{
+          width: '100%', padding: '12px', fontSize: '14px', fontWeight: '600',
+          color: '#fff', background: D.indigo, border: 'none', borderRadius: '10px', cursor: 'pointer',
+          marginBottom: '12px', transition: 'all 0.2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#4F46E5'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(99,102,241,0.3)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = D.indigo; e.currentTarget.style.boxShadow = 'none' }}
+        >View plans →</button>
+        <button onClick={() => supabase.auth.signOut()} style={{ fontSize: '13px', color: D.text2, background: 'none', border: 'none', cursor: 'pointer' }}>
+          Sign out
+        </button>
       </div>
     </div>
   )
@@ -110,18 +128,19 @@ function AppLayout({ session }) {
     return (
       <Link key={to} to={to} style={{
         display: 'flex', alignItems: 'center', gap: '10px',
-        padding: '8px 12px', borderRadius: '8px',
-        fontSize: '12px', textDecoration: 'none', transition: 'all 0.15s',
-        backgroundColor: isActive ? '#1e293b' : 'transparent',
-        color: isActive ? '#f1f5f9' : '#64748b',
+        padding: '9px 12px', borderRadius: '8px',
+        fontSize: '13px', textDecoration: 'none', transition: 'all 0.15s', fontWeight: '500',
+        background: isActive ? 'rgba(99,102,241,0.12)' : 'transparent',
+        color: isActive ? D.indigoLight : D.text2,
+        border: `1px solid ${isActive ? 'rgba(99,102,241,0.2)' : 'transparent'}`,
       }}
-      onMouseEnter={e => { if (!isActive) e.currentTarget.style.backgroundColor = '#1e293b20' }}
-      onMouseLeave={e => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent' }}
+        onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = D.text } }}
+        onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = D.text2 } }}
       >
         {icon}
-        <span>{label}</span>
+        <span style={{ flex: 1 }}>{label}</span>
         {badge != null && badge > 0 && (
-          <span className="ml-auto text-xs px-1.5 py-0.5 rounded-md" style={{ backgroundColor: '#6366f1', color: 'white' }}>{badge}</span>
+          <span style={{ fontSize: '10px', fontWeight: '700', padding: '2px 7px', borderRadius: '100px', background: D.indigo, color: '#fff' }}>{badge}</span>
         )}
       </Link>
     )
@@ -147,105 +166,135 @@ function AppLayout({ session }) {
   const outletContext = { reviews, setReviews, subscription, generateReply, addReview, loading, pendingCount, session }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: D.bg }}>
 
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex w-56 min-h-screen flex-col px-4 py-6 fixed top-0 left-0" style={{ backgroundColor: '#0f172a' }}>
-        <div onClick={() => { window.location.href = 'https://replios.com/#home' }} className="flex items-center gap-2 mb-8 px-2" style={{ cursor: 'pointer' }}>
-          <img src="/replio-logo-wordmark.svg" alt="Replio" height="30" style={{ height: '30px' }} />
+      <aside style={{
+        width: '220px', minHeight: '100vh', display: 'none',
+        flexDirection: 'column', padding: '24px 16px',
+        position: 'fixed', top: 0, left: 0,
+        background: D.sidebar,
+        borderRight: `1px solid ${D.border}`,
+      }} className="app-sidebar">
+
+        {/* Logo */}
+        <div onClick={() => { window.location.href = 'https://replios.com' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '28px', paddingLeft: '4px', cursor: 'pointer' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: D.indigo, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '900', color: '#fff', flexShrink: 0 }}>R</div>
+          <span style={{ fontSize: '16px', fontWeight: '800', color: D.text, letterSpacing: '-0.5px' }}>Replios</span>
         </div>
 
-        <div className="px-2 mb-6">
-          <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{
-            backgroundColor: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
-            color: subscription ? '#60a5fa' : '#a5b4fc',
-            border: `1px solid ${subscription ? 'rgba(96,165,250,0.2)' : 'rgba(99,102,241,0.2)'}`
+        {/* Plan badge */}
+        <div style={{ marginBottom: '20px', paddingLeft: '4px' }}>
+          <span style={{
+            fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '7px',
+            background: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
+            color: subscription ? '#60A5FA' : D.indigoLight,
+            border: `1px solid ${subscription ? 'rgba(96,165,250,0.2)' : 'rgba(99,102,241,0.2)'}`,
           }}>
-            {subscription ? `✦ Plan ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
+            {subscription ? `✦ ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
           </span>
         </div>
 
-        <nav className="space-y-0.5 flex-1">{navLinks}</nav>
+        {/* Nav */}
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>{navLinks}</nav>
 
-        <div className="border-t px-2 pt-4" style={{ borderColor: '#1e293b' }}>
-          <p className="text-xs truncate mb-2" style={{ color: '#475569' }}>{session.user.email}</p>
-          <button onClick={() => supabase.auth.signOut()} className="text-xs transition-colors hover:text-slate-300" style={{ color: '#475569' }}>
-            Sign out →
-          </button>
+        {/* Footer */}
+        <div style={{ borderTop: `1px solid ${D.border}`, paddingTop: '16px', paddingLeft: '4px' }}>
+          <p style={{ fontSize: '11px', color: D.text3, marginBottom: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{session.user.email}</p>
+          <button onClick={() => supabase.auth.signOut()} style={{ fontSize: '12px', color: D.text2, background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = D.text}
+            onMouseLeave={e => e.currentTarget.style.color = D.text2}
+          >Sign out →</button>
         </div>
       </aside>
 
       {/* Navbar mobile */}
-      <nav className="md:hidden fixed top-0 left-0 right-0 px-4 py-3 flex items-center justify-between z-20" style={{ backgroundColor: '#0f172a' }}>
-        <a href="https://replios.com/#home" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
-          <img src="/replio-logo-wordmark.svg" alt="Replio" height="26" style={{ height: '26px' }} />
-        </a>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: '#94a3b8' }}>
-          {mobileMenuOpen ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          )}
+      <nav style={{
+        display: 'flex', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 20,
+        padding: '0 20px', height: '56px',
+        alignItems: 'center', justifyContent: 'space-between',
+        background: D.sidebar, borderBottom: `1px solid ${D.border}`,
+      }} className="app-mobile-nav">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: D.indigo, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '900', color: '#fff' }}>R</div>
+          <span style={{ fontSize: '15px', fontWeight: '800', color: D.text, letterSpacing: '-0.5px' }}>Replios</span>
+        </div>
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: D.text2, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+          {mobileMenuOpen
+            ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          }
         </button>
       </nav>
 
-      {/* Menu mobile déroulant */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed top-12 left-0 right-0 z-10 px-4 py-4 space-y-1" style={{ backgroundColor: '#0f172a', borderTop: '1px solid #1e293b' }}>
-          <div className="mb-3 px-2">
-            <span className="text-xs font-medium px-2.5 py-1 rounded-md" style={{
-              backgroundColor: subscription ? 'rgba(96,165,250,0.1)' : 'rgba(99,102,241,0.1)',
-              color: subscription ? '#60a5fa' : '#a5b4fc',
-            }}>
-              {subscription ? `✦ Plan ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
-            </span>
-          </div>
-          {navLinks}
-          <div className="border-t pt-3 mt-3" style={{ borderColor: '#1e293b' }}>
-            <p className="text-xs truncate mb-2 px-3" style={{ color: '#475569' }}>{session.user.email}</p>
-            <button onClick={() => supabase.auth.signOut()} className="text-xs px-3" style={{ color: '#475569' }}>Sign out →</button>
-          </div>
+      {/* Mobile menu */}
+      <div style={{
+        position: 'fixed', top: '56px', left: 0, right: 0, zIndex: 19,
+        background: D.sidebar, borderBottom: `1px solid ${D.border}`,
+        padding: mobileMenuOpen ? '12px 16px 16px' : '0 16px',
+        maxHeight: mobileMenuOpen ? '400px' : '0',
+        overflow: 'hidden', transition: 'max-height 0.3s ease, padding 0.3s ease',
+      }} className="app-mobile-menu">
+        <div style={{ marginBottom: '12px' }}>
+          <span style={{ fontSize: '11px', fontWeight: '600', padding: '4px 10px', borderRadius: '7px', background: 'rgba(99,102,241,0.1)', color: D.indigoLight, border: '1px solid rgba(99,102,241,0.2)' }}>
+            {subscription ? `✦ ${subscription.plan.toUpperCase()}` : `⏱ Trial — ${daysLeft}d left`}
+          </span>
         </div>
-      )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>{navLinks}</div>
+        <div style={{ borderTop: `1px solid ${D.border}`, paddingTop: '12px' }}>
+          <p style={{ fontSize: '11px', color: D.text3, marginBottom: '6px' }}>{session.user.email}</p>
+          <button onClick={() => supabase.auth.signOut()} style={{ fontSize: '12px', color: D.text2, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign out →</button>
+        </div>
+      </div>
 
-      {/* Main */}
-      <main className="md:ml-56 flex-1 px-4 md:px-8 py-5 md:py-8 mt-12 md:mt-0">
+      {/* Main content */}
+      <main style={{
+        flex: 1,
+        padding: 'clamp(16px, 3vw, 32px)',
+        marginTop: '56px',
+        minHeight: 'calc(100vh - 56px)',
+      }} className="app-main">
 
-        {/* Bannière trial */}
+        {/* Trial banner */}
         {!subscription && isInTrial && (
-          <div className="mb-6 px-4 py-3 rounded-2xl flex items-center justify-between" style={{
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(167,139,250,0.08) 100%)',
-            border: '1px solid rgba(99,102,241,0.2)'
+          <div style={{
+            marginBottom: '20px', padding: '12px 16px',
+            borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.18)',
+            flexWrap: 'wrap', gap: '12px',
           }}>
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'rgba(99,102,241,0.15)' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'rgba(99,102,241,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={D.indigoLight} strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
-              <div>
-                <span className="text-sm font-medium" style={{ color: '#4338ca' }}>Free trial</span>
-                <span className="text-sm" style={{ color: '#6366f1' }}> — <strong>{daysLeft} days remaining</strong></span>
-              </div>
+              <span style={{ fontSize: '13px', color: D.indigoLight }}>
+                Free trial — <strong style={{ color: D.text }}>{daysLeft} days remaining</strong>
+              </span>
             </div>
-            <button
-              onClick={() => { window.location.href = 'https://replios.com/#pricing' }}
-              className="text-xs font-semibold px-4 py-2 rounded-xl text-white transition-all"
-              style={{ backgroundColor: '#6366f1' }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = '#4f46e5'
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(99,102,241,0.3)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = '#6366f1'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
-            >
-              Upgrade now →
-            </button>
+            <button onClick={() => { window.location.href = 'https://replios.com/#pricing' }} style={{
+              fontSize: '12px', fontWeight: '600', padding: '7px 14px',
+              color: '#fff', background: D.indigo, border: 'none', borderRadius: '8px', cursor: 'pointer',
+              transition: 'all 0.2s', whiteSpace: 'nowrap',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#4F46E5'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = D.indigo; e.currentTarget.style.transform = 'translateY(0)' }}
+            >Upgrade now →</button>
           </div>
         )}
 
         <Outlet context={outletContext} />
       </main>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @media(min-width: 768px) {
+          .app-sidebar { display: flex !important; }
+          .app-mobile-nav { display: none !important; }
+          .app-mobile-menu { display: none !important; }
+          .app-main { margin-left: 220px !important; margin-top: 0 !important; min-height: 100vh !important; }
+        }
+      `}</style>
     </div>
   )
 }
