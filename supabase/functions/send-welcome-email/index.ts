@@ -1,26 +1,8 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
-const HOOK_SECRET = Deno.env.get('SEND_EMAIL_HOOK_SECRET')!
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-// Vérifie la signature HMAC du hook Supabase
-async function verifyHookSignature(req: Request, body: string): Promise<boolean> {
-  try {
-    const signature = req.headers.get('x-supabase-signature')
-    if (!signature) return false
-
-    const secret = HOOK_SECRET.replace('v1,whsec_', '')
-    const keyData = Uint8Array.from(atob(secret), c => c.charCodeAt(0))
-    const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify'])
-    const sigBytes = Uint8Array.from(atob(signature.replace('v1,', '')), c => c.charCodeAt(0))
-    const bodyBytes = new TextEncoder().encode(body)
-    return await crypto.subtle.verify('HMAC', key, sigBytes, bodyBytes)
-  } catch {
-    return false
-  }
 }
 
 Deno.serve(async (req) => {
@@ -34,20 +16,8 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Empty body' }), { status: 400, headers: corsHeaders })
     }
 
-    // Vérifier la signature si le secret est défini
-    if (HOOK_SECRET) {
-      const valid = await verifyHookSignature(req, body)
-      if (!valid) {
-        return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 401, headers: corsHeaders })
-      }
-    }
-
     const payload = JSON.parse(body)
 
-    // Format du hook Supabase Send Email
-    // payload.email_data.token = le code OTP
-    // payload.email_data.email_action_type = 'signup' | 'recovery' | etc.
-    // payload.user.email = l'email du destinataire
     const email = payload?.user?.email
     const token = payload?.email_data?.token
     const emailActionType = payload?.email_data?.email_action_type
@@ -56,8 +26,6 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Missing email' }), { status: 400, headers: corsHeaders })
     }
 
-    // Ne traiter que les emails de signup et recovery
-    // Pour les autres types, laisser Supabase gérer
     let subject = ''
     let html = ''
 
@@ -68,7 +36,6 @@ Deno.serve(async (req) => {
       subject = 'Reset your Replios password'
       html = getRecoveryEmailHtml(payload?.email_data?.token_hash, payload?.email_data?.redirect_to)
     } else {
-      // Autres types (invite, etc.) — email générique
       subject = 'Action required on your Replios account'
       html = getOtpEmailHtml(token)
     }
