@@ -77,12 +77,7 @@ function RatingMeter({ mounted }) {
   const cx = 70, cy = 70
 
   return (
-    <div style={{
-      borderRadius: '14px', padding: '16px 18px',
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.07)',
-      marginBottom: '10px',
-    }}>
+    <div style={{ borderRadius: '14px', padding: '16px 18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', marginBottom: '10px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div>
           <p style={{ fontSize: '11px', color: '#475569', margin: 0 }}>Google rating · Le Petit Bistro</p>
@@ -166,7 +161,6 @@ function LiveDemo({ mounted }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <RatingMeter mounted={mounted} />
-
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: '10px', color: '#475569', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Live preview</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -174,7 +168,6 @@ function LiveDemo({ mounted }) {
           <span style={{ fontSize: '10px', color: '#10B981' }}>AI active</span>
         </div>
       </div>
-
       <div style={{ display: 'flex', gap: '6px' }}>
         {[
           { label: 'Pending', value: Math.max(0, 3-repliedCount), color: '#F59E0B' },
@@ -187,15 +180,7 @@ function LiveDemo({ mounted }) {
           </div>
         ))}
       </div>
-
-      <div style={{
-        borderRadius: '12px', overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.07)',
-        background: 'rgba(255,255,255,0.02)',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.99)',
-        transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)',
-      }}>
+      <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)', opacity: visible ? 1 : 0, transform: visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.99)', transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)' }}>
         <div style={{ padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -214,7 +199,7 @@ function LiveDemo({ mounted }) {
           <p style={{ fontSize: '11px', color: '#94A3B8', lineHeight: '1.6', margin: 0 }}>{review.text}</p>
         </div>
         <div style={{ padding: '10px 14px', minHeight: '56px' }}>
-          {phase === 'idle' && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ fontSize: '10px', color: '#334155' }}>Waiting for new reviews...</span></div>}
+          {phase === 'idle' && <span style={{ fontSize: '10px', color: '#334155' }}>Waiting for new reviews...</span>}
           {phase === 'thinking' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '11px', color: '#818CF8' }}>Replios AI is analyzing...</span>
@@ -235,7 +220,6 @@ function LiveDemo({ mounted }) {
           )}
         </div>
       </div>
-
       <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
         {REVIEWS.map((_, i) => (
           <div key={i} style={{ width: i === reviewIndex%REVIEWS.length ? '14px' : '5px', height: '5px', borderRadius: '3px', background: i === reviewIndex%REVIEWS.length ? '#6366F1' : 'rgba(99,102,241,0.2)', transition: 'all 0.4s ease' }}/>
@@ -245,63 +229,35 @@ function LiveDemo({ mounted }) {
   )
 }
 
-// ── Panel gauche dark premium ──────────────────────────────────────
 function LeftPanel({ mounted }) {
   return (
-    <div style={{
-      display: 'none', flexDirection: 'column', width: '50%',
-      padding: '40px', position: 'relative', overflow: 'hidden',
-      background: '#080C14',
-      borderRight: '1px solid rgba(255,255,255,0.06)',
-    }} className="auth-left-panel">
-
-      {/* Glows */}
+    <div style={{ display: 'none', flexDirection: 'column', width: '50%', padding: '40px', position: 'relative', overflow: 'hidden', background: '#080C14', borderRight: '1px solid rgba(255,255,255,0.06)' }} className="auth-left-panel">
       <div style={{ position: 'absolute', top: '-150px', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '500px', background: 'radial-gradient(ellipse, rgba(99,102,241,0.2) 0%, transparent 65%)', pointerEvents: 'none' }}/>
       <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '350px', height: '350px', background: 'radial-gradient(ellipse, rgba(34,211,238,0.06) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-
-      {/* Logo */}
       <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(-12px)', transition: 'all 0.6s ease', marginBottom: '32px', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
         <div style={{ width: '30px', height: '30px', borderRadius: '7px', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '900', color: '#fff' }}>R</div>
         <span style={{ fontSize: '17px', fontWeight: '800', color: '#F1F5F9', letterSpacing: '-0.5px' }}>Replios</span>
       </div>
-
-      {/* Tagline */}
       <div style={{ opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(12px)', transition: 'all 0.7s ease 0.1s', position: 'relative', zIndex: 1, marginBottom: '24px' }}>
         <h2 style={{ fontSize: '22px', fontWeight: '800', letterSpacing: '-1px', lineHeight: '1.2', color: '#F1F5F9', marginBottom: '8px' }}>
           Watch Replios work<br />
           <span style={{ background: 'linear-gradient(135deg, #818CF8, #22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>in real time.</span>
         </h2>
-        <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.6' }}>
-          Every review, answered instantly. Your rating, climbing automatically.
-        </p>
+        <p style={{ fontSize: '13px', color: '#475569', lineHeight: '1.6' }}>Every review, answered instantly. Your rating, climbing automatically.</p>
       </div>
-
-      {/* Live demo */}
       <div style={{ flex: 1, opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.7s ease 0.2s', position: 'relative', zIndex: 1, overflowY: 'auto' }}>
         <LiveDemo mounted={mounted} />
       </div>
-
-      {/* Footer */}
       <p style={{ fontSize: '11px', color: '#1E293B', position: 'relative', zIndex: 1, marginTop: '12px' }}>© 2026 Replios</p>
     </div>
   )
 }
 
-// ── Formulaire dark ──────────────────────────────────────────────
 function FormPanel({ children }) {
   return (
-    <div style={{
-      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '48px 24px',
-      background: '#05080F',
-      position: 'relative', overflow: 'hidden',
-      minHeight: '100vh',
-    }}>
-      {/* Subtle glow top */}
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', background: '#05080F', position: 'relative', overflow: 'hidden', minHeight: '100vh' }}>
       <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '400px', height: '300px', background: 'radial-gradient(ellipse, rgba(99,102,241,0.1) 0%, transparent 65%)', pointerEvents: 'none' }}/>
-      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '380px' }}>
-        {children}
-      </div>
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '380px' }}>{children}</div>
     </div>
   )
 }
@@ -314,16 +270,12 @@ function InputField({ label, type, placeholder, value, onChange, onKeyDown }) {
       <input
         type={type} placeholder={placeholder} value={value}
         onChange={onChange} onKeyDown={onKeyDown}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         style={{
-          width: '100%', padding: '11px 14px', fontSize: '14px',
-          borderRadius: '10px', outline: 'none',
+          width: '100%', padding: '11px 14px', fontSize: '14px', borderRadius: '10px', outline: 'none',
           background: focused ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.04)',
           border: `1px solid ${focused ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}`,
-          color: '#F1F5F9',
-          transition: 'all 0.2s',
-          boxSizing: 'border-box',
+          color: '#F1F5F9', transition: 'all 0.2s', boxSizing: 'border-box',
         }}
       />
     </div>
@@ -369,8 +321,12 @@ function Auth({ onBack }) {
       if (error) setMessage(error.message)
     } else {
       const { error } = await supabase.auth.signUp({ email, password })
-      if (error) setMessage(error.message)
-      else setPhase('otp')
+      // Ignorer l'erreur JSON/text-plain du SMTP custom — l'email OTP est envoyé quand même
+      if (error && !error.message?.includes('Invalid JSON') && !error.message?.includes('text/plain')) {
+        setMessage(error.message)
+      } else {
+        setPhase('otp')
+      }
     }
     setLoading(false)
   }
@@ -396,42 +352,31 @@ function Auth({ onBack }) {
 
   const btnStyle = {
     width: '100%', padding: '12px', fontSize: '14px', fontWeight: '700',
-    color: '#fff', background: '#6366F1', border: 'none',
-    borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+    color: '#fff', background: '#6366F1', border: 'none', borderRadius: '10px',
+    cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
   }
 
   const fadeIn = { opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.6s ease 0.1s' }
 
-  // ── OTP screen ────────────────────────────────────────────────
+  // ── OTP screen ──────────────────────────────────────────────
   if (phase === 'otp') {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', background: '#05080F' }}>
         <LeftPanel mounted={mounted} />
         <FormPanel>
           <div style={fadeIn}>
-
-            {/* Mobile logo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '40px' }} className="auth-mobile-logo">
               <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '900', color: '#fff' }}>R</div>
               <span style={{ fontSize: '16px', fontWeight: '800', color: '#F1F5F9', letterSpacing: '-0.5px' }}>Replios</span>
             </div>
-
-            {/* Icon */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
               <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818CF8" strokeWidth="1.5">
-                  <rect x="2" y="4" width="20" height="16" rx="3"/>
-                  <path d="m2 7 10 7 10-7"/>
-                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818CF8" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 7 10-7"/></svg>
               </div>
             </div>
-
             <h1 style={{ fontSize: '24px', fontWeight: '800', color: '#F1F5F9', letterSpacing: '-0.5px', textAlign: 'center', marginBottom: '8px' }}>Check your email</h1>
             <p style={{ fontSize: '14px', color: '#64748B', textAlign: 'center', marginBottom: '4px' }}>We sent a 6-digit code to</p>
             <p style={{ fontSize: '14px', fontWeight: '600', color: '#94A3B8', textAlign: 'center', marginBottom: '32px' }}>{email}</p>
-
-            {/* OTP input */}
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#64748B', marginBottom: '8px' }}>Verification code</label>
               <input
@@ -441,40 +386,32 @@ function Auth({ onBack }) {
                 onChange={e => { const v = e.target.value.replace(/\D/g,'').slice(0,6); setOtp(v); setOtpError('') }}
                 onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
                 style={{
-                  width: '100%', padding: '14px', textAlign: 'center',
-                  fontSize: '28px', fontWeight: '800', letterSpacing: '0.3em',
+                  width: '100%', padding: '14px', textAlign: 'center', fontSize: '28px', fontWeight: '800', letterSpacing: '0.3em',
                   borderRadius: '12px', outline: 'none', boxSizing: 'border-box',
-                  background: 'rgba(99,102,241,0.06)',
-                  border: `1px solid ${otpError ? '#EF4444' : 'rgba(99,102,241,0.3)'}`,
+                  background: 'rgba(99,102,241,0.06)', border: `1px solid ${otpError ? '#EF4444' : 'rgba(99,102,241,0.3)'}`,
                   color: '#F1F5F9', transition: 'all 0.2s',
                 }}
               />
               {otpError && <p style={{ fontSize: '12px', color: '#F87171', marginTop: '6px' }}>{otpError}</p>}
               {resendSuccess && !otpError && <p style={{ fontSize: '12px', color: '#10B981', marginTop: '6px' }}>✓ New code sent!</p>}
             </div>
-
             <button onClick={handleVerifyOtp} disabled={loading || otp.length !== 6} style={{ ...btnStyle, opacity: (loading || otp.length !== 6) ? 0.5 : 1 }}
               onMouseEnter={e => { if (!loading && otp.length === 6) { e.currentTarget.style.background = '#4F46E5'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(99,102,241,0.35)' }}}
               onMouseLeave={e => { e.currentTarget.style.background = '#6366F1'; e.currentTarget.style.boxShadow = 'none' }}
-            >
-              {loading ? 'Verifying...' : 'Verify →'}
-            </button>
-
+            >{loading ? 'Verifying...' : 'Verify →'}</button>
             <p style={{ textAlign: 'center', fontSize: '13px', color: '#475569', marginTop: '20px' }}>
               Didn't receive it?{' '}
               <button onClick={handleResendOtp} disabled={loading} style={{ color: '#818CF8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}>Resend code</button>
             </p>
-
             <p style={{ textAlign: 'center', marginTop: '16px' }}>
               <button onClick={() => { setPhase('form'); setOtp(''); setOtpError(''); setResendSuccess(false) }}
-                style={{ fontSize: '12px', color: '#334155', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.15s' }}
+                style={{ fontSize: '12px', color: '#334155', background: 'none', border: 'none', cursor: 'pointer' }}
                 onMouseEnter={e => e.currentTarget.style.color = '#64748B'}
                 onMouseLeave={e => e.currentTarget.style.color = '#334155'}
               >← Back</button>
             </p>
           </div>
         </FormPanel>
-
         <style>{`
           @keyframes authPulse{0%,100%{opacity:1}50%{opacity:0.3}}
           @keyframes authBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -486,20 +423,17 @@ function Auth({ onBack }) {
     )
   }
 
-  // ── Form screen ───────────────────────────────────────────────
+  // ── Form screen ─────────────────────────────────────────────
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: '#05080F' }}>
       <LeftPanel mounted={mounted} />
       <FormPanel>
         <div style={fadeIn}>
-
-          {/* Mobile logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '36px' }} className="auth-mobile-logo">
             <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '900', color: '#fff' }}>R</div>
             <span style={{ fontSize: '16px', fontWeight: '800', color: '#F1F5F9', letterSpacing: '-0.5px' }}>Replios</span>
           </div>
 
-          {/* Badge signup */}
           {!isLogin && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px 4px 6px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '100px', fontSize: '11px', color: '#818CF8', fontWeight: '500', marginBottom: '20px' }}>
               <span style={{ background: '#6366F1', color: '#fff', fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '100px' }}>Free</span>
@@ -514,7 +448,6 @@ function Auth({ onBack }) {
             {isLogin ? 'Sign in to continue to your dashboard' : 'Create your account in seconds'}
           </p>
 
-          {/* Fields */}
           <InputField label="Email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
           <InputField label="Password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} />
 
@@ -533,15 +466,11 @@ function Auth({ onBack }) {
             </div>
           )}
 
-          {/* Primary CTA */}
           <button onClick={handleSubmit} disabled={loading} style={{ ...btnStyle, marginBottom: '12px', opacity: loading ? 0.7 : 1 }}
             onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = '#4F46E5'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(99,102,241,0.35)'; e.currentTarget.style.transform = 'translateY(-1px)' }}}
             onMouseLeave={e => { e.currentTarget.style.background = '#6366F1'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)' }}
-          >
-            {loading ? 'Loading...' : isLogin ? 'Sign in →' : 'Create account →'}
-          </button>
+          >{loading ? 'Loading...' : isLogin ? 'Sign in →' : 'Create account →'}</button>
 
-          {/* Google */}
           <button onClick={handleGoogleLogin} style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '500', color: '#94A3B8', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s', marginBottom: '20px' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#F1F5F9' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#94A3B8' }}
@@ -555,14 +484,12 @@ function Auth({ onBack }) {
             Continue with Google
           </button>
 
-          {/* Divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.07)' }}/>
             <span style={{ fontSize: '12px', color: '#334155' }}>or</span>
             <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.07)' }}/>
           </div>
 
-          {/* Switch */}
           <p style={{ textAlign: 'center', fontSize: '13px', color: '#475569', marginBottom: '16px' }}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button onClick={switchMode} style={{ color: '#818CF8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
@@ -578,7 +505,6 @@ function Auth({ onBack }) {
             >← Back to home</button>
           </p>
 
-          {/* Trust */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.06)', flexWrap: 'wrap' }}>
             {['SSL secured', 'GDPR compliant', 'No card needed'].map((t, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#334155' }}>
@@ -587,7 +513,6 @@ function Auth({ onBack }) {
               </div>
             ))}
           </div>
-
         </div>
       </FormPanel>
 

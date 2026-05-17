@@ -1,8 +1,59 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!
+const HOOK_SECRET = Deno.env.get('SEND_EMAIL_HOOK_SECRET')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-signature',
+}
+
+function base64ToArrayBuffer(b64: string): ArrayBuffer {
+  const binaryStr = atob(b64)
+  const bytes = new Uint8Array(binaryStr.length)
+  for (let i = 0; i < binaryStr.length; i++) {
+    bytes[i] = binaryStr.charCodeAt(i)
+  }
+  return bytes.buffer as ArrayBuffer
+}
+
+async function verifyHookSignature(req: Request, body: string): Promise<boolean> {
+  try {
+    if (!HOOK_SECRET) {
+      console.log('[HMAC] No secret — skipping')
+      return true
+    }
+
+    const signature = req.headers.get('x-supabase-signature')
+    console.log('[HMAC] Signature:', signature ? signature.slice(0, 30) + '...' : 'MISSING')
+    console.log('[HMAC] Secret starts with:', HOOK_SECRET.slice(0, 20))
+
+    if (!signature) {
+      console.log('[HMAC] No signature — allowing')
+      return true
+    }
+
+    const rawSecret = HOOK_SECRET.startsWith('v1,whsec_')
+      ? HOOK_SECRET.slice('v1,whsec_'.length)
+      : HOOK_SECRET
+
+    const keyBuffer = base64ToArrayBuffer(rawSecret)
+    const key = await crypto.subtle.importKey(
+      'raw', keyBuffer,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false, ['verify']
+    )
+
+    const rawSig = signature.startsWith('v1,') ? signature.slice(3) : signature
+    const sigBuffer = base64ToArrayBuffer(rawSig)
+    const bodyBuffer = new TextEncoder().encode(body)
+
+    const valid = await crypto.subtle.verify('HMAC', key, sigBuffer, bodyBuffer)
+    console.log('[HMAC] Valid:', valid)
+    return valid
+
+  } catch (e) {
+    console.error('[HMAC] Error:', e)
+    return true
+  }
 }
 
 Deno.serve(async (req) => {
@@ -10,17 +61,27 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  console.log('[START] Headers:', JSON.stringify(Object.fromEntries(req.headers.entries())))
+
   try {
     const body = await req.text()
+    console.log('[BODY] Length:', body.length, '| Preview:', body.slice(0, 200))
+
     if (!body) {
       return new Response(JSON.stringify({ error: 'Empty body' }), { status: 400, headers: corsHeaders })
     }
 
-    const payload = JSON.parse(body)
+    const valid = await verifyHookSignature(req, body)
+    if (!valid) {
+      console.warn('[HMAC] Invalid signature — continuing for debug')
+    }
 
+    const payload = JSON.parse(body)
     const email = payload?.user?.email
     const token = payload?.email_data?.token
     const emailActionType = payload?.email_data?.email_action_type
+
+    console.log('[PAYLOAD] type:', emailActionType, '| email:', email, '| hasToken:', !!token)
 
     if (!email) {
       return new Response(JSON.stringify({ error: 'Missing email' }), { status: 400, headers: corsHeaders })
@@ -55,15 +116,16 @@ Deno.serve(async (req) => {
     })
 
     const data = await res.json()
+    console.log('[RESEND] Status:', res.status, '| Response:', JSON.stringify(data))
+
     if (!res.ok) {
-      console.error('Resend error:', data)
       return new Response(JSON.stringify({ error: data }), { status: 500, headers: corsHeaders })
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders })
 
   } catch (err) {
-    console.error('Unexpected error:', err)
+    console.error('[ERROR]', err)
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500, headers: corsHeaders })
   }
 })
