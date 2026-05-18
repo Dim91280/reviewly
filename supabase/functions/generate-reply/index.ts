@@ -30,7 +30,7 @@ serve(async (req) => {
   }
 
   try {
-    const { reviewText, rating, authorName, businessName: bodyBusinessName } = await req.json()
+    const { reviewText, rating, authorName, businessName: bodyBusinessName, variants } = await req.json()
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
 
@@ -76,6 +76,62 @@ serve(async (req) => {
       ? `Never use these words or expressions in your reply: ${avoidWords}.`
       : ''
 
+    // Mode variantes : 3 longueurs en un seul appel
+    if (variants) {
+      const variantsPrompt = `RÈGLE ABSOLUE : Détecte la langue de l'avis et réponds OBLIGATOIREMENT dans cette même langue. Avis en français = réponse en français. Avis en anglais = réponse en anglais.
+
+Tu réponds aux avis clients au nom de ${businessName}.
+
+Ton : ${toneInstruction}
+${sectorContext ? `Contexte : ${sectorContext}` : ''}
+${avoidInstruction ? `${avoidInstruction}` : ''}
+
+Génère 3 versions de réponse à cet avis ${rating} étoile(s) :
+"${reviewText}"
+
+Règles communes :
+- Sois authentique, évite les formules génériques
+- Avis négatif (1-2 étoiles) : reconnais le problème et propose de rectifier
+- Avis positif (4-5 étoiles) : exprime une vraie gratitude
+- Avis neutre (3 étoiles) : prends en compte le retour et montre ta volonté d'amélioration
+- Ne mentionne jamais le nombre d'étoiles
+- Réponds directement, sans introduction
+
+Retourne UNIQUEMENT un objet JSON valide, sans texte avant ni après, sans balises markdown :
+{
+  "short": "1 phrase maximum. Ultra-concis.",
+  "standard": "2-3 phrases. Équilibre entre chaleur et concision.",
+  "long": "4-5 phrases. Développé, personnalisé, avec une invitation à revenir."
+}`
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY!,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 600,
+          messages: [{ role: 'user', content: variantsPrompt }]
+        })
+      })
+
+      const data = await response.json()
+      const raw = data.content[0].text.trim()
+
+      // Parse JSON — on nettoie les éventuelles balises markdown
+      const clean = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
+      const parsed = JSON.parse(clean)
+
+      return new Response(
+        JSON.stringify({ variants: parsed }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Mode classique (rétrocompatibilité — appelé sans variants:true)
     const prompt = `RÈGLE ABSOLUE : Détecte la langue de l'avis et réponds OBLIGATOIREMENT dans cette même langue. Avis en français = réponse en français. Avis en anglais = réponse en anglais.
 
 Tu réponds aux avis clients au nom de ${businessName}.
